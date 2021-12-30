@@ -1,0 +1,5 @@
+{
+  "editor.wordWrapColumn": 120,
+  "bitburner.scriptRoot": "./src/",
+  "bitburner.fileWatcher.enable": true
+}

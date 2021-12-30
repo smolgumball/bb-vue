@@ -1,0 +1,17 @@
+{
+  "paths": [
+    "src/v2/components/AppRoot.js",
+    "src/v2/components/CommandPalette.js",
+    "src/v2/components/RecentEvents.js",
+    "src/v2/components/StoreDisplay.js",
+    "src/v2/eventBus.js",
+    "src/v2/lib.js",
+    "src/v2/main.js",
+    "src/v2/orchestrator.js",
+    "src/v2/store.js",
+    "src/v2/ui.commands.js",
+    "src/v2/ui.js",
+    "src/v2/vueLoader.js",
+    "src/v2/_testSandbox.js"
+  ]
+}

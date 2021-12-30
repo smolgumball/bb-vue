@@ -1,0 +1,23 @@
+{
+  "name": "bitburner-scripts",
+  "version": "0.0.1",
+  "author": "smolgumball",
+  "scripts": {
+    "updateDirTree": "node updateDirTree.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smolgumball/bitburner-vue"
+  },
+  "bugs": {
+    "url": "https://github.com/smolgumball/bitburner-vue/issues"
+  },
+  "homepage": "https://github.com/smolgumball/bitburner-vue#readme",
+  "volta": {
+    "node": "16.13.1",
+    "npm": "8.3.0"
+  },
+  "devDependencies": {
+    "dree": "^2.8.3"
+  }
+}

@@ -55,7 +55,10 @@ This cannot be undone unless you have previously made backups.
 `)
 
   if (confirmedDelete) {
-    filesToRemove.forEach((toRm) => ns.rm(toRm))
+    filesToRemove.forEach((toRm) => {
+      ns.scriptKill(toRm, options.host)
+      ns.rm(toRm)
+    })
     ns.tprint(`Deleted ${filesToRemove.length} files from '${options.host}'`)
   } else {
     ns.tprint(`Aborted deletion of ${filesToRemove.length} files from '${options.host}'`)

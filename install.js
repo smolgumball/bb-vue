@@ -22,13 +22,8 @@
 
 /**
  * `bitburner-vue` installs to a unique subdirectory by default. To place it somewhere other than
- * your root directory in BitBurner, set the prefixDirectory config as needed.
- *
- * For example, to install all scripts to a subdirectory called 'vueThing/',
- * modify the uncommented line below to read:
- *
- * let prefixDirectory = 'vueThing/'
- *
+ * your root directory in BitBurner, set the prefixDirectory config as needed. Do not use a
+ * relative path such as './myDirectory' - always use absolute paths like '/myDirectory'
  */
 let prefixDirectory = ''
 
@@ -60,16 +55,20 @@ export async function main(ns) {
     throw new Error('Run this script from home')
   }
 
-  let manifestPath = joinPath(repoRoot, manifestFile)
+  let manifestPath = joinPaths(repoRoot, manifestFile)
   let manifestData = await fetchConfig(ns, manifestPath)
   let manifestLength = manifestData.manifestPaths.length
+
+  if (prefixDirectory) prefixDirectory = `/${trimPath(prefixDirectory)}/`
 
   for (let i in manifestData.manifestPaths) {
     let { repoPath, installPath } = manifestData.manifestPaths[i]
     repoPath = joinPaths(repoRoot, repoPath)
     try {
-      installPath = joinPath(prefixDirectory, installPath)
+      installPath = joinPaths(prefixDirectory, installPath)
       await getFileFromGH(ns, repoPath, installPath)
+      await ns.sleep(100)
+      await rewriteImports(ns, installPath, manifestData.importRoot, prefixDirectory)
       ns.tprint(`Installed: ${installPath} [${Number(i) + 1}/${manifestLength}]`)
     } catch (e) {
       ns.tprint(`ERROR: Exception while downloading ${repoPath}: `, e.message)
@@ -77,16 +76,25 @@ export async function main(ns) {
     }
   }
 
-  let mainJsPath = joinPath(prefixDirectory, manifestData.entryFile)
+  ns.rm(manifestTmpPath, requiredHost)
+  let mainJsPath = joinPaths(prefixDirectory, manifestData.entryFile)
 
   // prettier-ignore
-  ns.tprint(`Install complete!
+  ns.tprint(`Install complete! 🎉
 
-👇👇 Run the following in your home terminal to launch bitburner-vue!
+Run the following in your home terminal to launch bitburner-vue:
 
 run ${mainJsPath}
 
 `)
+}
+
+async function rewriteImports(ns, filePath, importRoot, prefixDirectory) {
+  let file = ns.read(filePath)
+  file = file.replaceAll(`from '${importRoot}`, `from '${joinPaths(prefixDirectory, importRoot)}`)
+  file = file.replaceAll(`from "${importRoot}`, `from "${joinPaths(prefixDirectory, importRoot)}`)
+  file = file.replaceAll(`from \`${importRoot}`, `from \`${joinPaths(prefixDirectory, importRoot)}`)
+  await ns.write(filePath, file, 'w')
 }
 
 async function fetchConfig(ns, manifestPath) {
@@ -118,22 +126,22 @@ async function githubReq(ns, repoPath, installPath) {
 // Path helpers
 // ---
 
-function joinPath(pathA, pathB) {
-  return `${trimPathTrailing(pathA)}/${trimPathLeading(pathB)}`
+function joinPaths(pathA, pathB) {
+  return `${trimTrailingSlash(pathA)}/${trimLeadingSlash(pathB)}`
 }
 
 function trimPath(path) {
-  return `${trimPathTrailing(trimPathLeading(path))}`
+  return `${trimTrailingSlash(trimLeadingSlash(path))}`
 }
 
-function trimPathTrailing(path) {
+function trimLeadingSlash(path) {
   if (path && path.startsWith('/')) {
     return path.slice(1)
   }
   return path
 }
 
-function trimPathLeading(path) {
+function trimTrailingSlash(path) {
   if (path && path.endsWith('/')) {
     return path.slice(0, -1)
   }

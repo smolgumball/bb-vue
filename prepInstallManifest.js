@@ -1,7 +1,7 @@
 const util = require('util')
 const dree = require('dree')
 const { writeFileSync, rmSync } = require('fs')
-const { trimPathTrailing, trimPathLeading } = require('./lib.js')
+const { trimTrailingSlash, trimLeadingSlash } = require('./lib.js')
 
 const config = {
   scanRoot: 'src',
@@ -24,11 +24,11 @@ dree.scan(
     normalize: true,
   },
   (fileNode) => {
-    if (fileNode.relativePath.startsWith(trimPathTrailing(config.scanRoot))) {
-      let installPath = fileNode.relativePath.replace(`${trimPathTrailing(config.scanRoot)}/`, '')
+    if (fileNode.relativePath.startsWith(trimTrailingSlash(config.scanRoot))) {
+      let installPath = fileNode.relativePath.replace(`${trimTrailingSlash(config.scanRoot)}/`, '')
       manifestData.manifestPaths.push({
-        repoPath: `/${trimPathLeading(fileNode.relativePath)}`,
-        installPath: `/${trimPathLeading(installPath)}`,
+        repoPath: `/${trimLeadingSlash(fileNode.relativePath)}`,
+        installPath: `/${trimLeadingSlash(installPath)}`,
       })
     }
   }

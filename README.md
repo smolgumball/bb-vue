@@ -14,9 +14,12 @@ Copy contents of `install.js` from this repo into your BitBurner game and run to
 
 * An actual GitHub repo!
 * Something of a proper architecture, but still very WIP...
-* UI components in their own files... Almost like Vue SFCs, but decidedly more punk
-* Reactive data stores syncing NetScript and Vue UI layers ⚡ 
-* An event bus for communicating across modules 🚌 
+  * An `Orchestrator` class with a tick rate, a command queue, and extensive callback support
+  * An `EventBus` class for communicating across modules
+  * A reactive `Store` class for syncing NetScript and Vue UI layers
+  * A `UI` class for bootstrapping the demo Vue app and mounting it
+* An example `CommandPalette` component which creates async NetScript commands to be run by the `Orchestrator` and reports on their status
+* All UI components are now imported from their own files! Almost like Vue SFCs, but decidedly more punk
 * The beginnings of a central dashboard (something of an example of what can be done with the library thus far)
 
 ## Troubleshooting

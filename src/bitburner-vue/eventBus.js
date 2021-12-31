@@ -1,4 +1,4 @@
-import { emitEvent, projectGlobals, setProjectGlobal } from '/v2/lib.js'
+import { emitEvent, projectGlobals, setProjectGlobal } from '/bitburner-vue/lib.js'
 
 export default class EventBus {
   #ns

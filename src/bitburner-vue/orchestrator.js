@@ -1,4 +1,4 @@
-import { emitEvent, registerEvent, Log, deepScan, setProjectGlobal, updateStore } from '/v2/lib.js'
+import { emitEvent, registerEvent, Log, deepScan, setProjectGlobal, updateStore } from '/bitburner-vue/lib.js'
 
 export default class Orchestrator {
   logger
@@ -204,6 +204,7 @@ class NSCommand {
   }
 
   static commandFnAsString(commandFn) {
+    if (!commandFn) return
     try {
       return String(commandFn)
         .split('\n')

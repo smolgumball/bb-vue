@@ -1,4 +1,4 @@
-import { css, html, projectGlobals, setAppVisible, emitEvent } from '/v2/lib.js'
+import { css, html, projectGlobals, setAppVisible, emitEvent } from '/bitburner-vue/lib.js'
 
 export default {
   name: 'app-root',

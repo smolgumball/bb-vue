@@ -1,4 +1,4 @@
-import { css, html, toJson, projectGlobals } from '/v2/lib.js'
+import { css, html, toJson, projectGlobals } from '/bitburner-vue/lib.js'
 
 export default {
   name: 'recent-events',

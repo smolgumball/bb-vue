@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "author": "smolgumball",
   "scripts": {
-    "updateDirTree": "node updateDirTree.js"
+    "prepInstallManifest": "node prepInstallManifest.js"
   },
   "repository": {
     "type": "git",

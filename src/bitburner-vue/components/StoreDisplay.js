@@ -1,4 +1,4 @@
-import { toJson, css, html, projectGlobals, lodash } from '/v2/lib.js'
+import { toJson, css, html, projectGlobals, lodash } from '/bitburner-vue/lib.js'
 
 export default {
   name: 'store-display',

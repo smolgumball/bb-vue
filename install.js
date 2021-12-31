@@ -1,70 +1,151 @@
-/**
- * @credit https://github.com/lethern/Bitburner_git_fetch
- * @modifiedBy smolgumball
+/*
+
+
+
+
+
+
+
+    __    _ __  __
+   / /_  (_) /_/ /_  __  ___________  ___  _____     _   ____  _____
+  / __ \/ / __/ __ \/ / / / ___/ __ \/ _ \/ ___/____| | / / / / / _ \
+ / /_/ / / /_/ /_/ / /_/ / /  / / / /  __/ /  /_____/ |/ / /_/ /  __/
+/_.___/_/\__/_.___/\__,_/_/  /_/ /_/\___/_/         |___/\__,_/\___/
+
+
+
+
+*/ /**
+ * CONFIGURATION
+ * --------------------------------------
  */
 
-// if your github is https://github.com/Bob/Bitburner_lib, owner is Bob and repo is Bitburner_lib
-let owner = 'smolgumball'
-let repo = 'bitburner-vue'
-
-// if you want your files to be saved nested in a directory, type it here. Or leave it empty
+/**
+ * `bitburner-vue` installs to a unique subdirectory by default. To place it somewhere other than
+ * your root directory in BitBurner, set the prefixDirectory config as needed.
+ *
+ * For example, to install all scripts to a subdirectory called 'vueThing/',
+ * modify the uncommented line below to read:
+ *
+ * let prefixDirectory = 'vueThing/'
+ *
+ */
 let prefixDirectory = ''
 
-// probably no changes here
-let configFileName = 'installTree.txt'
-let baseURL = 'https://raw.githubusercontent.com/'
-let branch = 'main'
+/**
+ * --------------------------------------
+ * DO NOT EDIT BELOW THIS LINE
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
+
+let requiredHost = 'home'
+let repoRoot = 'https://raw.githubusercontent.com/smolgumball/bitburner-vue/main'
+let manifestFile = 'installManifest.txt'
+let manifestTmpPath = '/tmp/installManifest__bitburner-vue.txt'
 
 export async function main(ns) {
-  let { paths: filesToDownload } = await fetchConfig(ns)
-
-  if (ns.getHostname() !== 'home') {
-    throw new Error('Run the script from home')
+  if (ns.getHostname() !== requiredHost) {
+    throw new Error('Run this script from home')
   }
 
-  if (prefixDirectory) {
-    if (!prefixDirectory.endsWith('/')) prefixDirectory += '/'
-    if (prefixDirectory[0] !== '/') prefixDirectory = '/' + prefixDirectory
-  }
+  let manifestPath = joinPath(repoRoot, manifestFile)
+  let manifestData = await fetchConfig(ns, manifestPath)
+  let manifestLength = manifestData.manifestPaths.length
 
-  for (let i in filesToDownload) {
-    let filename = filesToDownload[i]
+  for (let i in manifestData.manifestPaths) {
+    let { repoPath, installPath } = manifestData.manifestPaths[i]
+    repoPath = joinPaths(repoRoot, repoPath)
     try {
-      await getFileFromGH(ns, filename)
-      ns.tprint(`Installed: ${filename} [${Number(i) + 1}/${filesToDownload.length}]`)
+      installPath = joinPath(prefixDirectory, installPath)
+      await getFileFromGH(ns, repoPath, installPath)
+      ns.tprint(`Installed: ${installPath} [${Number(i) + 1}/${manifestLength}]`)
     } catch (e) {
-      ns.tprint(`ERROR: tried to download ${filename}: `, e.message)
+      ns.tprint(`ERROR: Exception while downloading ${repoPath}: `, e.message)
       throw e
     }
   }
 
-  ns.tprint('Install complete!')
+  let mainJsPath = joinPath(prefixDirectory, manifestData.entryFile)
+
+  // prettier-ignore
+  ns.tprint(`Install complete!
+
+👇👇 Run the following in your home terminal to launch bitburner-vue!
+
+run ${mainJsPath}
+
+`)
 }
 
-async function fetchConfig(ns) {
+async function fetchConfig(ns, manifestPath) {
   try {
-    await getFileFromGH(ns, configFileName)
-    let json = ns.read(configFileName)
-    return JSON.parse(json)
+    await getFileFromGH(ns, manifestPath, manifestTmpPath)
+    return JSON.parse(ns.read(manifestTmpPath))
   } catch (e) {
-    ns.tprint(`ERROR: Downloading and reading config file failed ${configFileName}`)
+    ns.tprint(`ERROR: Downloading and reading config file failed ${manifestPath}`)
     throw e
   }
 }
 
-async function getFileFromGH(ns, filepath) {
-  let saveFilepath = prefixDirectory + filepath
-
-  await ns.scriptKill(saveFilepath, 'home')
-  await ns.rm(saveFilepath)
-  await ns.sleep(20)
-
-  await githubReq(ns, filepath, saveFilepath)
+async function getFileFromGH(ns, repoPath, installPath) {
+  await githubReq(ns, repoPath, installPath)
 }
 
-async function githubReq(ns, filepath, saveFilepath) {
-  let url = baseURL + owner + '/' + repo + '/' + branch + '/' + filepath
+async function githubReq(ns, repoPath, installPath) {
+  if (isScriptFile(installPath)) {
+    ns.print('Cleanup on: ' + installPath)
+    await ns.scriptKill(installPath, requiredHost)
+    await ns.rm(installPath, requiredHost)
+  }
 
-  ns.print('Request to: ' + url)
-  await ns.wget(url, saveFilepath)
+  ns.print('Request to: ' + repoPath)
+  await ns.sleep(100)
+  await ns.wget(repoPath, installPath, requiredHost)
 }
+
+// Path helpers
+// ---
+
+function joinPath(pathA, pathB) {
+  return `${trimPathTrailing(pathA)}/${trimPathLeading(pathB)}`
+}
+
+function trimPath(path) {
+  return `${trimPathTrailing(trimPathLeading(path))}`
+}
+
+function trimPathTrailing(path) {
+  if (path && path.startsWith('/')) {
+    return path.slice(1)
+  }
+  return path
+}
+
+function trimPathLeading(path) {
+  if (path && path.endsWith('/')) {
+    return path.slice(0, -1)
+  }
+  return path
+}
+
+// Reflection helpers
+// ---
+
+function isScriptFile(path) {
+  return path.endsWith('ns') || path.endsWith('js')
+}
+
+// Installer script forked from:
+// https://github.com/lethern/Bitburner_git_fetch

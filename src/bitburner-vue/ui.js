@@ -1,8 +1,8 @@
-import { html, weendow, doocument, emitEvent, projectGlobals, setProjectGlobal } from '/v2/lib.js'
-import AppRoot from '/v2/components/AppRoot.js'
-import StoreDisplay from '/v2/components/StoreDisplay.js'
-import RecentEvents from '/v2/components/RecentEvents.js'
-import CommandPalette from '/v2/components/CommandPalette.js'
+import { html, weendow, doocument, emitEvent, projectGlobals, setProjectGlobal } from '/bitburner-vue/lib.js'
+import AppRoot from '/bitburner-vue/components/AppRoot.js'
+import StoreDisplay from '/bitburner-vue/components/StoreDisplay.js'
+import RecentEvents from '/bitburner-vue/components/RecentEvents.js'
+import CommandPalette from '/bitburner-vue/components/CommandPalette.js'
 
 const UIComponents = [AppRoot, StoreDisplay, RecentEvents, CommandPalette]
 

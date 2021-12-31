@@ -1,0 +1,62 @@
+{
+  "importRoot": "/bitburner-vue/",
+  "entryFile": "/bitburner-vue/main.js",
+  "manifestPaths": [
+    {
+      "repoPath": "/src/bitburner-vue/bin/rmDeep.js",
+      "installPath": "/bitburner-vue/bin/rmDeep.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/components/AppRoot.js",
+      "installPath": "/bitburner-vue/components/AppRoot.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/components/CommandPalette.js",
+      "installPath": "/bitburner-vue/components/CommandPalette.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/components/RecentEvents.js",
+      "installPath": "/bitburner-vue/components/RecentEvents.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/components/StoreDisplay.js",
+      "installPath": "/bitburner-vue/components/StoreDisplay.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/eventBus.js",
+      "installPath": "/bitburner-vue/eventBus.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/lib.js",
+      "installPath": "/bitburner-vue/lib.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/main.js",
+      "installPath": "/bitburner-vue/main.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/orchestrator.js",
+      "installPath": "/bitburner-vue/orchestrator.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/store.js",
+      "installPath": "/bitburner-vue/store.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/ui.commands.js",
+      "installPath": "/bitburner-vue/ui.commands.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/ui.js",
+      "installPath": "/bitburner-vue/ui.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/vueLoader.js",
+      "installPath": "/bitburner-vue/vueLoader.js"
+    },
+    {
+      "repoPath": "/src/bitburner-vue/_testSandbox.js",
+      "installPath": "/bitburner-vue/_testSandbox.js"
+    }
+  ]
+}

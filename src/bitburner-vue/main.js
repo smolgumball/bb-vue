@@ -1,10 +1,10 @@
-import { emitEvent, timeDiff, setProjectGlobal, setAppVisible } from '/v2/lib.js'
+import { emitEvent, timeDiff, setProjectGlobal, setAppVisible } from '/bitburner-vue/lib.js'
 
-import EventBus from '/v2/eventBus.js'
-import VueLoader from '/v2/vueLoader.js'
-import Store from '/v2/store.js'
-import UI from '/v2/ui.js'
-import Orchestrator from '/v2/orchestrator.js'
+import EventBus from '/bitburner-vue/eventBus.js'
+import VueLoader from '/bitburner-vue/vueLoader.js'
+import Store from '/bitburner-vue/store.js'
+import UI from '/bitburner-vue/ui.js'
+import Orchestrator from '/bitburner-vue/orchestrator.js'
 
 /** @param {NS} ns **/
 export async function main(ns) {

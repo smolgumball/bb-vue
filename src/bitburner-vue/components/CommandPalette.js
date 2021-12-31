@@ -1,5 +1,5 @@
-import { registerEvent, projectGlobals, css, html, toJson } from '/v2/lib.js'
-import { RebootApplication, TestCommandFast, TestCommandSlow, TestCommandFail } from '/v2/ui.commands.js'
+import { registerEvent, projectGlobals, css, html, toJson } from '/bitburner-vue/lib.js'
+import { RebootApplication, TestCommandFast, TestCommandSlow, TestCommandFail } from '/bitburner-vue/ui.commands.js'
 
 const CommandTemplates = [RebootApplication, TestCommandFast, TestCommandSlow, TestCommandFail]
 

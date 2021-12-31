@@ -1,4 +1,4 @@
-import { emitEvent, setAppVisible, updateStore, projectGlobals } from '/v2/lib.js'
+import { emitEvent, setAppVisible, updateStore, projectGlobals } from '/bitburner-vue/lib.js'
 
 export const RebootApplication = {
   name: `🔁 Reboot Application`,

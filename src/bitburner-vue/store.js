@@ -28,7 +28,8 @@ export default class Store {
   }
 
   async init() {
-    if (this.#reactive) throw new Error('Store is already initialized; access with `Store.reactive`')
+    if (this.#reactive)
+      throw new Error('Store is already initialized; access with `Store.reactive`')
     if (!projectGlobals.Modules?.Vue) throw new Error('Vue is not loaded; check VueLoader usage')
 
     this.#reactive = projectGlobals.Modules.Vue.reactive({ ...this.#initialState })
@@ -43,7 +44,10 @@ export default class Store {
 
   logRecentEvent(type, event) {
     if (!this.#recentEventPassesFilter(type)) return
-    let recentEventsTrimmed = this.#reactive.recentEvents.items.slice(0, this.#reactive.recentEvents.maxItems - 1)
+    let recentEventsTrimmed = this.#reactive.recentEvents.items.slice(
+      0,
+      this.#reactive.recentEvents.maxItems - 1
+    )
     let newEvent = this.#createRecentEventRecord(type, event)
     this.#reactive.recentEvents.items = [newEvent, ...recentEventsTrimmed]
     this.#reactive.recentEvents.eventIsOdd = !this.#reactive.recentEvents.eventIsOdd

@@ -55,7 +55,11 @@ export default {
         <h3>scriptInfo</h3>
         <div class="script_info generic_display sgl--json_display">
           <!-- prettier-ignore -->
-          <div class="script_info_record" v-for="script in store.scriptInfo" :key="script.pid">{{ prepScriptInfo(script) }}</div>
+          <div
+            class="script_info_record"
+            v-for="script in store.scriptInfo"
+            :key="script.pid"
+          >{{ prepScriptInfo(script) }}</div>
         </div>
       </div>
       <div class="key_display" v-for="(val, key) in genericStores" :key="key">

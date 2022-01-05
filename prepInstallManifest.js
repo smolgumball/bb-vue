@@ -1,13 +1,13 @@
 const util = require('util')
 const dree = require('dree')
 const { writeFileSync, rmSync } = require('fs')
-const { trimTrailingSlash, trimLeadingSlash } = require('./lib.js')
+const { trimTrailingSlash, trimLeadingSlash, joinPaths } = require('./lib.js')
 
 const config = {
   scanRoot: 'src',
   scanIncludeExtensions: ['js', 'ns', 'txt'],
-  importRoot: '/bitburner-vue/',
-  entryFile: '/bitburner-vue/main.js',
+  importRoot: '/bb-vue/',
+  entryFile: '/bb-vue/getting-started.js',
   manifestFile: 'installManifest.txt',
 }
 
@@ -24,7 +24,7 @@ dree.scan(
     normalize: true,
   },
   (fileNode) => {
-    if (fileNode.relativePath.startsWith(trimTrailingSlash(config.scanRoot))) {
+    if (fileNode.relativePath.startsWith(joinPaths(config.scanRoot, config.importRoot))) {
       let installPath = fileNode.relativePath.replace(`${trimTrailingSlash(config.scanRoot)}/`, '')
       manifestData.manifestPaths.push({
         repoPath: `/${trimLeadingSlash(fileNode.relativePath)}`,

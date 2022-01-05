@@ -36,7 +36,12 @@ export default {
   `,
   template: html`
     <div class="recent_events sgl--json_display">
-      <div class="event" :class="{ odd: logItem.isOdd }" v-for="logItem in store.items" :key="logItem.uuid">
+      <div
+        class="event"
+        :class="{ odd: logItem.isOdd }"
+        v-for="logItem in store.items"
+        :key="logItem.uuid"
+      >
         <div class="event_header">
           <div class="event_type">{{logItem.type}}</div>
           <div class="event_time">{{ logItem.time }}</div>

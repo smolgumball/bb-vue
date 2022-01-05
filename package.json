@@ -18,6 +18,7 @@
     "npm": "8.3.0"
   },
   "devDependencies": {
-    "dree": "^2.8.3"
+    "dree": "^2.8.3",
+    "eslint": "^8.6.0"
   }
 }

@@ -56,7 +56,8 @@ export default {
       border-left: 2px double var(--sglBorderColor);
       color: var(--sglFontLightColor);
       background-color: var(--sglAppInnerBgColor);
-      box-shadow: inset 0px 0px 30px 10px var(--sglBoxShadowColor1), 0px 0px 40px 20px var(--sglBoxShadowColor2);
+      box-shadow: inset 0px 0px 30px 10px var(--sglBoxShadowColor1),
+        0px 0px 40px 20px var(--sglBoxShadowColor2);
       overflow: auto;
       opacity: 0;
       transition: transform 0.35s ease, opacity 0.35s ease;

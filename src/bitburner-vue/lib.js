@@ -26,7 +26,7 @@ export function getProjectGlobal(key) {
  * @param {Object} data
  */
 export function updateStore(data) {
-  if (projectGlobals?.store) {
+  if (projectGlobals.store) {
     projectGlobals.store.update(data)
   } else {
     throw new Error('updateStore failed; store not found')
@@ -50,7 +50,7 @@ export function emitEvent(type, data) {
  * @param {Function} handler
  */
 export function registerEvent(type, handler) {
-  if (projectGlobals?.eventBus) {
+  if (projectGlobals.eventBus) {
     projectGlobals.eventBus.on(type, handler)
   } else {
     throw new Error('registerEvent failed; eventBus not found')
@@ -69,13 +69,13 @@ export function setAppVisible(isVisible) {
       'afterbegin',
       html`
         <style id="__sglStyle" type="text/css">
-          #${projectGlobals.ui.rootIds.wrap} {
+          #${projectGlobals.ui?.rootIds?.wrap} {
             z-index: 1500;
             position: relative;
             transition: opacity 0.35s ease;
           }
 
-          body.__sglHidden #${projectGlobals.ui.rootIds.wrap} {
+          body.__sglHidden #${projectGlobals.ui?.rootIds?.wrap} {
             pointer-events: none;
             opacity: 0;
           }
@@ -188,8 +188,6 @@ export function uppercaseFirstLetter(value) {
 }
 
 /**
- * Truncates value of provided event.value key to only include the first X keys or array elements
- * Modifies the passed event object in-place
  * @param {Object} eventClone
  */
 export function deepTruncate(value) {
@@ -378,7 +376,13 @@ export const toJsonSafe = function (object, objectMaxDepth, arrayMaxLength, inde
           // object depth. As such, we do not increment the object depth when recursing into an
           // array.
           for (i = 0; i < length; ++i) {
-            partial[i] = toString(path + '.' + i, value[i], cumulativeIndent + indent, depth, arrayMaxLength)
+            partial[i] = toString(
+              path + '.' + i,
+              value[i],
+              cumulativeIndent + indent,
+              depth,
+              arrayMaxLength
+            )
           }
           if (i < value.length) {
             // arrayMaxLength reached
@@ -392,7 +396,12 @@ export const toJsonSafe = function (object, objectMaxDepth, arrayMaxLength, inde
           if (Object.prototype.hasOwnProperty.call(value, subKey)) {
             var subValue
             try {
-              subValue = toString(path + '.' + subKey, value[subKey], cumulativeIndent + indent, depth + 1)
+              subValue = toString(
+                path + '.' + subKey,
+                value[subKey],
+                cumulativeIndent + indent,
+                depth + 1
+              )
               partial.push(quote(subKey) + ': ' + subValue)
             } catch (e) {
               // this try/catch due to forbidden accessors on some objects
@@ -402,7 +411,8 @@ export const toJsonSafe = function (object, objectMaxDepth, arrayMaxLength, inde
           }
         }
         var result = '\n' + cumulativeIndent + '{\n'
-        for (i = 0; i < partial.length; ++i) result += cumulativeIndent + indent + partial[i] + ',\n'
+        for (i = 0; i < partial.length; ++i)
+          result += cumulativeIndent + indent + partial[i] + ',\n'
         if (partial.length > 0) {
           // Remove trailing comma
           result = result.slice(0, result.length - 2) + '\n'

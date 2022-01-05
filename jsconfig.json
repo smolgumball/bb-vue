@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "/bitburner-vue/*": ["./src/bitburner-vue/*"]
+      "/*": ["src/*"]
     }
   }
 }

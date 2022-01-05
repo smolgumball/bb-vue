@@ -1,4 +1,11 @@
-import { emitEvent, registerEvent, Log, deepScan, setProjectGlobal, updateStore } from '/bitburner-vue/lib.js'
+import {
+  emitEvent,
+  registerEvent,
+  Log,
+  deepScan,
+  setProjectGlobal,
+  updateStore,
+} from '/bitburner-vue/lib.js'
 
 export default class Orchestrator {
   logger
@@ -200,7 +207,15 @@ class NSCommand {
   #failValue
 
   static createFromEvent(ns, event) {
-    return new NSCommand(ns, event.commandFn, event.notifyFn, event.successFn, event.failFn, event.alwaysFn, event.uuid)
+    return new NSCommand(
+      ns,
+      event.commandFn,
+      event.notifyFn,
+      event.successFn,
+      event.failFn,
+      event.alwaysFn,
+      event.uuid
+    )
   }
 
   static commandFnAsString(commandFn) {

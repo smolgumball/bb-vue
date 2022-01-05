@@ -1,5 +1,10 @@
 import { registerEvent, projectGlobals, css, html, toJson } from '/bitburner-vue/lib.js'
-import { RebootApplication, TestCommandFast, TestCommandSlow, TestCommandFail } from '/bitburner-vue/ui.commands.js'
+import {
+  RebootApplication,
+  TestCommandFast,
+  TestCommandSlow,
+  TestCommandFail,
+} from '/bitburner-vue/ui.commands.js'
 
 const CommandTemplates = [RebootApplication, TestCommandFast, TestCommandSlow, TestCommandFail]
 
@@ -190,11 +195,20 @@ export default {
   template: html`
     <div class="command_palette">
       <div class="commands_wrap">
-        <div class="command_trigger" v-for="command in commandTemplates" :key="command.slug" :id="command.slug">
-          <button class="command_title sgl--button" @click="run(command)">{{ command.name }}</button>
+        <div
+          class="command_trigger"
+          v-for="command in commandTemplates"
+          :key="command.slug"
+          :id="command.slug"
+        >
+          <button class="command_title sgl--button" @click="run(command)">
+            {{ command.name }}
+          </button>
         </div>
         <div class="command_trigger">
-          <button class="command_title sgl--button" @click="clearCommandReports">Clear Command Reports</button>
+          <button class="command_title sgl--button" @click="clearCommandReports">
+            Clear Command Reports
+          </button>
         </div>
       </div>
       <div class="command_reports sgl--enable_scrollbar" :class="{ hasCommandReports }">
@@ -210,7 +224,9 @@ export default {
           <template v-else>
             <div class="command_report_list">
               <div class="command_report_list_header" :title="report.name">{{ report.name }}</div>
-              <div class="command_report_list_slug" :title="report.state.slug">{{ report.slug }}</div>
+              <div class="command_report_list_slug" :title="report.state.slug">
+                {{ report.slug }}
+              </div>
               <div class="command_report_list_uuid" :title="report.state.uuid">
                 {{ report.state.uuid || 'Waiting for UUID' }}
               </div>
@@ -225,12 +241,17 @@ export default {
               <div class="command_report_list_pair">
                 <strong>Result:</strong> <code>{{ commandReportResult(report) }}</code>
               </div>
-              <button class="details_button sgl--button sgl--button-sm" @click="report.showDetails = true">
+              <button
+                class="details_button sgl--button sgl--button-sm"
+                @click="report.showDetails = true"
+              >
                 Details
               </button>
             </div>
           </template>
-          <div class="close_button sgl--button sgl--button-sm" @click="report.showDetails = false">×</div>
+          <div class="close_button sgl--button sgl--button-sm" @click="report.showDetails = false">
+            ×
+          </div>
         </div>
       </div>
     </div>
@@ -277,7 +298,9 @@ export default {
       })
     },
     clearCommandReports() {
-      this.commandReports = this.commandReports.filter((report) => !this.staleCommandReports.includes(report))
+      this.commandReports = this.commandReports.filter(
+        (report) => !this.staleCommandReports.includes(report)
+      )
     },
     handleRemoteInvocation(event) {
       let requestedCommandTemplate = this.findCommandBySlug(event.commandSlug)

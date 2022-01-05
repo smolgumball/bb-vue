@@ -1,62 +1,58 @@
 {
-  "importRoot": "/bitburner-vue/",
-  "entryFile": "/bitburner-vue/main.js",
+  "importRoot": "/bb-vue/",
+  "entryFile": "/bb-vue/getting-started.js",
   "manifestPaths": [
     {
-      "repoPath": "/src/bitburner-vue/bin/rmDeep.js",
-      "installPath": "/bitburner-vue/bin/rmDeep.js"
+      "repoPath": "/src/bb-vue/AppFactory.js",
+      "installPath": "/bb-vue/AppFactory.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/components/AppRoot.js",
-      "installPath": "/bitburner-vue/components/AppRoot.js"
+      "repoPath": "/src/bb-vue/AppStyles.js",
+      "installPath": "/bb-vue/AppStyles.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/components/CommandPalette.js",
-      "installPath": "/bitburner-vue/components/CommandPalette.js"
+      "repoPath": "/src/bb-vue/ComponentManager.js",
+      "installPath": "/bb-vue/ComponentManager.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/components/RecentEvents.js",
-      "installPath": "/bitburner-vue/components/RecentEvents.js"
+      "repoPath": "/src/bb-vue/examples/0-getting-started.js",
+      "installPath": "/bb-vue/examples/0-getting-started.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/components/StoreDisplay.js",
-      "installPath": "/bitburner-vue/components/StoreDisplay.js"
+      "repoPath": "/src/bb-vue/examples/1-app-stores.js",
+      "installPath": "/bb-vue/examples/1-app-stores.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/eventBus.js",
-      "installPath": "/bitburner-vue/eventBus.js"
+      "repoPath": "/src/bb-vue/examples/2-scss-support.js",
+      "installPath": "/bb-vue/examples/2-scss-support.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/lib.js",
-      "installPath": "/bitburner-vue/lib.js"
+      "repoPath": "/src/bb-vue/examples/3-event-busses.js",
+      "installPath": "/bb-vue/examples/3-event-busses.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/main.js",
-      "installPath": "/bitburner-vue/main.js"
+      "repoPath": "/src/bb-vue/examples/4-connecting-with-netscript.js",
+      "installPath": "/bb-vue/examples/4-connecting-with-netscript.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/orchestrator.js",
-      "installPath": "/bitburner-vue/orchestrator.js"
+      "repoPath": "/src/bb-vue/lib.js",
+      "installPath": "/bb-vue/lib.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/store.js",
-      "installPath": "/bitburner-vue/store.js"
+      "repoPath": "/src/bb-vue/MittLoader.js",
+      "installPath": "/bb-vue/MittLoader.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/ui.commands.js",
-      "installPath": "/bitburner-vue/ui.commands.js"
+      "repoPath": "/src/bb-vue/resources.js",
+      "installPath": "/bb-vue/resources.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/ui.js",
-      "installPath": "/bitburner-vue/ui.js"
+      "repoPath": "/src/bb-vue/SassLoader.js",
+      "installPath": "/bb-vue/SassLoader.js"
     },
     {
-      "repoPath": "/src/bitburner-vue/vueLoader.js",
-      "installPath": "/bitburner-vue/vueLoader.js"
-    },
-    {
-      "repoPath": "/src/bitburner-vue/_testSandbox.js",
-      "installPath": "/bitburner-vue/_testSandbox.js"
+      "repoPath": "/src/bb-vue/VueLoader.js",
+      "installPath": "/bb-vue/VueLoader.js"
     }
   ]
 }

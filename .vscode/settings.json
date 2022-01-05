@@ -1,5 +1,8 @@
 {
   "editor.wordWrapColumn": 120,
   "bitburner.scriptRoot": "./src/",
-  "bitburner.fileWatcher.enable": true
+  "bitburner.authToken": "ztBL1BCx5YDMS8m40FpBuuaHbEGRRAFwxYThEUkIzSfZaZu5K06wdlaVtPLQeOuk",
+  "bitburner.fileWatcher.enable": true,
+  "bitburner.showFileWatcherEnabledNotification": true,
+  "bitburner.showPushSuccessNotification": true
 }

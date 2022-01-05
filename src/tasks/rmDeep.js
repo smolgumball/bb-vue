@@ -36,7 +36,8 @@ export async function main(ns) {
 
   if (!filesToRemove.length) {
     ns.tprint(
-      `No files found matching filters: starts-with=${startsWith}, ` + `--ends-with=${endsWith}, --host=${options.host}`
+      `No files found matching filters: starts-with=${startsWith}, ` +
+        `--ends-with=${endsWith}, --host=${options.host}`
     )
   }
 

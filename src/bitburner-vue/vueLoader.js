@@ -16,7 +16,9 @@ export default class VueLoader {
 
     let isFreshImport = false
     if (!projectGlobals.Modules?.Vue) {
-      this.#VueModule = await import('https://cdn.jsdelivr.net/npm/vue@3.2.26/dist/vue.esm-browser.js')
+      this.#VueModule = await import(
+        'https://cdn.jsdelivr.net/npm/vue@3.2.26/dist/vue.esm-browser.js'
+      )
       setProjectGlobal('Modules.Vue', this.#VueModule)
       isFreshImport = true
     } else {

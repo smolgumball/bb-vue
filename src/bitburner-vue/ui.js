@@ -1,4 +1,11 @@
-import { html, weendow, doocument, emitEvent, projectGlobals, setProjectGlobal } from '/bitburner-vue/lib.js'
+import {
+  html,
+  weendow,
+  doocument,
+  emitEvent,
+  projectGlobals,
+  setProjectGlobal,
+} from '/bitburner-vue/lib.js'
 import AppRoot from '/bitburner-vue/components/AppRoot.js'
 import StoreDisplay from '/bitburner-vue/components/StoreDisplay.js'
 import RecentEvents from '/bitburner-vue/components/RecentEvents.js'

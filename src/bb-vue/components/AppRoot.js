@@ -1,59 +1,100 @@
-import { html, css } from '/bb-vue/lib.js'
+import { html, css, getGlobal } from '/bb-vue/lib.js'
+
+import { nearestConsumerRootMount } from '/bb-vue/components/_resources.js'
+
+import ConsumerRoot from '/bb-vue/components/internal/ConsumerRoot.js'
+import StylesheetManager from '/bb-vue/components/internal/StylesheetManager.js'
+
+import Window from '/bb-vue/components/Window.js'
+import WindowManager from '/bb-vue/components/WindowManager.js'
+import AppTray from '/bb-vue/components/AppTray.js'
+import Button from '/bb-vue/components/Button.js'
+import JsonDisplay from '/bb-vue/components/JsonDisplay.js'
+import Tabs from '/bb-vue/components/Tabs.js'
+
+export const ComponentLibrary = [
+  ConsumerRoot,
+  StylesheetManager,
+  Window,
+  WindowManager,
+  AppTray,
+  Button,
+  JsonDisplay,
+  Tabs,
+]
 
 export default {
   __libraryRoot: true,
   name: 'bbv-app-root',
   template: html`
     <main class="__CMP_NAME__" bbv-container>
-      <section v-for="app in mountedApps" :key="app.name" :id="app.name">
-        <component :is="app.name" bbv-foreground />
-      </section>
+      <bbv-consumer-root
+        v-for="app in consumerRootDefs"
+        :key="app.name"
+        :id="app.name"
+        :consumer-root-def="app"
+        @consumer-root-shutdown="onConsumerRootShutdown"
+        @consumer-root-mounted="onConsumerRootMounted"
+      />
+      <bbv-stylesheet-manager :consumer-root-defs="consumerRootDefs" />
       <bbv-window-manager />
       <bbv-app-tray />
     </main>
   `,
   data() {
+    const Mitt = getGlobal('Mitt')
+    let bus = Mitt.createBus()
+
     return {
-      mountedApps: {},
+      internals: {
+        bus: bus,
+        send: bus.emit,
+        listen: bus.on,
+        store: {
+          consumerRootDefs: [],
+          consumerRootMounts: [],
+          windowMounts: [],
+        },
+        nearestConsumerRootMount,
+      },
     }
   },
+  provide() {
+    return this.$data
+  },
   computed: {
-    styles() {
-      let styles = ''
-      styles += this.$options.__finalStyles.join('')
-      Object.values(this.mountedApps).forEach((x) => (styles += x.__finalStyles.join('')))
-      return styles
+    consumerRootDefs() {
+      return this.internals.store.consumerRootDefs
     },
-  },
-  watch: {
-    styles: {
-      immediate: true,
-      handler(newVal) {
-        let styleId = `styles-for-${this.$options.name}`
-        if (!this.$el) return
-        this.$el.querySelectorAll(`#${styleId}`).forEach((x) => (x.__staleStyles = true))
-        this.$el.insertAdjacentHTML(
-          'afterbegin',
-          html`
-            <style type="text/css" id="${styleId}">
-              ${newVal}
-            </style>
-          `
-        )
-        this.$el.querySelectorAll(`#${styleId}`).forEach((x) => x.__staleStyles && x.remove())
-      },
-    },
-  },
-  created() {
-    console.log('approot created')
-    this.$listen('app:shutdown', this.onAppShutdown)
   },
   methods: {
-    registerApp(appDef) {
-      this.mountedApps[appDef.name] = appDef
+    registerApp(appDefinition) {
+      const Vue = getGlobal('Vue')
+      let rawAppDefinition = Vue.markRaw(appDefinition)
+      this.internals.store.consumerRootDefs = [
+        ...this.internals.store.consumerRootDefs.filter((x) => {
+          return x.name !== rawAppDefinition.name
+        }),
+        rawAppDefinition,
+      ]
     },
-    onAppShutdown(appInstance) {
-      delete this.mountedApps[appInstance.$options.name]
+    onConsumerRootMounted(consumerRootMountCtx) {
+      this.internals.store.consumerRootMounts = [
+        ...this.internals.store.consumerRootMounts.filter((x) => {
+          return x.$options.name !== consumerRootMountCtx.$options.name
+        }),
+        consumerRootMountCtx,
+      ]
+    },
+    onConsumerRootShutdown(consumerRootMountCtx) {
+      this.internals.store.consumerRootMounts = this.internals.store.consumerRootMounts.filter(
+        (x) => {
+          return x.$options.name !== consumerRootMountCtx.$options.name
+        }
+      )
+      this.internals.store.consumerRootDefs = this.internals.store.consumerRootDefs.filter((x) => {
+        return x.name !== consumerRootMountCtx.$options.name
+      })
     },
   },
   scssResources: css`
@@ -84,6 +125,7 @@ export default {
       --bbvHackerDarkFgColor: #c5c255;
       --bbvHackerDarkBgColor: #171c23;
       --bbvAppTrayFgColor: #89d3e4;
+      --bbvAppTrayBorderColor: #33e01e;
       --bbvAppTrayBgColor: #274b64;
     }
 

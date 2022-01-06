@@ -7,10 +7,7 @@ export default {
     <dialog class="__CMP_NAME__" v-bind="{ open: windowState == WindowStates.open }">
       <div class="window_titlebar">
         <div class="window_title">{{ title }}<slot name="title" /></div>
-        <div class="window_controls" v-if="canMinimize || canClose">
-          <bbv-button v-if="canMinimize" icon class="window_minimize" @click="minimize"
-            >🔽</bbv-button
-          >
+        <div class="window_controls" v-if="canClose">
           <bbv-button v-if="canClose" icon class="window_close" @click="close">❎</bbv-button>
         </div>
       </div>
@@ -22,6 +19,7 @@ export default {
       </div>
     </dialog>
   `,
+  inject: ['internals'],
   props: {
     title: {
       type: String,
@@ -33,16 +31,19 @@ export default {
     },
     canClose: {
       type: Boolean,
-      default: false,
-    },
-    canMinimize: {
-      type: Boolean,
       default: true,
+    },
+    appTrayConfig: {
+      type: Object,
+      default: () => new Object(),
     },
   },
   data() {
     return {
       WindowStates,
+
+      uuid: crypto.randomUUID(),
+      owner: null,
       windowState: WindowStates.closed,
 
       /* TODO: Wire me up, Scotty */
@@ -50,35 +51,34 @@ export default {
       stackingIndex: 1,
       isDragging: false,
       isOob: false,
-
-      uuid: null,
     }
   },
   created() {
-    this.uuid = crypto.randomUUID()
-    if (this.initialState) {
-      this.windowState = this.initialState
+    this.owner = this.internals.nearestConsumerRootMount(this)
+    this.appTrayConfigDefault = { show: true, title: this.title }
+    if (this.$props.initialState) {
+      this.windowState = this.$props.initialState
     }
   },
   mounted() {
-    this.$send('window:created', this)
+    this.internals.send('window:updated', {
+      action: 'created',
+      windowMount: this,
+    })
   },
   beforeUnmount() {
-    this.windowState = WindowStates.destroyed
-    this.$send('window:destroyed', this)
+    this.internals.send('window:updated', {
+      action: 'destroyed',
+      windowMount: this,
+    })
   },
   methods: {
     open() {
       this.windowState = WindowStates.open
     },
-    minimize() {
-      if (!this.canMinimize) return
-      this.windowState = WindowStates.minimized
-    },
     close() {
       if (!this.canClose) return
       this.windowState = WindowStates.closed
-      this.$send('window:closed', this)
     },
   },
   scss: css`
@@ -109,6 +109,7 @@ export default {
         font-weight: bold;
         flex-grow: 1;
         padding-left: 5px;
+        padding-right: 20px;
       }
 
       .window_controls {
@@ -117,7 +118,6 @@ export default {
         flex-grow: 0;
       }
 
-      .window_minimize,
       .window_close {
         border-radius: 0;
         background-color: var(--bbvWindowActionsBgColor);

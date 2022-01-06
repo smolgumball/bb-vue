@@ -1,31 +1,43 @@
-import { html, css } from '/bb-vue/lib.js'
+import { WindowPositionStrategies } from '/bb-vue/components/_resources.js'
 
 export default {
   name: 'bbv-window-manager',
-  template: html``,
-  data() {
-    return {
-      mountedWindows: [],
-    }
-  },
+  inject: ['internals'],
+  template: `<!-- __CMP_NAME__ -->`,
   created() {
-    this.$listen('window:created', this.events.onWindowCreated)
-    this.$listen('window:destroyed', this.events.onWindowDestroyed)
+    this.internals.listen('window:updated', this.onWindowUpdated)
   },
   methods: {
-    events: {
-      onWindowCreated(win) {
-        let windowCount = this.mountedWindows.length
-        this.mountedWindows.push(win)
-        if (windowCount > 1) {
-          this.placeWindow(win, WindowPositionStrategies.cascadeStack)
-        }
-      },
-      onWindowDestroyed(win) {
-        this.mountedWindows = this.mountedWindows.filter((x) => x.uuid != win.uuid)
-      },
+    onWindowUpdated({ action, windowMount }) {
+      switch (action) {
+        case 'created':
+          this.onWindowCreated(windowMount)
+          break
+        case 'destroyed':
+          this.onWindowDestroyed(windowMount)
+          break
+      }
+    },
+    onWindowCreated(windowMount) {
+      this.internals.store.windowMounts.push(windowMount)
+      if (this.internals.store.windowMounts.length > 1) {
+        this.placeWindow(windowMount, WindowPositionStrategies.cascadeStack)
+      }
+    },
+    onWindowDestroyed(windowMount) {
+      this.internals.store.windowMounts = this.internals.store.windowMounts.filter((x) => {
+        return x.uuid != windowMount.uuid
+      })
+    },
+    placeWindow(windowMount, positionStrategy) {
+      switch (positionStrategy) {
+        case WindowPositionStrategies.cascadeStack:
+          // TODO
+          break
+
+        default:
+          break
+      }
     },
   },
-  scssResources: css``,
-  scss: css``,
 }

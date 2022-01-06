@@ -3,12 +3,16 @@ import { css, html } from '/bb-vue/lib.js'
 export default {
   name: 'bbv-button',
   template: html`
-    <button class="__CMP_NAME__" :class="{ icon }">
+    <button class="__CMP_NAME__" :class="{ icon, small }">
       <slot />
     </button>
   `,
   props: {
     icon: {
+      type: Boolean,
+      default: false,
+    },
+    small: {
       type: Boolean,
       default: false,
     },
@@ -33,11 +37,17 @@ export default {
         background-color: var(--bbvButtonHoverBgColor);
       }
 
+      &.small {
+        padding: 6px;
+        font-size: 12px;
+        line-height: 1.1;
+        font-weight: normal;
+      }
+
       &.icon {
         padding: 2px;
         line-height: 1.5;
         font-weight: normal;
-        border: none;
       }
     }
   `,

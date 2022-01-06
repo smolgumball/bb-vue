@@ -15,7 +15,7 @@ export default class ComponentManager {
   #rawComponents = new Set()
   #processingReports = []
 
-  constructor(appConfig, Sass, sassResources, componentTier) {
+  constructor(appConfig, Sass, sassResources) {
     this.#appConfig = appConfig
     this.#Sass = Sass
     this.#sassResources = toStr(sassResources)
@@ -66,12 +66,12 @@ export default class ComponentManager {
     if (isBlank(toStr(cmpDef.name))) {
       throw new ComponentValidationException(`Component needs 'name' key of type String`, cmpDef)
     }
-    if (isBlank(toStr(cmpDef.template))) {
+    /* if (isBlank(toStr(cmpDef.template))) {
       throw new ComponentValidationException(
         `Component needs 'template' key of type String`,
         cmpDef
       )
-    }
+    } */
     return cmpDef
   }
 
@@ -139,7 +139,7 @@ export default class ComponentManager {
       scss = this.#performTokenReplacements(scss, this.#appConfig.appId, cmpDef.name)
       scss = `${this.#sassResources}\n${scss}`
       try {
-        scss = await this.#Sass.compileAsync(scss, this.#appConfig.scssCompilerOptions)
+        scss = await this.#Sass.compileAsync(scss, {})
         didProcess = true
       } catch (error) {
         scss = ''
@@ -154,12 +154,14 @@ export default class ComponentManager {
     let didProcess = false
     let template = toStr(cmpDef.template)
 
-    try {
-      template = this.#performTokenReplacements(template, this.#appConfig.appId, cmpDef.name)
-      didProcess = true
-    } catch (error) {
-      template = ''
-      throw new ProcessingException('Template', error)
+    if (!isBlank(template)) {
+      try {
+        template = this.#performTokenReplacements(template, this.#appConfig.appId, cmpDef.name)
+        didProcess = true
+      } catch (error) {
+        template = ''
+        throw new ProcessingException('Template', error)
+      }
     }
 
     return { template: toStr(template), didProcess }

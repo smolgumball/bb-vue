@@ -13,10 +13,12 @@
 // --------------------------------------------------------------
 
 export const Keys = Object.freeze({
-  libNamespace: 'bbVue',
+  libKey: 'bbVue',
   vueModuleKey: 'Vue',
   mittModuleKey: 'Mitt',
-  globalConfigKey: 'globalConfig',
+  rootAppKey: 'rootApp',
+  globalBusKey: 'rootBus',
+  globalConfigKey: 'appFactoryConfig',
 })
 
 export const ReplacementTokens = Object.freeze({
@@ -34,7 +36,7 @@ export const win = globalThis['window']
 export const doc = globalThis['document']
 export const lodash = globalThis['window']._
 
-if (!win[Keys.libNamespace]) win[Keys.libNamespace] = {}
+if (!win[Keys.libKey]) win[Keys.libKey] = {}
 
 /**
  * Use sparingly! Sets a value by key to internal library storage.
@@ -44,7 +46,7 @@ if (!win[Keys.libNamespace]) win[Keys.libNamespace] = {}
  */
 
 export function setGlobal(key, value) {
-  lodash.set(win[Keys.libNamespace], key, value)
+  lodash.set(win[Keys.libKey], key, value)
 }
 
 /**
@@ -54,19 +56,19 @@ export function setGlobal(key, value) {
  * @see https://lodash.com/docs/4.17.15#get
  */
 export function getGlobal(key, defaultValue) {
-  return lodash.get(win[Keys.libNamespace], key, defaultValue)
+  return lodash.get(win[Keys.libKey], key, defaultValue)
 }
 
-export function setConfig(value) {
+export function setGlobalAppFactoryConfig(value) {
   setGlobal(Keys.globalConfigKey, value)
 }
 
-export function getConfig() {
+export function getGlobalAppFactoryConfig() {
   return getGlobal(Keys.globalConfigKey, {})
 }
 
 export function registerNewApp(appDef) {
-  getGlobal('rootApp')?._instance?.ctx?.registerApp(appDef)
+  getGlobal(Keys.rootAppKey)?._instance?.ctx?.registerApp(appDef)
 }
 
 //

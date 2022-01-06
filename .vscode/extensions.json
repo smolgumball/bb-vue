@@ -1,3 +1,7 @@
 {
-  "recommendations": ["hexnaught.vscode-bitburner-connector", "pushqrdx.inline-html", "esbenp.prettier-vscode"]
+  "recommendations": [
+    "pushqrdx.inline-html",
+    "esbenp.prettier-vscode",
+    "bitburner.bitburner-vscode-integration"
+  ]
 }

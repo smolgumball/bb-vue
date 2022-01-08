@@ -36,7 +36,6 @@ export default class ComponentManager {
     for (let cmpDef of this.#rawComponents) {
       let processed = await this.#processSingle(cmpDef)
       this.#processingReports.push(processed)
-      this.#rawComponents.delete(cmpDef)
     }
     this.#hasProcessed = true
   }

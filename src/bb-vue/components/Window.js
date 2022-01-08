@@ -1,14 +1,22 @@
-import { css, html } from '/bb-vue/lib.js'
-import { WindowStates } from '/bb-vue/components/_resources.js'
+// eslint-disable-next-line no-unused-vars
+import { html, css } from '/bb-vue/lib.js'
+import { nearestConsumerRootMount, WindowStates } from '/bb-vue/components/_resources.js'
+import useDraggableWindow from '/bb-vue/components/concerns/useDraggableWindow.js'
 
 export default {
   name: 'bbv-window',
   template: html`
-    <dialog class="__CMP_NAME__" v-bind="{ open: windowState == WindowStates.open }">
-      <div class="window_titlebar">
+    <div
+      ref="thisWindow"
+      class="__CMP_NAME__"
+      :class="{ isOpen: shouldDisplay }"
+      :style="draggable.style"
+      @click="bringToFont"
+    >
+      <div class="window_titlebar" ref="titleBar">
         <div class="window_title">{{ title }}<slot name="title" /></div>
         <div class="window_controls" v-if="canClose">
-          <bbv-button v-if="canClose" icon class="window_close" @click="close">❎</bbv-button>
+          <bbv-button v-if="canClose" class="window_close" @click="close">❌</bbv-button>
         </div>
       </div>
       <div class="window_content">
@@ -17,21 +25,28 @@ export default {
       <div class="window_actions">
         <slot name="actions"></slot>
       </div>
-    </dialog>
+    </div>
   `,
   inject: ['internals'],
+  emits: ['window-closed', 'window-opened'],
   props: {
     title: {
       type: String,
       default: '',
     },
-    initialState: {
-      type: String,
-      default: WindowStates.open,
+    startOpen: {
+      type: Boolean,
+      default: true,
     },
     canClose: {
       type: Boolean,
       default: true,
+    },
+    startPosition: {
+      type: Object,
+    },
+    startPositionOffset: {
+      type: Object,
     },
     appTrayConfig: {
       type: Object,
@@ -40,82 +55,126 @@ export default {
   },
   data() {
     return {
-      WindowStates,
-
       uuid: crypto.randomUUID(),
       owner: null,
-      windowState: WindowStates.closed,
-
-      /* TODO: Wire me up, Scotty */
-      offsetPosition: { x: 0, y: 0 },
+      draggable: {},
       stackingIndex: 1,
-      isDragging: false,
-      isOob: false,
+      windowState: WindowStates.closed,
+      shouldDisplay: false,
+      WindowStates,
     }
+  },
+  watch: {
+    windowState(newVal, oldVal) {
+      if (oldVal == WindowStates.closed && newVal == WindowStates.open) {
+        // Lag window opens just a bit to ensure CSS transitions are applied
+        setTimeout(() => {
+          this.shouldDisplay = true
+        }, 50)
+      } else if (oldVal == WindowStates.open && newVal == WindowStates.closed) {
+        this.shouldDisplay = false
+      }
+    },
   },
   created() {
-    this.owner = this.internals.nearestConsumerRootMount(this)
-    this.appTrayConfigDefault = { show: true, title: this.title }
-    if (this.$props.initialState) {
-      this.windowState = this.$props.initialState
-    }
+    this.owner = nearestConsumerRootMount(this)
+    this.appTrayConfigDefaults = { show: true, title: this.title }
   },
   mounted() {
-    this.internals.send('window:updated', {
-      action: 'created',
+    if (this.$props.startOpen) {
+      this.windowState = WindowStates.open
+    }
+    this.internals.send('window-mounted', {
       windowMount: this,
+    })
+    useDraggableWindow(this.draggable, {
+      titleBarRef: this.$refs.titleBar,
+      draggableRef: this.$refs.thisWindow,
+      startPosition: this.$props.startPosition,
+      startPositionOffset: this.$props.startPositionOffset,
     })
   },
   beforeUnmount() {
-    this.internals.send('window:updated', {
-      action: 'destroyed',
+    this.internals.send('window-before-unmount', {
       windowMount: this,
     })
   },
   methods: {
     open() {
       this.windowState = WindowStates.open
+      this.$emit('window-opened', this)
     },
     close() {
       if (!this.canClose) return
       this.windowState = WindowStates.closed
+      this.$emit('window-closed', this)
     },
+    bringToFont() {},
   },
   scss: css`
     .__CMP_NAME__ {
-      top: 50vh;
-      padding: 0;
-      border-radius: 10px;
+      position: fixed;
+      z-index: 1500;
+
+      display: flex;
+      flex-direction: column;
+      min-width: 250px;
+      min-height: 250px;
+
+      resize: both;
       overflow: hidden;
+      border: 2px solid var(--bbvBorderColor);
+      border-radius: 10px;
+
       background-color: var(--bbvAppInnerBgColor);
       box-shadow: inset 0px 0px 70px 0px var(--bbvBoxShadowColor1),
         0px 0px 20px 0px var(--bbvBoxShadowColor2);
-      border: 2px solid var(--bbvBorderColor);
-      transform: translateY(-50%);
-      max-width: 400px;
+
+      transition: opacity 0.4s ease, transform 0.4s ease;
+
+      &:not(.isOpen) {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(25px);
+      }
 
       .window_titlebar {
         display: flex;
+        flex-grow: 0;
         justify-content: space-between;
         align-items: center;
-        font-size: 14px;
-        padding: 5px;
+        font-size: 12px;
         color: var(--bbvWindowTitlebarFgColor);
         background-color: var(--bbvWindowTitlebarBgColor);
         border-bottom: 2px solid var(--bbvBorderColor);
+        user-select: none;
+        cursor: grab;
       }
 
       .window_title {
-        font-weight: bold;
+        display: flex;
         flex-grow: 1;
-        padding-left: 5px;
-        padding-right: 20px;
+        font-weight: bold;
+        padding: 7px 15px 5px 15px;
       }
 
       .window_controls {
         display: flex;
         justify-content: space-around;
         flex-grow: 0;
+        font-size: 14px;
+        cursor: auto;
+
+        .bbv-button {
+          margin: 3px;
+          padding: 2px;
+          padding-bottom: 4px;
+          border-radius: 5px;
+
+          &:last-child {
+            margin-right: 12px;
+          }
+        }
       }
 
       .window_close {
@@ -124,7 +183,11 @@ export default {
       }
 
       .window_content {
+        @include bbv-scrollbar;
+
         padding: 25px 15px;
+        flex-grow: 1;
+        overflow-y: auto;
         color: var(--bbvFontLightColor);
 
         & > *:first-child {
@@ -135,10 +198,14 @@ export default {
 
       .window_actions {
         display: flex;
+        flex-grow: 0;
         justify-content: space-between;
-        padding: 15px;
+        align-items: center;
+        padding: 8px 15px;
         border-top: 2px solid var(--bbvBorderColor);
         background-color: var(--bbvWindowActionsBgColor);
+        color: var(--bbvWindowTitlebarFgColor);
+        font-size: 12px;
       }
     }
   `,

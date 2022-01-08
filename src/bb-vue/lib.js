@@ -15,6 +15,7 @@
 export const Keys = Object.freeze({
   libKey: 'bbVue',
   vueModuleKey: 'Vue',
+  vueUseModuleKey: 'VueUse',
   mittModuleKey: 'Mitt',
   rootAppKey: 'rootApp',
   globalBusKey: 'rootBus',
@@ -46,6 +47,13 @@ if (!win[Keys.libKey]) win[Keys.libKey] = {}
  */
 
 export function setGlobal(key, value) {
+  if (key == Keys.vueModuleKey) {
+    // HACK: Ensure Vue is loaded where certain iife modules expect it
+    lodash.set(globalThis, Keys.vueModuleKey, value)
+  } else if (key == Keys.vueUseModuleKey) {
+    // HACK: Ensure Vue is loaded where certain iife modules expect it
+    lodash.set(globalThis, Keys.vueUseModuleKey, value)
+  }
   lodash.set(win[Keys.libKey], key, value)
 }
 
@@ -56,6 +64,13 @@ export function setGlobal(key, value) {
  * @see https://lodash.com/docs/4.17.15#get
  */
 export function getGlobal(key, defaultValue) {
+  if (key == Keys.vueModuleKey) {
+    // HACK: Ensure Vue is loaded where certain iife modules expect it
+    return lodash.get(globalThis, Keys.vueModuleKey)
+  } else if (key == Keys.vueUseModuleKey) {
+    // HACK: Ensure Vue is loaded where certain iife modules expect it
+    return lodash.get(globalThis, Keys.vueUseModuleKey)
+  }
   return lodash.get(win[Keys.libKey], key, defaultValue)
 }
 
@@ -68,7 +83,7 @@ export function getGlobalAppFactoryConfig() {
 }
 
 export function registerNewApp(appDef) {
-  getGlobal(Keys.rootAppKey)?._instance?.ctx?.registerApp(appDef)
+  return getGlobal(Keys.rootAppKey)?._instance?.ctx?.registerApp(appDef)
 }
 
 //

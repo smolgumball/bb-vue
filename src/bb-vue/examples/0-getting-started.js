@@ -62,9 +62,8 @@ const MyAppComponent = {
         <bbv-button @click="myData.ezCounter++">Add 1</bbv-button>
       </p>
 
-      <p>Or shut everything down:</p>
-
       <template #actions>
+        Or shut everything down:
         <bbv-button @click="appSend('shutdown')">Shutdown App</bbv-button>
       </template>
     </bbv-window>
@@ -141,6 +140,7 @@ const MyJsonComponent = {
       code {
         margin: 0;
         font-family: inherit;
+        overflow: auto;
       }
     }
   `,

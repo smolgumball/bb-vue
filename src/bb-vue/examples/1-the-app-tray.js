@@ -19,7 +19,7 @@ export async function main(ns) {
       only two running inside BitBurner
     */
     .configure({ forceReload: true })
-    .setRootComponent(MyAppOneComponent)
+    .setRootComponent(PrimaryAppRoot)
     .start()
 
   ns.tprint('my-app-one booted!')
@@ -33,7 +33,7 @@ export async function main(ns) {
     instead, this AppFactory is inheriting it's configuration options
     from the global AppFactory configuration we set at the top of our script
   */
-  await new AppFactory('my-app-two', ns).setRootComponent(MyAppTwoComponent).start()
+  await new AppFactory('my-app-two', ns).setRootComponent(DifferentAppRoot).start()
   ns.tprint('my-app-two booted!')
 
   /*
@@ -42,8 +42,8 @@ export async function main(ns) {
   */
 }
 
-const MyAppOneComponent = {
-  name: 'my-app-one',
+const PrimaryAppRoot = {
+  name: 'primary-app-root',
   inject: ['appSend'],
   template: html`
     <bbv-window
@@ -76,31 +76,32 @@ const MyAppOneComponent = {
   `,
 }
 
-const MyAppTwoComponent = {
-  name: 'my-app-two',
+const DifferentAppRoot = {
+  name: 'secondary-app-root',
   inject: ['appSend'],
   template: html`
-    <bbv-window
-      class="__CMP_NAME__"
-      title="Hello from my-app-two, window #1!"
-      :app-tray-config="{ title: '[2:1]' }"
-    >
-      <p>Boop beep</p>
-      <template #actions>
-        <bbv-button @click="appSend('shutdown')">Shutdown App</bbv-button>
-      </template>
-    </bbv-window>
-
-    <bbv-window
-      class="__CMP_NAME__"
-      title="Hello from my-app-two, window #2!"
-      :app-tray-config="{ title: '[2:2]' }"
-    >
-      <p>Boop beep</p>
-      <template #actions>
-        <bbv-button @click="appSend('shutdown')">Shutdown App</bbv-button>
-      </template>
-    </bbv-window>
+    <main>
+      <bbv-window
+        class="__CMP_NAME__"
+        title="Hello from my-app-two, window #1!"
+        :app-tray-config="{ title: '🥇' }"
+      >
+        <p>Boop beep</p>
+        <template #actions>
+          <bbv-button @click="appSend('shutdown')">Shutdown App</bbv-button>
+        </template>
+      </bbv-window>
+      <bbv-window
+        class="__CMP_NAME__"
+        title="Hello from my-app-two, window #2!"
+        :app-tray-config="{ title: '🥈' }"
+      >
+        <p>Boop beep</p>
+        <template #actions>
+          <bbv-button @click="appSend('shutdown')">Shutdown App</bbv-button>
+        </template>
+      </bbv-window>
+    </main>
   `,
   data() {
     return {

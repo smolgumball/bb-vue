@@ -1,7 +1,7 @@
-import { css, html, scss } from '/bb-vue/lib.js'
+import { css, html } from '/bb-vue/lib.js'
 import AppFactory from '/bb-vue/AppFactory.js'
 
-const ScssResources = scss`
+const ScssResources = css`
   @mixin fixedModal() {
     position: fixed;
     z-index: 1500;

@@ -1,7 +1,9 @@
 {
   "recommendations": [
-    "pushqrdx.inline-html",
     "esbenp.prettier-vscode",
-    "bitburner.bitburner-vscode-integration"
+    "bitburner.bitburner-vscode-integration",
+    "bashmish.es6-string-css",
+    "tobermory.es6-string-html",
+    "dbaeumer.vscode-eslint"
   ]
 }

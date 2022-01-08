@@ -14,31 +14,36 @@ export default {
     let bus = Mitt.createBus()
 
     return {
-      __appBus: bus,
-      __consumerRootMountCtx: null,
+      private: {
+        bus,
+        consumerRootMount: null,
+      },
       appListen: bus.on,
       appSend: this.appSendWrapper,
       appStore: {},
     }
   },
   provide() {
-    return this.$data
+    const { reactivePick } = getGlobal('VueUse')
+    return reactivePick(this.$data, 'appListen', 'appSend', 'appStore')
   },
   methods: {
     appSendWrapper(event, data) {
       switch (event) {
         case 'shutdown':
-          this.$emit('consumer-root-shutdown', this.__consumerRootMountCtx)
+          this.$emit('consumer-root-shutdown', this.private.consumerRootMount)
           break
         default:
-          this.__appBus.emit(event, data)
+          this.private.bus.emit(event, data)
           break
       }
     },
     onConsumerRootMounted(vnode) {
-      let consumerRootMountCtx = vnode?.component?.ctx
-      this.__consumerRootMountCtx = consumerRootMountCtx
-      this.$emit('consumer-root-mounted', consumerRootMountCtx)
+      this.private.consumerRootMount = vnode?.component?.ctx
+      if (!this.private.consumerRootMount) {
+        console.warn(`consumerRootMount is null for ${this.consumerRootDef.__name}`)
+      }
+      this.$emit('consumer-root-mounted', this.private.consumerRootMount)
     },
   },
   render() {
@@ -47,6 +52,7 @@ export default {
       'section',
       { 'bbv-foreground': true },
       Vue.h(this.consumerRootDef, {
+        'app-id': this.consumerRootDef.__appId,
         onVnodeMounted: this.onConsumerRootMounted,
       })
     )

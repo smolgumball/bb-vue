@@ -28,7 +28,7 @@ export default class SassLoader {
           // console.log('sass:loadResolve')
         } else {
           reject()
-          // console.log('sass:loadReject')
+          console.error('sass:loadReject', this)
           throw new Error('SassLoader could not load module in #loadSassModule()')
         }
         this.#undoDefineHack()

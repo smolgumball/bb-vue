@@ -2,12 +2,12 @@ import {
   doc,
   getGlobalAppFactoryConfig,
   getGlobal,
-  html,
   isBlank,
   lodash,
   registerNewApp,
   setGlobal,
   toStr,
+  html,
 } from '/bb-vue/lib.js'
 
 import ComponentManager from '/bb-vue/ComponentManager.js'
@@ -15,12 +15,15 @@ import MittLoader from '/bb-vue/MittLoader.js'
 import SassLoader from '/bb-vue/SassLoader.js'
 import VueLoader from '/bb-vue/VueLoader.js'
 
+import ScriptX from '/bb-vue/components/internal/ScriptX.js'
 import { default as AppRoot, ComponentLibrary } from '/bb-vue/components/AppRoot.js'
 
 const CreateOrGetRootVueApp = async (Vue, Sass, forceReload) => {
   const rootConfig = {
     appId: 'bb-vue-root',
   }
+
+  // console.time('CreateOrGetRootVueApp')
 
   let existingRootDom = doc.getElementById(rootConfig.appId)
   if (!forceReload && existingRootDom && getGlobal('rootApp')?._instance) {
@@ -38,6 +41,7 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload) => {
   let processedLibraryRoot = rootComponentsManager.processedLibraryRoot
   processedLibraryRoot.__finalStyles = rootComponentsManager.gatherAllProcessedStyles()
   rootApp = Vue.createApp(processedLibraryRoot)
+  rootApp.use(ScriptX)
   rootComponentsManager.registerWithVueApp(rootApp)
 
   doc.body.insertAdjacentHTML(
@@ -50,6 +54,8 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload) => {
 
   rootApp.mount(`#${rootConfig.appId}`)
   setGlobal('rootApp', rootApp)
+
+  // console.timeEnd('CreateOrGetRootVueApp')
 
   return rootApp
 }
@@ -112,8 +118,10 @@ export default class AppFactory {
   setRootComponent(componentDefinition) {
     this.#validateOnlyOneStart()
 
-    let cmpDef = ComponentManager.Validate(componentDefinition)
+    let cmpDef = { ...ComponentManager.Validate(componentDefinition) }
     cmpDef.__consumerRoot = true
+    cmpDef.__appId = this.#appConfig.appId
+    cmpDef.__name = `${cmpDef.__appId}:${cmpDef.name}`
     this.#rootComponent = cmpDef
     this.#componentsInQueue.add(cmpDef)
 
@@ -150,6 +158,8 @@ export default class AppFactory {
     this.#validateOnlyOneStart()
     this.#validateStart()
 
+    // console.time('AppFactory:start')
+
     await this.#runLoaders()
 
     let rootVueApp = await CreateOrGetRootVueApp(this.#Vue, this.#Sass, this.#appConfig.forceReload)
@@ -174,6 +184,8 @@ export default class AppFactory {
         }) is now mounted!\n\n🧰 Use the Debug -> Activate menu to open the BitBurner Developer Tools.\n👓 In the Elements tab, you should find your app at the top of the <body> tag.\n\n🎉 Have fun!\n\nP.S. If you're sick of seeing this message, add \`showTips: false\` to your app's configuration object.\n\n`
       )
     }
+
+    // console.timeEnd('AppFactory:start')
 
     return rootVueApp
   }
@@ -203,31 +215,4 @@ export default class AppFactory {
       )
     }
   }
-
-  /* static Catch(ns, executeFn) {
-    if (!executeFn) throw new TypeError('executeFn must be provided')
-
-    try {
-      return executeFn()
-    } catch (error) {
-      return AppFactory.HandleException(ns, error)
-    }
-  }
-
-  static async CatchAsync(ns, executeFn) {
-    if (!executeFn) throw new TypeError('executeFn must be provided')
-
-    try {
-      return await executeFn()
-    } catch (error) {
-      return AppFactory.HandleException(ns, error)
-    }
-  }
-
-  static HandleException(ns, error) {
-    console.error(error.toString(), error.originalError)
-    ns.tprint(error.toString())
-    ns.exit()
-    console.log('killing NS')
-  } */
 }

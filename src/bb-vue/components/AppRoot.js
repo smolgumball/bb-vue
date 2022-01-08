@@ -1,6 +1,4 @@
-import { html, css, getGlobal } from '/bb-vue/lib.js'
-
-import { nearestConsumerRootMount } from '/bb-vue/components/_resources.js'
+import { css, getGlobal, html, lodash } from '/bb-vue/lib.js'
 
 import ConsumerRoot from '/bb-vue/components/internal/ConsumerRoot.js'
 import StylesheetManager from '/bb-vue/components/internal/StylesheetManager.js'
@@ -8,6 +6,7 @@ import StylesheetManager from '/bb-vue/components/internal/StylesheetManager.js'
 import Window from '/bb-vue/components/Window.js'
 import WindowManager from '/bb-vue/components/WindowManager.js'
 import AppTray from '/bb-vue/components/AppTray.js'
+import AppTrayGroup from '/bb-vue/components/AppTrayGroup.js'
 import Button from '/bb-vue/components/Button.js'
 import JsonDisplay from '/bb-vue/components/JsonDisplay.js'
 import Tabs from '/bb-vue/components/Tabs.js'
@@ -18,6 +17,7 @@ export const ComponentLibrary = [
   Window,
   WindowManager,
   AppTray,
+  AppTrayGroup,
   Button,
   JsonDisplay,
   Tabs,
@@ -27,37 +27,45 @@ export default {
   __libraryRoot: true,
   name: 'bbv-app-root',
   template: html`
-    <main class="__CMP_NAME__" bbv-container>
-      <bbv-consumer-root
-        v-for="app in consumerRootDefs"
-        :key="app.name"
-        :id="app.name"
-        :consumer-root-def="app"
-        @consumer-root-shutdown="onConsumerRootShutdown"
-        @consumer-root-mounted="onConsumerRootMounted"
-      />
-      <bbv-stylesheet-manager :consumer-root-defs="consumerRootDefs" />
-      <bbv-window-manager />
-      <bbv-app-tray />
-    </main>
+    <transition name="rootAppIntro" appear>
+      <main class="__CMP_NAME__" bbv-container v-if="depsLoaded">
+        <transition-group name="consumerAppIntro" appear>
+          <bbv-consumer-root
+            v-for="app in consumerRootDefs"
+            :key="app.__name"
+            :id="app.__name"
+            :consumer-root-def="app"
+            @consumer-root-shutdown="onConsumerRootShutdown"
+            @consumer-root-mounted="onConsumerRootMounted"
+          />
+        </transition-group>
+        <bbv-stylesheet-manager :consumer-root-defs="consumerRootDefs" />
+        <bbv-window-manager />
+        <bbv-app-tray />
+      </main>
+    </transition>
   `,
   data() {
     const Mitt = getGlobal('Mitt')
     let bus = Mitt.createBus()
 
     return {
+      depsLoaded: false,
       internals: {
         bus: bus,
         send: bus.emit,
         listen: bus.on,
+        windowManager: null,
         store: {
           consumerRootDefs: [],
           consumerRootMounts: [],
           windowMounts: [],
         },
-        nearestConsumerRootMount,
       },
     }
+  },
+  created() {
+    this.loadDeps()
   },
   provide() {
     return this.$data
@@ -68,12 +76,21 @@ export default {
     },
   },
   methods: {
-    registerApp(appDefinition) {
-      const Vue = getGlobal('Vue')
-      let rawAppDefinition = Vue.markRaw(appDefinition)
+    async loadDeps() {
+      if (!getGlobal('VueUse')) {
+        // console.time('AppRoot:loadDeps')
+        await this.$scriptx.load('https://unpkg.com/@vueuse/shared')
+        await this.$scriptx.load('https://unpkg.com/@vueuse/core')
+        // console.timeEnd('AppRoot:loadDeps')
+      }
+      this.depsLoaded = true
+    },
+    registerApp(consumerAppDef) {
+      const { markRaw } = getGlobal('Vue')
+      let rawAppDefinition = markRaw(consumerAppDef)
       this.internals.store.consumerRootDefs = [
         ...this.internals.store.consumerRootDefs.filter((x) => {
-          return x.name !== rawAppDefinition.name
+          return x.__name !== rawAppDefinition.__name
         }),
         rawAppDefinition,
       ]
@@ -81,7 +98,7 @@ export default {
     onConsumerRootMounted(consumerRootMountCtx) {
       this.internals.store.consumerRootMounts = [
         ...this.internals.store.consumerRootMounts.filter((x) => {
-          return x.$options.name !== consumerRootMountCtx.$options.name
+          return x.$options.__name !== consumerRootMountCtx.$options.__name
         }),
         consumerRootMountCtx,
       ]
@@ -89,20 +106,48 @@ export default {
     onConsumerRootShutdown(consumerRootMountCtx) {
       this.internals.store.consumerRootMounts = this.internals.store.consumerRootMounts.filter(
         (x) => {
-          return x.$options.name !== consumerRootMountCtx.$options.name
+          return x.$options.__name !== consumerRootMountCtx.$options.__name
         }
       )
       this.internals.store.consumerRootDefs = this.internals.store.consumerRootDefs.filter((x) => {
-        return x.name !== consumerRootMountCtx.$options.name
+        return x.__name !== consumerRootMountCtx.$options.__name
       })
     },
   },
   scssResources: css`
     @mixin typo-basic {
-      font-family: 'Lucida Console', monospace;
-      font-weight: 400;
-      font-size: 16px;
-      line-height: 1.1;
+      & {
+        font-family: 'Lucida Console', monospace;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 1.1;
+      }
+    }
+
+    @mixin bbv-scrollbar($size: 4px, $width: $size, $height: $size) {
+      &::-webkit-scrollbar {
+        display: initial;
+
+        @if $width {
+          width: $width;
+        } @else {
+          width: $size;
+        }
+
+        @if $height {
+          height: $height;
+        } @else {
+          height: $size;
+        }
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--bbvButtonFgColor);
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: var(--bbvButtonBgColor);
+      }
     }
   `,
   scss: css`
@@ -125,7 +170,7 @@ export default {
       --bbvHackerDarkFgColor: #c5c255;
       --bbvHackerDarkBgColor: #171c23;
       --bbvAppTrayFgColor: #89d3e4;
-      --bbvAppTrayBorderColor: #33e01e;
+      --bbvAppTrayBorderColor: #4bb4c5;
       --bbvAppTrayBgColor: #274b64;
     }
 
@@ -142,12 +187,6 @@ export default {
     [bbv-container] {
       @include typo-basic;
 
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-
       * {
         box-sizing: border-box;
       }
@@ -155,7 +194,26 @@ export default {
 
     [bbv-foreground] {
       z-index: 1500;
-      pointer-events: auto;
+
+      & > * {
+        pointer-events: auto;
+      }
+    }
+
+    .__CMP_NAME__ {
+      &.rootAppIntro-enter-active,
+      &.rootAppIntro-leave-active,
+      &.consumerAppIntro-enter-active,
+      &.consumerAppIntro-leave-active {
+        transition: opacity 0.4s ease, transform 0.4s ease, filter 1s ease;
+      }
+
+      &.rootAppIntro-enter-from,
+      &.rootAppIntro-leave-to,
+      &.consumerAppIntro-enter-from,
+      &.consumerAppIntro-leave-to {
+        opacity: 0;
+      }
     }
   `,
 }

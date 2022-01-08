@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
-import { html, css } from '/bb-vue/lib.js'
-import { nearestConsumerRootMount, WindowStates } from '/bb-vue/components/_resources.js'
+import { nearestConsumerRootMount, html, css } from '/bb-vue/lib.js'
+import { WindowStates } from '/bb-vue/components/_resources.js'
 import useDraggableWindow from '/bb-vue/components/concerns/useDraggableWindow.js'
 
 export default {
@@ -84,20 +84,16 @@ export default {
     if (this.$props.startOpen) {
       this.windowState = WindowStates.open
     }
-    this.internals.send('window-mounted', {
-      windowMount: this,
-    })
     useDraggableWindow(this.draggable, {
       titleBarRef: this.$refs.titleBar,
       draggableRef: this.$refs.thisWindow,
       startPosition: this.$props.startPosition,
       startPositionOffset: this.$props.startPositionOffset,
     })
+    this.internals.windowManager.addWindow(this)
   },
   beforeUnmount() {
-    this.internals.send('window-before-unmount', {
-      windowMount: this,
-    })
+    this.internals.windowManager.removeWindow(this)
   },
   methods: {
     open() {

@@ -49,12 +49,13 @@ if (!win[Keys.libKey]) win[Keys.libKey] = {}
 export function setGlobal(key, value) {
   if (key == Keys.vueModuleKey) {
     // HACK: Ensure Vue is loaded where certain iife modules expect it
-    lodash.set(globalThis, Keys.vueModuleKey, value)
+    return lodash.set(globalThis, Keys.vueModuleKey, value)
   } else if (key == Keys.vueUseModuleKey) {
-    // HACK: Ensure Vue is loaded where certain iife modules expect it
-    lodash.set(globalThis, Keys.vueUseModuleKey, value)
+    // HACK: Ensure VueUse is loaded where certain iife modules expect it
+    return lodash.set(globalThis, Keys.vueUseModuleKey, value)
+  } else {
+    return lodash.set(win[Keys.libKey], key, value)
   }
-  lodash.set(win[Keys.libKey], key, value)
 }
 
 /**
@@ -65,13 +66,14 @@ export function setGlobal(key, value) {
  */
 export function getGlobal(key, defaultValue) {
   if (key == Keys.vueModuleKey) {
-    // HACK: Ensure Vue is loaded where certain iife modules expect it
+    // HACK: Ensure Vue is retrieved from where certain iife modules expect it
     return lodash.get(globalThis, Keys.vueModuleKey)
   } else if (key == Keys.vueUseModuleKey) {
-    // HACK: Ensure Vue is loaded where certain iife modules expect it
+    // HACK: Ensure VueUse is retrieved from where certain iife modules expect it
     return lodash.get(globalThis, Keys.vueUseModuleKey)
+  } else {
+    return lodash.get(win[Keys.libKey], key, defaultValue)
   }
-  return lodash.get(win[Keys.libKey], key, defaultValue)
 }
 
 export function setGlobalAppFactoryConfig(value) {
@@ -116,6 +118,22 @@ export class ComponentValidationException {
       this.componentDefinition
     )}`
   }
+}
+
+// APP TRAVERSAL /////////////
+// -----------------------------------------
+// --------------------------------------------------------------
+
+export function nearestConsumerRootMount(startingVm) {
+  let consumerRoot = null
+  let parent = startingVm.$parent
+  while (parent && !consumerRoot) {
+    if (parent.$options.__consumerRoot === true) {
+      consumerRoot = parent
+    }
+    parent = parent.$parent
+  }
+  return consumerRoot
 }
 
 // FUNCTIONS /////////////

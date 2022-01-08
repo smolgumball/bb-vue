@@ -21,15 +21,3 @@ export const ComponentTiers = Object.freeze({
   library: 'library',
   consumer: 'consumer',
 })
-
-export function nearestConsumerRootMount(startingVm) {
-  let consumerRoot = null
-  let parent = startingVm.$parent
-  while (parent && !consumerRoot) {
-    if (parent.$options.__consumerRoot === true) {
-      consumerRoot = parent
-    }
-    parent = parent.$parent
-  }
-  return consumerRoot
-}

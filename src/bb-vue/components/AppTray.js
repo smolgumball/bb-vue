@@ -25,7 +25,6 @@ export default {
       type: Object,
       default() {
         return {
-          title: null,
           showWindows: true,
         }
       },
@@ -52,7 +51,9 @@ export default {
 
       let windowsByRoots = consumerRootMounts.reduce((acc, root) => {
         let ownedWindows = windowMounts.filter((x) => x.owner == root.uuid)
-        acc.push({ root, windowMounts: ownedWindows })
+        if (ownedWindows.length) {
+          acc.push({ root, windowMounts: ownedWindows })
+        }
         return acc
       }, [])
 
@@ -139,11 +140,11 @@ export default {
         }
       }
 
-      if (trayItem.kind == TrayItemTypes.consumerRootMount) {
+      /* if (trayItem.kind == TrayItemTypes.consumerRootMount) {
         if (trayItem.trayConfigFromParent.title) {
           trayItem.title = trayItem.trayConfigFromParent.title
         }
-      }
+      } */
 
       return trayItem
     },

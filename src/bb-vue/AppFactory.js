@@ -173,7 +173,7 @@ export default class AppFactory {
     let processedConsumerRoot = componentManager.processedConsumerRoot
     processedConsumerRoot.__finalStyles = componentManager.gatherAllProcessedStyles()
 
-    registerNewApp(processedConsumerRoot)
+    let consumerAppHandleFn = registerNewApp(processedConsumerRoot)
 
     this.#started = true
 
@@ -187,7 +187,7 @@ export default class AppFactory {
 
     // console.timeEnd('AppFactory:start')
 
-    return rootVueApp
+    return consumerAppHandleFn
   }
 
   async #runLoaders() {

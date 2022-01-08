@@ -4,65 +4,84 @@ import { css, html, setGlobalAppFactoryConfig } from '/bb-vue/lib.js'
 /** @param {NS} ns **/
 export async function main(ns) {
   /*
-    you can configure all your AppFactories at once if that's easier.
-    note that these configs are _persistent_ and will effect all AppFactory
-    instances you try to start until you reload BitBurner! however, you can
-    still override each AppFactory using it's configure() method, as seen below
+    always wrap your AppFactory usage in a try/catch block,
+    to get helpful error messages from bb-vue.
   */
-  setGlobalAppFactoryConfig({ showTips: false, forceReload: false })
-
-  /* boot the first app */
-  await new AppFactory('my-app-one', ns)
+  try {
     /*
-      let's override our global AppFactory config to force a reload on just
-      this first app. this will ensure that this app and the following are the
-      only two running inside BitBurner
+      you can configure all your AppFactories at once if that's easier.
+      note that these configs are _persistent_ and will effect all AppFactory
+      instances you try to start until you reload BitBurner! however, you can
+      still override each AppFactory using it's configure() method, as seen below
     */
-    .configure({ forceReload: true })
-    .setRootComponent(PrimaryAppRoot)
-    .start()
+    setGlobalAppFactoryConfig({ showTips: false, forceReload: false })
 
-  ns.tprint('my-app-one booted!')
+    /* boot the first app */
+    let myAppOneHandleFn = await new AppFactory('my-app-one', ns)
+      /*
+        let's override our global AppFactory config to force a reload on just
+        this first app. this will ensure that this app and the following are the
+        only two running inside BitBurner
+      */
+      .configure({ forceReload: true })
+      .setRootComponent(PrimaryAppRoot)
+      .start()
 
-  /* wait a bit... */
-  await ns.sleep(1000)
-  ns.tprint('Waiting 1s...')
+    ns.tprint('my-app-one booted!')
 
-  /*
-    notice that we aren't calling `configure` on this second app.
-    instead, this AppFactory is inheriting it's configuration options
-    from the global AppFactory configuration we set at the top of our script
-  */
-  await new AppFactory('my-app-two', ns).setRootComponent(DifferentAppRoot).start()
-  ns.tprint('my-app-two booted!')
+    /* wait a bit... */
+    await ns.sleep(1000)
+    ns.tprint('Waiting 1s and then booting a second app...')
 
-  /*
-    watch the app tray grow as your apps come online!
-    think of how you could boot apps from scripts all across your game, as needed!
-  */
+    /*
+      notice that we aren't calling `configure` on this second app.
+      instead, this AppFactory is inheriting it's configuration options
+      from the setGlobalAppFactoryConfig call we made at the top of our script
+    */
+    let myAppTwoHandleFn = await new AppFactory('my-app-two', ns) /* prettier-ignore */
+      .setRootComponent(DifferentAppRoot)
+      .start()
+
+    ns.tprint('my-app-two booted!')
+
+    /* wait a bit... */
+    await ns.sleep(1000)
+    ns.tprint('Waiting 1s and then logging mounted apps to debug console...')
+
+    /* retrieve references to both running apps */
+    const [runningAppOne, runningAppTwo] = [myAppOneHandleFn(), myAppTwoHandleFn()]
+
+    /* display in debug console (Debug -> Activate) */
+    console.debug(runningAppOne)
+    console.debug(runningAppTwo)
+  } catch (error) {
+    /* in case something goes wrong, log it out and halt the program */
+    console.error(error)
+    ns.tprint(error.toString())
+    ns.exit()
+  }
 }
 
 const PrimaryAppRoot = {
   name: 'primary-app-root',
-  inject: ['appSend'],
+  inject: ['appShutdown'],
   template: html`
     <bbv-window
       ref="myWindow"
       class="__CMP_NAME__"
       title="Hello from my-app-one!"
-      :app-tray-config='{ title: "[1:1]" }'
+      :app-tray-config='{ title: "✅" }'
     >
       <p>Beep boop</p>
       <template #actions>
-        <bbv-button @click="appSend('shutdown')">Shutdown App</bbv-button>
+        <bbv-button @click="appShutdown">Shutdown App</bbv-button>
       </template>
     </bbv-window>
   `,
   data() {
     return {
       appTrayConfig: {
-        title: 'My App #1',
-        showWindows: true,
+        showWindows: false,
       },
     }
   },
@@ -78,7 +97,7 @@ const PrimaryAppRoot = {
 
 const DifferentAppRoot = {
   name: 'secondary-app-root',
-  inject: ['appSend'],
+  inject: ['appShutdown'],
   template: html`
     <main>
       <bbv-window
@@ -88,7 +107,7 @@ const DifferentAppRoot = {
       >
         <p>Boop beep</p>
         <template #actions>
-          <bbv-button @click="appSend('shutdown')">Shutdown App</bbv-button>
+          <bbv-button @click="appShutdown">Shutdown App</bbv-button>
         </template>
       </bbv-window>
       <bbv-window
@@ -98,7 +117,7 @@ const DifferentAppRoot = {
       >
         <p>Boop beep</p>
         <template #actions>
-          <bbv-button @click="appSend('shutdown')">Shutdown App</bbv-button>
+          <bbv-button @click="appShutdown">Shutdown App</bbv-button>
         </template>
       </bbv-window>
     </main>
@@ -106,7 +125,6 @@ const DifferentAppRoot = {
   data() {
     return {
       appTrayConfig: {
-        title: 'My App #2',
         showWindows: true,
       },
     }

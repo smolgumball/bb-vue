@@ -18,14 +18,15 @@ export default {
         bus,
         consumerRootMount: null,
       },
+      appStore: {},
       appListen: bus.on,
       appSend: this.appSendWrapper,
-      appStore: {},
+      appShutdown: this.appShutdownWrapper,
     }
   },
   provide() {
     const { reactivePick } = getGlobal('VueUse')
-    return reactivePick(this.$data, 'appListen', 'appSend', 'appStore')
+    return reactivePick(this.$data, 'appStore', 'appListen', 'appSend', 'appShutdown')
   },
   methods: {
     appSendWrapper(event, data) {
@@ -36,6 +37,13 @@ export default {
         default:
           this.private.bus.emit(event, data)
           break
+      }
+    },
+    appShutdownWrapper() {
+      if (!this.private.consumerRootMount) {
+        throw new Error('Tried to shutdown a null app root', this.private.consumerRootMount)
+      } else {
+        this.$emit('consumer-root-shutdown', this.private.consumerRootMount)
       }
     },
     onConsumerRootMounted(vnode) {

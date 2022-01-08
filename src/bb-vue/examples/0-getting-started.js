@@ -8,31 +8,50 @@ export async function main(ns) {
     to get helpful error messages from bb-vue.
   */
   try {
-    await new AppFactory('my-first-app', ns)
-      /*
-        forceReload ensures that the entire bb-vue framework is torn down
-        each time you use an AppFactory.
+    const myAppFactory = new AppFactory('my-first-app', ns)
 
-        you probably don't want this once you're done developing your
-        bb-vue components, otherwise each script using AppFactory will
-        cause the global bb-vue framework to reboot, and will remove all
-        other running apps in the process!
-      */
-      .configure({ forceReload: true })
-
-      /* a root component must ALWAYS be set */
-      .setRootComponent(MyAppComponent)
-
-      /* afterwards, you can add as many additional components as you like */
-      .addComponents(MyJsonComponent)
-
-      /* and always remember to start the app */
-      .start()
-  } catch (error) {
     /*
-      in case something goes wrong, log it out and halt the program.
-      check your Debug -> Activate menu for more info
+      AppFactory.configure allows you to configure the behavior of
+      the current appFactory instance
+
+      forceReload ensures that the entire bb-vue framework is torn down
+      each time you use an AppFactory.
+
+      >> you probably don't want this once you're done developing your
+      >> bb-vue components, otherwise each script using AppFactory will
+      >> cause the global bb-vue framework to reboot, and will remove all
+      >> other running apps in the process!
     */
+    myAppFactory.configure({ forceReload: true })
+
+    /*
+      a root component must ALWAYS be set.
+      your AppFactory won't start without it
+    */
+    myAppFactory.setRootComponent(MyAppComponent)
+
+    /*
+      you can add as many additional components as you like.
+      make sure you define and register each component you use within your app
+    */
+    myAppFactory.addComponents(MyJsonComponent)
+    // or: myAppFactory.addComponents(MyJsonComponent, MyOtherComponent, AnotherCoolComponent)
+
+    /*
+      once your appFactory is prepped with your configuration, a root component, and
+      all of your other components, it's time to call AppFactory.start()
+      always remember to `await` the starting of your app; it can take a little bit
+      the first time you use bb-vue after restarting BitBurner
+    */
+    const myAppHandleFn = await myAppFactory.start()
+
+    /*
+      after starting the app, you can retrieve a reference to your root component
+      by running the function returned from AppFactory.start
+    */
+    console.debug(myAppHandleFn())
+  } catch (error) {
+    /* in case something goes wrong, log it out and halt the program */
     console.error(error)
     ns.tprint(error.toString())
     ns.exit()
@@ -48,7 +67,7 @@ const MyAppComponent = {
     method call. you can see it's wired to a button at the bottom
     of the bbv-window down below
   */
-  inject: ['appSend'],
+  inject: ['appShutdown'],
   template: html`
     <bbv-window class="__CMP_NAME__" title="Hello from bb-vue!">
       <p>Render your own components:</p>
@@ -64,7 +83,7 @@ const MyAppComponent = {
 
       <template #actions>
         Or shut everything down:
-        <bbv-button @click="appSend('shutdown')">Shutdown App</bbv-button>
+        <bbv-button @click="appShutdown">Shutdown App</bbv-button>
       </template>
     </bbv-window>
   `,

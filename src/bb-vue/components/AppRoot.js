@@ -55,12 +55,12 @@ export default {
         bus: bus,
         send: bus.emit,
         listen: bus.on,
-        windowManager: null,
         store: {
           consumerRootDefs: [],
           consumerRootMounts: [],
           windowMounts: [],
         },
+        windowManager: null,
       },
     }
   },
@@ -94,6 +94,8 @@ export default {
         }),
         rawAppDefinition,
       ]
+
+      return () => this.getConsumerRootMountIfAvailable(rawAppDefinition.__name)
     },
     onConsumerRootMounted(consumerRootMountCtx) {
       this.internals.store.consumerRootMounts = [
@@ -103,7 +105,8 @@ export default {
         consumerRootMountCtx,
       ]
     },
-    onConsumerRootShutdown(consumerRootMountCtx) {
+    async onConsumerRootShutdown(consumerRootMountCtx) {
+      await this.internals.windowManager.closeAllWindowsByRootMount(consumerRootMountCtx)
       this.internals.store.consumerRootMounts = this.internals.store.consumerRootMounts.filter(
         (x) => {
           return x.$options.__name !== consumerRootMountCtx.$options.__name
@@ -112,6 +115,13 @@ export default {
       this.internals.store.consumerRootDefs = this.internals.store.consumerRootDefs.filter((x) => {
         return x.__name !== consumerRootMountCtx.$options.__name
       })
+    },
+    getConsumerRootMountIfAvailable(rootMountName) {
+      return (
+        this.internals.store.consumerRootMounts.find((x) => {
+          return rootMountName == x.$options.__name
+        }) ?? null
+      )
     },
   },
   scssResources: css`

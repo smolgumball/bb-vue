@@ -7,10 +7,6 @@
       "installPath": "/bb-vue/AppFactory.js"
     },
     {
-      "repoPath": "/src/bb-vue/AppStyles.js",
-      "installPath": "/bb-vue/AppStyles.js"
-    },
-    {
       "repoPath": "/src/bb-vue/ComponentManager.js",
       "installPath": "/bb-vue/ComponentManager.js"
     },
@@ -31,20 +27,20 @@
       "installPath": "/bb-vue/components/Button.js"
     },
     {
-      "repoPath": "/src/bb-vue/components/concerns/useDraggableWindow.js",
-      "installPath": "/bb-vue/components/concerns/useDraggableWindow.js"
+      "repoPath": "/src/bb-vue/components/concerns/useDragWin.js",
+      "installPath": "/bb-vue/components/concerns/useDragWin.js"
     },
     {
       "repoPath": "/src/bb-vue/components/internal/ConsumerRoot.js",
       "installPath": "/bb-vue/components/internal/ConsumerRoot.js"
     },
     {
-      "repoPath": "/src/bb-vue/components/internal/ScriptX.js",
-      "installPath": "/bb-vue/components/internal/ScriptX.js"
+      "repoPath": "/src/bb-vue/components/internal/CssManager.js",
+      "installPath": "/bb-vue/components/internal/CssManager.js"
     },
     {
-      "repoPath": "/src/bb-vue/components/internal/StylesheetManager.js",
-      "installPath": "/bb-vue/components/internal/StylesheetManager.js"
+      "repoPath": "/src/bb-vue/components/internal/ScriptX.js",
+      "installPath": "/bb-vue/components/internal/ScriptX.js"
     },
     {
       "repoPath": "/src/bb-vue/components/JsonDisplay.js",
@@ -55,12 +51,12 @@
       "installPath": "/bb-vue/components/Tabs.js"
     },
     {
-      "repoPath": "/src/bb-vue/components/Window.js",
-      "installPath": "/bb-vue/components/Window.js"
+      "repoPath": "/src/bb-vue/components/Win.js",
+      "installPath": "/bb-vue/components/Win.js"
     },
     {
-      "repoPath": "/src/bb-vue/components/WindowManager.js",
-      "installPath": "/bb-vue/components/WindowManager.js"
+      "repoPath": "/src/bb-vue/components/WinManager.js",
+      "installPath": "/bb-vue/components/WinManager.js"
     },
     {
       "repoPath": "/src/bb-vue/components/_resources.js",

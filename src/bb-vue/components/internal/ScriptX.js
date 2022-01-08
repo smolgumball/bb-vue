@@ -1,4 +1,4 @@
-import { getGlobal } from '/bb-vue/lib.js'
+import { doc, getGlobal } from '/bb-vue/lib.js'
 
 class Utils {
   static isUndefined(x) {
@@ -61,11 +61,11 @@ class VueScriptX {
         let parent = this.$el.parentElement
         if (!this.src) {
           self.promise = self.promise.then(() => {
-            let script = document.createElement('script')
+            let script = doc.createElement('script')
             let el = this.$el.innerHTML
             el = el.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&amp;/gi, '&')
             script.type = 'text/javascript'
-            script.appendChild(document.createTextNode(el))
+            script.appendChild(doc.createTextNode(el))
             parent.appendChild(script)
             this.$emit('loaded') // any other proper way to do this or emit error?
           })
@@ -98,13 +98,13 @@ class VueScriptX {
     })
     self.installed = true
   }
-  load(src, opts = { parent: document.head }) {
+  load(src, opts = { parent: doc.head }) {
     if (!this.loaded[src]) {
       this.loaded[src] = new Promise((resolve, reject) => {
-        let script = document.createElement('script')
+        let script = doc.createElement('script')
         // omit the special options that VueScriptX supports
         Utils.defaults(script, Utils.omit(opts, ['unload', 'parent']), { type: 'text/javascript' })
-        // async may not be used with 'document.write'
+        // async may not be used with 'doc.write'
         script.async = false
         script.src = src
         // crossorigin in HTML and crossOrigin in the DOM per HTML spec

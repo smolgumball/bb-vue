@@ -1,19 +1,19 @@
-export const WindowStates = Object.freeze({
+export const WinStates = Object.freeze({
   open: 'open',
   closed: 'closed',
 })
 
-export const WindowPositionStrategies = Object.freeze({
+export const WinPositionStrategies = Object.freeze({
   cascadeStack: 'cascadeStack',
 })
 
 export const AppStates = Object.freeze({
-  hasWindows: 'hasWindows',
-  withoutWindows: 'withoutWindows',
+  hasWins: 'hasWins',
+  withoutWins: 'withoutWins',
 })
 
 export const TrayItemTypes = Object.freeze({
-  windowMount: 'windowMount',
+  winMount: 'winMount',
   consumerRootMount: 'consumerRootMount',
 })
 

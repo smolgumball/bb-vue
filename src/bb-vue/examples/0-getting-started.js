@@ -63,13 +63,13 @@ const MyAppComponent = {
   /*
     here, we bring in some special functionality offered by the
     core bb-vue framework. this let's us shut down our entire app
-    (all the windows, all the sub-components, etc.) with a single
+    (all the wins, all the sub-components, etc.) with a single
     method call. you can see it's wired to a button at the bottom
-    of the bbv-window down below
+    of the bbv-win down below
   */
   inject: ['appShutdown'],
   template: html`
-    <bbv-window class="__CMP_NAME__" title="Hello from bb-vue!">
+    <bbv-win class="__CMP_NAME__" title="Hello from bb-vue!">
       <p>Render your own components:</p>
       <my-json-display :display="myData" />
 
@@ -85,7 +85,7 @@ const MyAppComponent = {
         Or shut everything down:
         <bbv-button @click="appShutdown">Shutdown App</bbv-button>
       </template>
-    </bbv-window>
+    </bbv-win>
   `,
   data() {
     return {

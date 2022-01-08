@@ -56,9 +56,9 @@ export async function main(ns) {
     throw new Error('Run this script from the root directory of home')
   }
 
-  if (`${ns.args[0]}`.length) repoBranch = ns.args[0]
+  if (ns.args[0]) repoBranch = ns.args[0]
+  if (ns.args[1]) prefixDirectory = ns.args[1]
 
-  if (`${ns.args[1]}`.length) prefixDirectory = ns.args[1]
   if (prefixDirectory) prefixDirectory = `/${trimPath(prefixDirectory)}/`
 
   let repoUrl = joinPaths(repoRoot, repoBranch)

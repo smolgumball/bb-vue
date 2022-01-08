@@ -1,7 +1,7 @@
 import { html } from '/bitburner-vue/lib.js'
 
 export default {
-  name: 'bbv-stylesheet-manager',
+  name: 'bbv-css-manager',
   props: {
     consumerRootDefs: {
       type: Array,

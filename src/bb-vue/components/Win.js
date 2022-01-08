@@ -1,34 +1,33 @@
-// eslint-disable-next-line no-unused-vars
 import { nearestConsumerRootMount, html, css } from '/bb-vue/lib.js'
-import { WindowStates } from '/bb-vue/components/_resources.js'
-import useDraggableWindow from '/bb-vue/components/concerns/useDraggableWindow.js'
+import { WinStates } from '/bb-vue/components/_resources.js'
+import useDraggableWin from '/bb-vue/components/concerns/useDragWin.js'
 
 export default {
-  name: 'bbv-window',
+  name: 'bbv-win',
   template: html`
     <div
-      ref="thisWindow"
+      ref="thisWin"
       class="__CMP_NAME__"
       :class="{ isOpen: shouldDisplay }"
       :style="draggable.style"
       @click="bringToFont"
     >
-      <div class="window_titlebar" ref="titleBar">
-        <div class="window_title">{{ title }}<slot name="title" /></div>
-        <div class="window_controls" v-if="canClose">
-          <bbv-button v-if="canClose" class="window_close" @click="close">❌</bbv-button>
+      <div class="win_titlebar" ref="titleBar">
+        <div class="win_title">{{ title }}<slot name="title" /></div>
+        <div class="win_controls" v-if="canClose">
+          <bbv-button v-if="canClose" class="win_close" @click="close">❌</bbv-button>
         </div>
       </div>
-      <div class="window_content">
+      <div class="win_content">
         <slot name="default"></slot>
       </div>
-      <div class="window_actions">
+      <div class="win_actions">
         <slot name="actions"></slot>
       </div>
     </div>
   `,
   inject: ['internals'],
-  emits: ['window-closed', 'window-opened'],
+  emits: ['win-closed', 'win-opened'],
   props: {
     title: {
       type: String,
@@ -59,19 +58,19 @@ export default {
       owner: null,
       draggable: {},
       stackingIndex: 1,
-      windowState: WindowStates.closed,
+      winState: WinStates.closed,
       shouldDisplay: false,
-      WindowStates,
+      WinStates,
     }
   },
   watch: {
-    windowState(newVal, oldVal) {
-      if (oldVal == WindowStates.closed && newVal == WindowStates.open) {
-        // Lag window opens just a bit to ensure CSS transitions are applied
+    winState(newVal, oldVal) {
+      if (oldVal == WinStates.closed && newVal == WinStates.open) {
+        // Lag win opens just a bit to ensure CSS transitions are applied
         setTimeout(() => {
           this.shouldDisplay = true
         }, 50)
-      } else if (oldVal == WindowStates.open && newVal == WindowStates.closed) {
+      } else if (oldVal == WinStates.open && newVal == WinStates.closed) {
         this.shouldDisplay = false
       }
     },
@@ -82,28 +81,28 @@ export default {
   },
   mounted() {
     if (this.$props.startOpen) {
-      this.windowState = WindowStates.open
+      this.winState = WinStates.open
     }
-    useDraggableWindow(this.draggable, {
+    useDraggableWin(this.draggable, {
       titleBarRef: this.$refs.titleBar,
-      draggableRef: this.$refs.thisWindow,
+      draggableRef: this.$refs.thisWin,
       startPosition: this.$props.startPosition,
       startPositionOffset: this.$props.startPositionOffset,
     })
-    this.internals.windowManager.addWindow(this)
+    this.internals.winManager.addWin(this)
   },
   beforeUnmount() {
-    this.internals.windowManager.removeWindow(this)
+    this.internals.winManager.removeWin(this)
   },
   methods: {
     open() {
-      this.windowState = WindowStates.open
-      this.$emit('window-opened', this)
+      this.winState = WinStates.open
+      this.$emit('win-opened', this)
     },
     close() {
       if (!this.canClose) return
-      this.windowState = WindowStates.closed
-      this.$emit('window-closed', this)
+      this.winState = WinStates.closed
+      this.$emit('win-closed', this)
     },
     bringToFont() {},
   },
@@ -134,27 +133,27 @@ export default {
         transform: translateY(25px);
       }
 
-      .window_titlebar {
+      .win_titlebar {
         display: flex;
         flex-grow: 0;
         justify-content: space-between;
         align-items: center;
         font-size: 12px;
-        color: var(--bbvWindowTitlebarFgColor);
-        background-color: var(--bbvWindowTitlebarBgColor);
+        color: var(--bbvWinTitlebarFgColor);
+        background-color: var(--bbvWinTitlebarBgColor);
         border-bottom: 2px solid var(--bbvBorderColor);
         user-select: none;
         cursor: grab;
       }
 
-      .window_title {
+      .win_title {
         display: flex;
         flex-grow: 1;
         font-weight: bold;
         padding: 7px 15px 5px 15px;
       }
 
-      .window_controls {
+      .win_controls {
         display: flex;
         justify-content: space-around;
         flex-grow: 0;
@@ -173,12 +172,12 @@ export default {
         }
       }
 
-      .window_close {
+      .win_close {
         border-radius: 0;
-        background-color: var(--bbvWindowActionsBgColor);
+        background-color: var(--bbvWinActionsBgColor);
       }
 
-      .window_content {
+      .win_content {
         @include bbv-scrollbar;
 
         padding: 25px 15px;
@@ -192,15 +191,15 @@ export default {
         }
       }
 
-      .window_actions {
+      .win_actions {
         display: flex;
         flex-grow: 0;
         justify-content: space-between;
         align-items: center;
         padding: 8px 15px;
         border-top: 2px solid var(--bbvBorderColor);
-        background-color: var(--bbvWindowActionsBgColor);
-        color: var(--bbvWindowTitlebarFgColor);
+        background-color: var(--bbvWinActionsBgColor);
+        color: var(--bbvWinTitlebarFgColor);
         font-size: 12px;
       }
     }

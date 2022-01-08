@@ -1,10 +1,10 @@
 import { css, getGlobal, html, lodash } from '/bb-vue/lib.js'
 
 import ConsumerRoot from '/bb-vue/components/internal/ConsumerRoot.js'
-import StylesheetManager from '/bb-vue/components/internal/StylesheetManager.js'
+import CssManager from '/bb-vue/components/internal/CssManager.js'
 
-import Window from '/bb-vue/components/Window.js'
-import WindowManager from '/bb-vue/components/WindowManager.js'
+import Win from '/bb-vue/components/Win.js'
+import WinManager from '/bb-vue/components/WinManager.js'
 import AppTray from '/bb-vue/components/AppTray.js'
 import AppTrayGroup from '/bb-vue/components/AppTrayGroup.js'
 import Button from '/bb-vue/components/Button.js'
@@ -13,9 +13,9 @@ import Tabs from '/bb-vue/components/Tabs.js'
 
 export const ComponentLibrary = [
   ConsumerRoot,
-  StylesheetManager,
-  Window,
-  WindowManager,
+  CssManager,
+  Win,
+  WinManager,
   AppTray,
   AppTrayGroup,
   Button,
@@ -39,8 +39,8 @@ export default {
             @consumer-root-mounted="onConsumerRootMounted"
           />
         </transition-group>
-        <bbv-stylesheet-manager :consumer-root-defs="consumerRootDefs" />
-        <bbv-window-manager />
+        <bbv-css-manager :consumer-root-defs="consumerRootDefs" />
+        <bbv-win-manager />
         <bbv-app-tray />
       </main>
     </transition>
@@ -58,9 +58,9 @@ export default {
         store: {
           consumerRootDefs: [],
           consumerRootMounts: [],
-          windowMounts: [],
+          winMounts: [],
         },
-        windowManager: null,
+        winManager: null,
       },
     }
   },
@@ -106,7 +106,7 @@ export default {
       ]
     },
     async onConsumerRootShutdown(consumerRootMountCtx) {
-      await this.internals.windowManager.closeAllWindowsByRootMount(consumerRootMountCtx)
+      await this.internals.winManager.closeAllWinsByRootMount(consumerRootMountCtx)
       this.internals.store.consumerRootMounts = this.internals.store.consumerRootMounts.filter(
         (x) => {
           return x.$options.__name !== consumerRootMountCtx.$options.__name
@@ -173,10 +173,10 @@ export default {
       --bbvButtonBgColor: #0b1420;
       --bbvButtonHoverFgColor: #00fff3;
       --bbvButtonHoverBgColor: #162a47;
-      --bbvWindowTitlebarFgColor: #89d3e4;
-      --bbvWindowTitlebarBgColor: #0f4878;
-      --bbvWindowActionsFgColor: #83d5d9;
-      --bbvWindowActionsBgColor: #0f4878;
+      --bbvWinTitlebarFgColor: #89d3e4;
+      --bbvWinTitlebarBgColor: #0f4878;
+      --bbvWinActionsFgColor: #83d5d9;
+      --bbvWinActionsBgColor: #0f4878;
       --bbvHackerDarkFgColor: #c5c255;
       --bbvHackerDarkBgColor: #171c23;
       --bbvAppTrayFgColor: #89d3e4;

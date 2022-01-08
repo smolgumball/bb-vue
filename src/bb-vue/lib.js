@@ -35,7 +35,7 @@ export const ReplacementTokens = Object.freeze({
 
 export const win = globalThis['window']
 export const doc = globalThis['document']
-export const lodash = globalThis['window']._
+export const lodash = win._
 
 if (!win[Keys.libKey]) win[Keys.libKey] = {}
 
@@ -67,12 +67,12 @@ export function setGlobal(key, value) {
 export function getGlobal(key, defaultValue) {
   if (key == Keys.vueModuleKey) {
     // HACK: Ensure Vue is retrieved from where certain iife modules expect it
-    return lodash.get(globalThis, Keys.vueModuleKey)
+    return lodash['get'](globalThis, Keys.vueModuleKey)
   } else if (key == Keys.vueUseModuleKey) {
     // HACK: Ensure VueUse is retrieved from where certain iife modules expect it
-    return lodash.get(globalThis, Keys.vueUseModuleKey)
+    return lodash['get'](globalThis, Keys.vueUseModuleKey)
   } else {
-    return lodash.get(win[Keys.libKey], key, defaultValue)
+    return lodash['get'](win[Keys.libKey], key, defaultValue)
   }
 }
 

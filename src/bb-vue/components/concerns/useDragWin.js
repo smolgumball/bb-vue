@@ -1,8 +1,8 @@
-import { getGlobal, lodash } from '/bb-vue/lib.js'
+import { doc, getGlobal, lodash } from '/bb-vue/lib.js'
 
-export default async function useDraggableWindow(store, options = {}) {
+export default async function useDraggableWin(store, options = {}) {
   const { reactive, nextTick } = getGlobal('Vue')
-  const { useDraggable, useElementBounding, until, get } = getGlobal('VueUse')
+  const { useDraggable, useElementBounding, until } = getGlobal('VueUse')
 
   if (!lodash.isObjectLike(store)) {
     throw new Error('Must provide store as first arg')
@@ -26,7 +26,7 @@ export default async function useDraggableWindow(store, options = {}) {
   }
 
   store.position = {}
-  store.fixedRoot = useElementBounding(document.querySelector('[bbv-root]'))
+  store.fixedRoot = useElementBounding(doc.querySelector('[bbv-root]'))
   store.titleBar = useElementBounding(opts.titleBarRef)
   store.draggableTarget = useElementBounding(opts.draggableRef)
 
@@ -36,8 +36,8 @@ export default async function useDraggableWindow(store, options = {}) {
   })
 
   store.position = {
-    x: get(store.fixedRoot.width) / 2 - get(store.draggableTarget.width) / 2,
-    y: get(store.fixedRoot.height) / 2 - get(store.draggableTarget.height) / 2,
+    x: store.fixedRoot.width / 2 - store.draggableTarget.width / 2,
+    y: store.fixedRoot.height / 2 - store.draggableTarget.height / 2,
   }
 
   if (opts.startPositionOffset) {

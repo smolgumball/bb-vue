@@ -1,5 +1,5 @@
-import { WindowStates, TrayItemTypes } from '/bb-vue/components/_resources.js'
-import { css, getGlobal, html } from '/bb-vue/lib.js'
+import { WinStates, TrayItemTypes } from '/bb-vue/components/_resources.js'
+import { css, doc, getGlobal, html } from '/bb-vue/lib.js'
 
 export default {
   name: 'bbv-app-tray',
@@ -8,10 +8,10 @@ export default {
       <transition-group name="appTrayItemFadeUp" appear>
         <template v-for="group in trayItems" :key="group.root.uuid">
           <bbv-app-tray-group>
-            <template :key="window.uuid" v-for="window in group.windowMounts">
-              <bbv-button :title="window.title" @click="toggleTrayItem(window)" small>
-                <template v-if="window.windowState == WindowStates.open">🔽</template>
-                <template v-else>{{ window.title }}</template>
+            <template :key="win.uuid" v-for="win in group.winMounts">
+              <bbv-button :title="win.title" @click="toggleTrayItem(win)" small>
+                <template v-if="win.winState == WinStates.open">🔽</template>
+                <template v-else>{{ win.title }}</template>
               </bbv-button>
             </template>
           </bbv-app-tray-group>
@@ -25,22 +25,22 @@ export default {
       type: Object,
       default() {
         return {
-          showWindows: true,
+          showWins: true,
         }
       },
     },
   },
   data() {
     return {
-      WindowStates,
+      WinStates,
       TrayItemTypes,
       isCollapsed: false,
     }
   },
   computed: {
     trayItems() {
-      let windowMounts = this.internals.store.windowMounts
-        .map((windowMount) => this.buildTrayItemFor(TrayItemTypes.windowMount, windowMount))
+      let winMounts = this.internals.store.winMounts
+        .map((winMount) => this.buildTrayItemFor(TrayItemTypes.winMount, winMount))
         .filter((x) => !!x)
 
       let consumerRootMounts = this.internals.store.consumerRootMounts
@@ -49,15 +49,15 @@ export default {
         )
         .filter((x) => !!x)
 
-      let windowsByRoots = consumerRootMounts.reduce((acc, root) => {
-        let ownedWindows = windowMounts.filter((x) => x.owner == root.uuid)
-        if (ownedWindows.length) {
-          acc.push({ root, windowMounts: ownedWindows })
+      let winsByRoots = consumerRootMounts.reduce((acc, root) => {
+        let ownedWins = winMounts.filter((x) => x.owner == root.uuid)
+        if (ownedWins.length) {
+          acc.push({ root, winMounts: ownedWins })
         }
         return acc
       }, [])
 
-      return windowsByRoots
+      return winsByRoots
     },
   },
   mounted() {
@@ -66,7 +66,7 @@ export default {
   methods: {
     watchGameDock() {
       const { useIntervalFn } = getGlobal('VueUse')
-      let gameDockSelector = document.querySelector('.MuiDrawer-root.MuiDrawer-docked')
+      let gameDockSelector = doc.querySelector('.MuiDrawer-root.MuiDrawer-docked')
 
       useIntervalFn(() => {
         let width = gameDockSelector.clientWidth
@@ -78,28 +78,25 @@ export default {
       }, 400)
     },
     toggleTrayItem(trayItem) {
-      if (trayItem.windowState != WindowStates.open) {
-        trayItem.windowMount.open()
+      if (trayItem.winState != WinStates.open) {
+        trayItem.winMount.open()
       } else {
-        trayItem.windowMount.close()
+        trayItem.winMount.close()
       }
     },
     buildTrayItemFor(trayItemType, trayCompatibleItem) {
-      const windowTrayItem = (windowMount) => {
+      const winTrayItem = (winMount) => {
         return {
-          kind: TrayItemTypes.windowMount,
-          uuid: windowMount.uuid,
-          title: windowMount.title,
-          owner: windowMount.owner.$options.__name,
-          windowState: windowMount.windowState,
-          windowMount: windowMount,
-          trayConfigLocal: Object.assign(
-            windowMount.appTrayConfigDefaults,
-            windowMount.appTrayConfig
-          ),
+          kind: TrayItemTypes.winMount,
+          uuid: winMount.uuid,
+          title: winMount.title,
+          owner: winMount.owner.$options.__name,
+          winState: winMount.winState,
+          winMount: winMount,
+          trayConfigLocal: Object.assign(winMount.appTrayConfigDefaults, winMount.appTrayConfig),
           trayConfigFromParent: Object.assign(
             this.appTrayConfigDefaults,
-            windowMount.owner.appTrayConfig
+            winMount.owner.appTrayConfig
           ),
         }
       }
@@ -120,18 +117,18 @@ export default {
 
       let trayItem
       switch (trayItemType) {
-        case TrayItemTypes.windowMount:
-          trayItem = windowTrayItem(trayCompatibleItem)
+        case TrayItemTypes.winMount:
+          trayItem = winTrayItem(trayCompatibleItem)
           break
         case TrayItemTypes.consumerRootMount:
           trayItem = rootTrayItem(trayCompatibleItem)
           break
       }
 
-      if (trayItem.kind == TrayItemTypes.windowMount) {
+      if (trayItem.kind == TrayItemTypes.winMount) {
         if (
           trayItem.trayConfigLocal.show !== true ||
-          trayItem.trayConfigFromParent.showWindows !== true
+          trayItem.trayConfigFromParent.showWins !== true
         ) {
           return null
         }

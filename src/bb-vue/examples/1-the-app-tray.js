@@ -66,8 +66,8 @@ const PrimaryAppRoot = {
   name: 'primary-app-root',
   inject: ['appShutdown'],
   template: html`
-    <bbv-window
-      ref="myWindow"
+    <bbv-win
+      ref="myWin"
       class="__CMP_NAME__"
       title="Hello from my-app-one!"
       :app-tray-config='{ title: "✅" }'
@@ -76,12 +76,12 @@ const PrimaryAppRoot = {
       <template #actions>
         <bbv-button @click="appShutdown">Shutdown App</bbv-button>
       </template>
-    </bbv-window>
+    </bbv-win>
   `,
   data() {
     return {
       appTrayConfig: {
-        showWindows: false,
+        showWins: false,
       },
     }
   },
@@ -100,32 +100,32 @@ const DifferentAppRoot = {
   inject: ['appShutdown'],
   template: html`
     <main>
-      <bbv-window
+      <bbv-win
         class="__CMP_NAME__"
-        title="Hello from my-app-two, window #1!"
+        title="Hello from my-app-two, win #1!"
         :app-tray-config="{ title: '🥇' }"
       >
         <p>Boop beep</p>
         <template #actions>
           <bbv-button @click="appShutdown">Shutdown App</bbv-button>
         </template>
-      </bbv-window>
-      <bbv-window
+      </bbv-win>
+      <bbv-win
         class="__CMP_NAME__"
-        title="Hello from my-app-two, window #2!"
+        title="Hello from my-app-two, win #2!"
         :app-tray-config="{ title: '🥈' }"
       >
         <p>Boop beep</p>
         <template #actions>
           <bbv-button @click="appShutdown">Shutdown App</bbv-button>
         </template>
-      </bbv-window>
+      </bbv-win>
     </main>
   `,
   data() {
     return {
       appTrayConfig: {
-        showWindows: true,
+        showWins: true,
       },
     }
   },

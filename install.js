@@ -46,24 +46,29 @@ let prefixDirectory = ''
 */
 
 let requiredHost = 'home'
-let repoRoot = 'https://raw.githubusercontent.com/smolgumball/bitburner-vue/main'
+let repoRoot = 'https://raw.githubusercontent.com/smolgumball/bitburner-vue'
+let repoBranch = 'main'
 let manifestFile = 'installManifest.txt'
-let manifestTmpPath = '/tmp/installManifest__bitburner-vue.txt'
+let manifestTmpPath = '/tmp/installManifest__bb-vue.txt'
 
 export async function main(ns) {
   if (ns.getHostname() !== requiredHost) {
-    throw new Error('Run this script from home')
+    throw new Error('Run this script from the root directory of home')
   }
 
-  let manifestPath = joinPaths(repoRoot, manifestFile)
+  if (`${ns.args[0]}`.length) repoBranch = ns.args[0]
+
+  if (`${ns.args[1]}`.length) prefixDirectory = ns.args[1]
+  if (prefixDirectory) prefixDirectory = `/${trimPath(prefixDirectory)}/`
+
+  let repoUrl = joinPaths(repoRoot, repoBranch)
+  let manifestPath = joinPaths(repoUrl, manifestFile)
   let manifestData = await fetchConfig(ns, manifestPath)
   let manifestLength = manifestData.manifestPaths.length
 
-  if (prefixDirectory) prefixDirectory = `/${trimPath(prefixDirectory)}/`
-
   for (let i in manifestData.manifestPaths) {
     let { repoPath, installPath } = manifestData.manifestPaths[i]
-    repoPath = joinPaths(repoRoot, repoPath)
+    repoPath = joinPaths(repoUrl, repoPath)
     try {
       installPath = joinPaths(prefixDirectory, installPath)
       await getFileFromGH(ns, repoPath, installPath)

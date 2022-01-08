@@ -1,6 +1,6 @@
 {
   "importRoot": "/bb-vue/",
-  "entryFile": "/bb-vue/getting-started.js",
+  "entryFile": "/bb-vue/examples/0-getting-started.js",
   "manifestPaths": [
     {
       "repoPath": "/src/bb-vue/AppFactory.js",
@@ -15,24 +15,76 @@
       "installPath": "/bb-vue/ComponentManager.js"
     },
     {
+      "repoPath": "/src/bb-vue/components/AppRoot.js",
+      "installPath": "/bb-vue/components/AppRoot.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/AppTray.js",
+      "installPath": "/bb-vue/components/AppTray.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/AppTrayGroup.js",
+      "installPath": "/bb-vue/components/AppTrayGroup.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/Button.js",
+      "installPath": "/bb-vue/components/Button.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/concerns/useDraggableWindow.js",
+      "installPath": "/bb-vue/components/concerns/useDraggableWindow.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/internal/ConsumerRoot.js",
+      "installPath": "/bb-vue/components/internal/ConsumerRoot.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/internal/ScriptX.js",
+      "installPath": "/bb-vue/components/internal/ScriptX.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/internal/StylesheetManager.js",
+      "installPath": "/bb-vue/components/internal/StylesheetManager.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/JsonDisplay.js",
+      "installPath": "/bb-vue/components/JsonDisplay.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/Tabs.js",
+      "installPath": "/bb-vue/components/Tabs.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/Window.js",
+      "installPath": "/bb-vue/components/Window.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/WindowManager.js",
+      "installPath": "/bb-vue/components/WindowManager.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/_resources.js",
+      "installPath": "/bb-vue/components/_resources.js"
+    },
+    {
       "repoPath": "/src/bb-vue/examples/0-getting-started.js",
       "installPath": "/bb-vue/examples/0-getting-started.js"
     },
     {
-      "repoPath": "/src/bb-vue/examples/1-app-stores.js",
-      "installPath": "/bb-vue/examples/1-app-stores.js"
+      "repoPath": "/src/bb-vue/examples/1-the-app-tray.js",
+      "installPath": "/bb-vue/examples/1-the-app-tray.js"
     },
     {
-      "repoPath": "/src/bb-vue/examples/2-scss-support.js",
-      "installPath": "/bb-vue/examples/2-scss-support.js"
+      "repoPath": "/src/bb-vue/examples/2-events-and-communication.js",
+      "installPath": "/bb-vue/examples/2-events-and-communication.js"
     },
     {
-      "repoPath": "/src/bb-vue/examples/3-event-busses.js",
-      "installPath": "/bb-vue/examples/3-event-busses.js"
+      "repoPath": "/src/bb-vue/examples/3-connecting-with-scripts.js",
+      "installPath": "/bb-vue/examples/3-connecting-with-scripts.js"
     },
     {
-      "repoPath": "/src/bb-vue/examples/4-connecting-with-netscript.js",
-      "installPath": "/bb-vue/examples/4-connecting-with-netscript.js"
+      "repoPath": "/src/bb-vue/examples/4-complex-and-fun.js",
+      "installPath": "/bb-vue/examples/4-complex-and-fun.js"
     },
     {
       "repoPath": "/src/bb-vue/lib.js",
@@ -41,10 +93,6 @@
     {
       "repoPath": "/src/bb-vue/MittLoader.js",
       "installPath": "/bb-vue/MittLoader.js"
-    },
-    {
-      "repoPath": "/src/bb-vue/resources.js",
-      "installPath": "/bb-vue/resources.js"
     },
     {
       "repoPath": "/src/bb-vue/SassLoader.js",

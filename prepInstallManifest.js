@@ -7,7 +7,7 @@ const config = {
   scanRoot: 'src',
   scanIncludeExtensions: ['js', 'ns', 'txt'],
   importRoot: '/bb-vue/',
-  entryFile: '/bb-vue/getting-started.js',
+  entryFile: '/bb-vue/examples/0-getting-started.js',
   manifestFile: 'installManifest.txt',
 }
 

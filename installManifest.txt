@@ -91,6 +91,30 @@
       "installPath": "/bb-vue/MittLoader.js"
     },
     {
+      "repoPath": "/src/bb-vue/new-examples/0-getting-started.js",
+      "installPath": "/bb-vue/new-examples/0-getting-started.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/new-examples/1-adding-components.js",
+      "installPath": "/bb-vue/new-examples/1-adding-components.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/new-examples/2-writing-styles-scss.js",
+      "installPath": "/bb-vue/new-examples/2-writing-styles-scss.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/new-examples/3-controlling-your-app.js",
+      "installPath": "/bb-vue/new-examples/3-controlling-your-app.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/new-examples/4-sending-data-from-scripts.js",
+      "installPath": "/bb-vue/new-examples/4-sending-data-from-scripts.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/new-examples/5-demo-app.js",
+      "installPath": "/bb-vue/new-examples/5-demo-app.js"
+    },
+    {
       "repoPath": "/src/bb-vue/SassLoader.js",
       "installPath": "/bb-vue/SassLoader.js"
     },

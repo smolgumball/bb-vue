@@ -49,7 +49,7 @@ export default {
     onConsumerRootMounted(vnode) {
       this.private.consumerRootMount = vnode?.component?.ctx
       if (!this.private.consumerRootMount) {
-        console.warn(`consumerRootMount is null for ${this.consumerRootDef.__name}`)
+        console.warn(`App root is null for ${this.consumerRootDef.__name}`)
       }
       this.$emit('consumer-root-mounted', this.private.consumerRootMount)
     },

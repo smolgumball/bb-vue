@@ -72,7 +72,7 @@ export async function main(ns) {
     try {
       installPath = joinPaths(prefixDirectory, installPath)
       await getFileFromGH(ns, repoPath, installPath)
-      await ns.sleep(100)
+      await ns.sleep(1)
       await rewriteImports(ns, installPath, manifestData.importRoot, prefixDirectory)
       ns.tprint(`Installed: ${installPath} [${Number(i) + 1}/${manifestLength}]`)
     } catch (e) {

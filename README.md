@@ -4,11 +4,23 @@ Use Vue inside BitBurner!
 
 ![bitburner_jmT3LDJN0J](https://user-images.githubusercontent.com/53015256/147802003-5aba9bc9-6ef9-4902-b4a1-0d6c5286672a.png)
 
-## Installations
+## In Development
+
+Most recent changes for those who want to browse the source:
+* Take a [peek at the `/src/bb-vue/*` tree](https://github.com/smolgumball/bb-vue/tree/dev/src/bb-vue) of the `dev` branch
+* Pop over here and [heed the call for testers](https://github.com/smolgumball/bb-vue/issues/11) if you'd like to lend a hand in shaping the growth of `bb-vue` with your feedback
+
+## Stable / Legacy Installation
 
 Copy contents of `install.js` from this repo into your BitBurner game and run to install!
 
 ## Changelog
+
+### `dev`
+
+* A new architecture that allows for more user-control
+* Beginnings of a component library for creating UIs quickly
+* Active development, be warned, but [feel free to contribute](https://github.com/smolgumball/bb-vue/issues/11) as well!
 
 ### v0.0.1
 

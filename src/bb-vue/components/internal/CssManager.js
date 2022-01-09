@@ -1,4 +1,4 @@
-import { html } from '/bitburner-vue/lib.js'
+import { html } from '/bb-vue/lib.js'
 
 export default {
   name: 'bbv-css-manager',

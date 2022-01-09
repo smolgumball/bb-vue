@@ -6,8 +6,8 @@ import {
   lodash,
   registerNewApp,
   setGlobal,
-  toStr,
   html,
+  toStr,
 } from '/bb-vue/lib.js'
 
 import ComponentManager from '/bb-vue/ComponentManager.js'
@@ -18,9 +18,10 @@ import VueLoader from '/bb-vue/VueLoader.js'
 import ScriptX from '/bb-vue/components/internal/ScriptX.js'
 import { default as AppRoot, ComponentLibrary } from '/bb-vue/components/AppRoot.js'
 
-const CreateOrGetRootVueApp = async (Vue, Sass, forceReload) => {
+const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {
   const rootConfig = {
     appId: 'bb-vue-root',
+    scssResources: AppRoot.scssResources,
   }
 
   // console.time('CreateOrGetRootVueApp')
@@ -32,26 +33,21 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload) => {
     existingRootDom.remove()
   }
 
-  let rootComponentsManager = new ComponentManager(rootConfig, Sass, AppRoot.scssResources)
+  let componentManager = new ComponentManager(rootConfig, Sass)
+  componentManager.add(AppRoot, ...ComponentLibrary)
+  await componentManager.processAll()
+
+  let processedLibraryRoot = {
+    ...componentManager.processedLibraryRoot,
+    __finalStyles: componentManager.gatherAllProcessedStyles(),
+  }
 
   let rootApp
-  rootComponentsManager.add(AppRoot, ...ComponentLibrary)
-  await rootComponentsManager.processAll()
-
-  let processedLibraryRoot = rootComponentsManager.processedLibraryRoot
-  processedLibraryRoot.__finalStyles = rootComponentsManager.gatherAllProcessedStyles()
   rootApp = Vue.createApp(processedLibraryRoot)
   rootApp.use(ScriptX)
-  rootComponentsManager.registerWithVueApp(rootApp)
+  componentManager.registerWithVueApp(rootApp)
 
-  doc.body.insertAdjacentHTML(
-    'afterbegin',
-    // prettier-ignore
-    html`
-        <div id="${rootConfig.appId}" bbv-root></div>
-      `
-  )
-
+  doc.body.insertAdjacentHTML('afterbegin', html`<div id="${rootConfig.appId}" bbv-root></div>`)
   rootApp.mount(`#${rootConfig.appId}`)
   setGlobal('rootApp', rootApp)
 
@@ -63,29 +59,13 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload) => {
 //
 
 export default class AppFactory {
-  #Vue
-  #Mitt
-  #Sass
-
   #ns
-  #appId
   #appConfig
-  #defaultAppConfig
-
-  #scssResources
   #rootComponent
-  #componentsInQueue
+  #componentsInQueue = new Set()
+  #mounted = false
 
-  #started
-
-  constructor(appId, ns) {
-    if (isBlank(appId)) {
-      throw new Error(
-        `Every AppFactory needs a unique appId! ` +
-          `Try using \`crypto.randomUUID()\` if you can't think of one.`
-      )
-    }
-
+  constructor(ns) {
     if (isBlank(ns) || !(ns.tprint || ns.sleep || ns.exit)) {
       throw new Error(
         `Every AppFactory needs a unique reference to the ns object! ` +
@@ -93,89 +73,43 @@ export default class AppFactory {
       )
     }
 
-    this.#appId = toStr(appId)
     this.#ns = ns
-    this.#started = false
+    this.#mounted = false
     this.#componentsInQueue = new Set()
-    this.configure()
 
     return this
   }
 
-  configure(instanceConfig = {}) {
-    this.#validateOnlyOneStart()
-    let globalConfig = { ...getGlobalAppFactoryConfig() }
-    this.#defaultAppConfig = {
-      showTips: true,
-      forceReload: false,
-    }
-    this.#appConfig = Object.assign({}, this.#defaultAppConfig, globalConfig, instanceConfig)
-    this.#appConfig.appId = this.#appId
+  async mount({ config = {}, components = [], rootComponent = {} }) {
+    this.#configure(config)
+    this.#addComponents(components)
+    this.#setRootComponent(rootComponent)
 
-    return this
-  }
-
-  setRootComponent(componentDefinition) {
-    this.#validateOnlyOneStart()
-
-    let cmpDef = { ...ComponentManager.Validate(componentDefinition) }
-    cmpDef.__consumerRoot = true
-    cmpDef.__appId = this.#appConfig.appId
-    cmpDef.__name = `${cmpDef.__appId}:${cmpDef.name}`
-    this.#rootComponent = cmpDef
-    this.#componentsInQueue.add(cmpDef)
-
-    return this
-  }
-
-  addComponents(...args) {
-    this.#validateOnlyOneStart()
-
-    if (isBlank(args)) {
-      throw new Error('Please provide one or more components to add')
-    }
-
-    for (let cmpDef of args) {
-      cmpDef = ComponentManager.Validate(cmpDef)
-      this.#componentsInQueue.add(cmpDef)
-    }
-
-    return this
-  }
-
-  addScssResources(scssResources) {
-    this.#validateOnlyOneStart()
-
-    if (!lodash.isString(scssResources)) {
-      throw new TypeError('SCSS resources added to AppFactory must be of type String')
-    }
-    this.#scssResources = toStr(scssResources)
-
-    return this
-  }
-
-  async start() {
-    this.#validateOnlyOneStart()
     this.#validateStart()
+    this.#validateOneMount()
 
     // console.time('AppFactory:start')
 
-    await this.#runLoaders()
+    const { Vue, Sass } = await this.#runLoaders()
 
-    let rootVueApp = await CreateOrGetRootVueApp(this.#Vue, this.#Sass, this.#appConfig.forceReload)
-
-    let componentManager = new ComponentManager(this.#appConfig, this.#Sass, this.#scssResources)
-
+    let rootVueApp = await CreateOrGetRootVueApp(Vue, Sass, this.#appConfig.forceReload)
+    let componentManager = new ComponentManager(
+      this.#appConfig,
+      Sass,
+      this.#appConfig.scssResources
+    )
     componentManager.add(...this.#componentsInQueue)
     await componentManager.processAll()
     componentManager.registerWithVueApp(rootVueApp)
 
-    let processedConsumerRoot = componentManager.processedConsumerRoot
-    processedConsumerRoot.__finalStyles = componentManager.gatherAllProcessedStyles()
+    let processedConsumerRoot = {
+      ...componentManager.processedConsumerRoot,
+      __finalStyles: componentManager.gatherAllProcessedStyles(),
+    }
 
     let consumerAppHandleFn = registerNewApp(processedConsumerRoot)
 
-    this.#started = true
+    this.#mounted = true
 
     if (this.#appConfig.showTips) {
       this.#ns.tprint(
@@ -190,29 +124,76 @@ export default class AppFactory {
     return consumerAppHandleFn
   }
 
+  #configure(instanceConfig = {}) {
+    let globalConfig = { ...getGlobalAppFactoryConfig() }
+
+    if (isBlank(instanceConfig.id)) {
+      throw new Error(
+        `Every AppFactory needs a unique ID! ` +
+          `Try using \`crypto.randomUUID()\` if you can't think of one.`
+      )
+    }
+
+    let defaultConfig = {
+      appId: toStr(instanceConfig.id),
+      showTips: true,
+      forceReload: false,
+      scssResources: '',
+    }
+
+    this.#appConfig = Object.assign(defaultConfig, globalConfig, instanceConfig)
+
+    if (!isBlank(this.#appConfig.scssResources)) {
+      if (!lodash.isString(this.#appConfig.scssResources)) {
+        throw new TypeError('SCSS resources added to AppFactory must be of type String')
+      }
+    }
+  }
+
+  #addComponents(components) {
+    if (!lodash.isArray(components)) {
+      throw new Error('Please provide one or more components to add as an array')
+    }
+
+    for (let cmpDef of components) {
+      cmpDef = ComponentManager.Validate(cmpDef)
+      this.#componentsInQueue.add(cmpDef)
+    }
+  }
+
+  #setRootComponent(componentDefinition = {}) {
+    let cmpDef = { ...ComponentManager.Validate(componentDefinition) }
+    cmpDef.__consumerRoot = true
+    cmpDef.__appId = this.#appConfig.appId
+    cmpDef.__name = `${cmpDef.__appId}:${cmpDef.name}`
+    this.#rootComponent = cmpDef
+    this.#componentsInQueue.add(cmpDef)
+
+    return this
+  }
+
   async #runLoaders() {
-    this.#Vue = await VueLoader.Get()
-    this.#Mitt = await MittLoader.Get()
-    this.#Sass = await SassLoader.Get()
+    const [Vue, Mitt, Sass] = await Promise.all([
+      VueLoader.Get(),
+      MittLoader.Get(),
+      SassLoader.Get(),
+    ])
+    return { Vue, Mitt, Sass }
   }
 
   #validateStart() {
     if (this.#componentsInQueue.size < 1) {
-      throw new Error('You must add at least one component to the AppFactory before starting it')
+      throw new Error('You must add at least one component to an AppFactory')
     }
 
     if (isBlank(this.#rootComponent)) {
-      throw new Error(
-        'You must mark one component as your root component using AppFactory.setRootComponent'
-      )
+      throw new Error('You must add one root component to an AppFactory')
     }
   }
 
-  #validateOnlyOneStart() {
-    if (this.#started === true) {
-      throw new Error(
-        'AppFactory can only be started once! You should store a reference to the AppInstance that is returned from AppFactory.start'
-      )
+  #validateOneMount() {
+    if (this.#mounted === true) {
+      throw new Error('You can only mount an AppFactory instance once')
     }
   }
 }

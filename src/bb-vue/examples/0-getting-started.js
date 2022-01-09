@@ -1,57 +1,45 @@
+/**
+ * @see: Learn more about Vue here: https://v3.vuejs.org/
+ * @see: Learn more about Sass here: https://sass-lang.com/
+ * @see: Learn more about bb-vue here: https://github.com/smolgumball/bb-vue
+ */
+
+// Start with a single import from the bb-vue library
 import AppFactory from '/bb-vue/AppFactory.js'
+
+/**
+ * These functions are used to enable nicer syntax highlighting of HTML/CSS in VSCode.
+ * Specifically the `prettier - code formatter`, `es6-string-css` and `es6-string-html`
+ * extensions can be used.You can safely remove these imports, as long as you remove references to them below.
+ **/
 import { css, html } from '/bb-vue/lib.js'
+
+// Note the standard BitBurner function signature here.
+// Always start your bb-vue apps from standard BitBurner scripts since you will
+// need to pass a valid NS instance to the AppFactory constructor!
 
 /** @param {NS} ns **/
 export async function main(ns) {
-  /*
-    always wrap your AppFactory usage in a try/catch block,
-    to get helpful error messages from bb-vue.
-  */
+  // Wrap your AppFactory usage with try/catch for better error messages
   try {
-    const myAppFactory = new AppFactory('my-first-app', ns)
+    const myAppFactory = new AppFactory(ns)
+    const myAppHandleFn = await myAppFactory.mount({
+      // An app ID is always required
+      config: { id: 'my-first-app' },
 
-    /*
-      AppFactory.configure allows you to configure the behavior of
-      the current appFactory instance
+      // Additional components are optional.
+      // Here, we're adding just one extra
+      components: [MyJsonComponent],
 
-      forceReload ensures that the entire bb-vue framework is torn down
-      each time you use an AppFactory.
+      // A root component is always required
+      rootComponent: MyAppComponent,
+    })
 
-      >> you probably don't want this once you're done developing your
-      >> bb-vue components, otherwise each script using AppFactory will
-      >> cause the global bb-vue framework to reboot, and will remove all
-      >> other running apps in the process!
-    */
-    myAppFactory.configure({ forceReload: true })
-
-    /*
-      a root component must ALWAYS be set.
-      your AppFactory won't start without it
-    */
-    myAppFactory.setRootComponent(MyAppComponent)
-
-    /*
-      you can add as many additional components as you like.
-      make sure you define and register each component you use within your app
-    */
-    myAppFactory.addComponents(MyJsonComponent)
-    // or: myAppFactory.addComponents(MyJsonComponent, MyOtherComponent, AnotherCoolComponent)
-
-    /*
-      once your appFactory is prepped with your configuration, a root component, and
-      all of your other components, it's time to call AppFactory.start()
-      always remember to `await` the starting of your app; it can take a little bit
-      the first time you use bb-vue after restarting BitBurner
-    */
-    const myAppHandleFn = await myAppFactory.start()
-
-    /*
-      after starting the app, you can retrieve a reference to your root component
-      by running the function returned from AppFactory.start
-    */
+    // You can retrieve a reference to your root component
+    // by running the function returned from mount()
     console.debug(myAppHandleFn())
   } catch (error) {
-    /* in case something goes wrong, log it out and halt the program */
+    // In case something goes wrong, log it out and halt the program
     console.error(error)
     ns.tprint(error.toString())
     ns.exit()
@@ -59,15 +47,17 @@ export async function main(ns) {
 }
 
 const MyAppComponent = {
+  // Every component needs a unique name
   name: 'my-first-root-component',
-  /*
-    here, we bring in some special functionality offered by the
-    core bb-vue framework. this let's us shut down our entire app
-    (all the wins, all the sub-components, etc.) with a single
-    method call. you can see it's wired to a button at the bottom
-    of the bbv-win down below
-  */
+
+  // Here, we "inject" a helper function provided by the bb-vue library.
+  // Running this function shuts down your entire app. It is wired to a button
+  // click at the bottom of the bbv-win component, in the #actions slot!
   inject: ['appShutdown'],
+
+  // Your template is where a lot of the magic happens. Render DOM elements here,
+  // and use various Vue-specific techniques like `v-for`, @event binding, etc.
+  // Learn more about Vue here: https://v3.vuejs.org/
   template: html`
     <bbv-win class="__CMP_NAME__" title="Hello from bb-vue!">
       <p>Render your own components:</p>
@@ -87,6 +77,10 @@ const MyAppComponent = {
       </template>
     </bbv-win>
   `,
+
+  // The data function tells Vue what kind of reactive data you'd like to use.
+  // Changing these values from inside or outside the component will cause the
+  // component to update automatically! Learn more about Vue here: https://v3.vuejs.org/
   data() {
     return {
       myData: { 'bb-vue-is': 'easy to use!', ezCounter: 0 },
@@ -96,30 +90,34 @@ const MyAppComponent = {
       },
     }
   },
+
+  // The scss key is where you define the styles for your component.
   scss: css`
     /*
-      you can reference the component name with
-      __CMP_NAME__and it will be replaced at startup.
-      this happens in both templates and style blocks
+      You can reference your component name with __CMP_NAME__and it
+      will be replaced at startup. This happens in both templates and style blocks!
     */
     .__CMP_NAME__ {
-      /*
-        this makes it easy to write styles will
-        only apply where you want them to
-      */
       p {
         margin: 0;
         padding: 25px 0 5px 0;
 
-        /* have you noticed we're writing SCSS? */
+        /*
+          Have you noticed we're writing SCSS? bb-vue supports Sass 0.11.1
+          through the sass.js tool; a bit outdated now, but good enough for some
+          dank BitBurner components. Learn more about sass.js here:
+          https://github.com/medialize/sass.js/#sassjs
+        */
         strong {
           font-size: 13px;
           padding: 3px 6px 1px 6px;
           display: inline-block;
           border-radius: 5px;
 
-          /* use the provided CSS theming variables to color your elements */
-          /* you can find all of them on the <body> tag */
+          /*
+            You can use the provided CSS theming variables to color your elements.
+            Find all of them on the <body> tag of your BitBurner debug / devtools console.
+          */
           color: var(--bbvHackerDarkFgColor);
           background-color: var(--bbvHackerDarkBgColor);
         }
@@ -132,6 +130,9 @@ const MyAppComponent = {
   `,
 }
 
+// Here's a simple supporting component that displays data passed to it.
+// It converts the data to a JSON string and then display it in the whitespace
+// sensitive HTML tag <pre>
 const MyJsonComponent = {
   name: 'my-json-display',
   props: {

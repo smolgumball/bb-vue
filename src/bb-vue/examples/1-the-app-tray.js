@@ -1,61 +1,47 @@
 import AppFactory from '/bb-vue/AppFactory.js'
-import { css, html, setGlobalAppFactoryConfig } from '/bb-vue/lib.js'
+import { css, html } from '/bb-vue/lib.js'
 
 /** @param {NS} ns **/
 export async function main(ns) {
-  /*
-    always wrap your AppFactory usage in a try/catch block,
-    to get helpful error messages from bb-vue.
-  */
   try {
-    /*
-      you can configure all your AppFactories at once if that's easier.
-      note that these configs are _persistent_ and will effect all AppFactory
-      instances you try to start until you reload BitBurner! however, you can
-      still override each AppFactory using it's configure() method, as seen below
-    */
-    setGlobalAppFactoryConfig({ showTips: false, forceReload: false })
+    // App one
+    // ---
 
-    /* boot the first app */
-    let myAppOneHandleFn = await new AppFactory('my-app-one', ns)
-      /*
-        let's override our global AppFactory config to force a reload on just
-        this first app. this will ensure that this app and the following are the
-        only two running inside BitBurner
-      */
-      .configure({ forceReload: true })
-      .setRootComponent(PrimaryAppRoot)
-      .start()
+    let appOne = new AppFactory(ns)
+    const appOneHandleFn = await appOne.mount({
+      config: { id: 'app-one' },
+      rootComponent: PrimaryAppRoot,
+    })
 
-    ns.tprint('my-app-one booted!')
+    ns.tprint('app-one booted!')
 
-    /* wait a bit... */
+    // Wait a bit...
     await ns.sleep(1000)
     ns.tprint('Waiting 1s and then booting a second app...')
 
-    /*
-      notice that we aren't calling `configure` on this second app.
-      instead, this AppFactory is inheriting it's configuration options
-      from the setGlobalAppFactoryConfig call we made at the top of our script
-    */
-    let myAppTwoHandleFn = await new AppFactory('my-app-two', ns) /* prettier-ignore */
-      .setRootComponent(DifferentAppRoot)
-      .start()
+    // App two
+    // ---
 
-    ns.tprint('my-app-two booted!')
+    let appTwo = new AppFactory(ns)
+    const appTwoHandleFn = await appTwo.mount({
+      config: { id: 'app-two' },
+      rootComponent: DifferentAppRoot,
+    })
 
-    /* wait a bit... */
+    ns.tprint('app-two booted!')
+
+    // Wait a bit...
     await ns.sleep(1000)
     ns.tprint('Waiting 1s and then logging mounted apps to debug console...')
 
-    /* retrieve references to both running apps */
-    const [runningAppOne, runningAppTwo] = [myAppOneHandleFn(), myAppTwoHandleFn()]
+    // Retrieve references to both running apps using the handle / lookup functions
+    // returned from the mount() method calls earlier.
+    const [runningAppOne, runningAppTwo] = [appOneHandleFn(), appTwoHandleFn()]
 
-    /* display in debug console (Debug -> Activate) */
+    // Display running app info in debug console / devtools (Debug -> Activate)
     console.debug(runningAppOne)
     console.debug(runningAppTwo)
   } catch (error) {
-    /* in case something goes wrong, log it out and halt the program */
     console.error(error)
     ns.tprint(error.toString())
     ns.exit()
@@ -66,12 +52,7 @@ const PrimaryAppRoot = {
   name: 'primary-app-root',
   inject: ['appShutdown'],
   template: html`
-    <bbv-win
-      ref="myWin"
-      class="__CMP_NAME__"
-      title="Hello from my-app-one!"
-      :app-tray-config='{ title: "✅" }'
-    >
+    <bbv-win ref="myWin" class="__CMP_NAME__" title="Hello from my-app-one!">
       <p>Beep boop</p>
       <template #actions>
         <bbv-button @click="appShutdown">Shutdown App</bbv-button>
@@ -80,6 +61,7 @@ const PrimaryAppRoot = {
   `,
   data() {
     return {
+      // Don't display windows from this app in the app tray
       appTrayConfig: {
         showWins: false,
       },
@@ -100,6 +82,10 @@ const DifferentAppRoot = {
   inject: ['appShutdown'],
   template: html`
     <main>
+      <!--
+        Use the "app-tray-config" prop to show a specific title
+        when this window is minimized in the app tray
+      -->
       <bbv-win
         class="__CMP_NAME__"
         title="Hello from my-app-two, win #1!"
@@ -110,6 +96,11 @@ const DifferentAppRoot = {
           <bbv-button @click="appShutdown">Shutdown App</bbv-button>
         </template>
       </bbv-win>
+
+      <!--
+        Use the "app-tray-config" prop to show a specific title
+        when this window is minimized in the app tray
+      -->
       <bbv-win
         class="__CMP_NAME__"
         title="Hello from my-app-two, win #2!"
@@ -125,6 +116,7 @@ const DifferentAppRoot = {
   data() {
     return {
       appTrayConfig: {
+        // Display windows from this app in the app tray normally (default)
         showWins: true,
       },
     }

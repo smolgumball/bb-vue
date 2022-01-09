@@ -5,23 +5,21 @@ import {
   ReplacementTokens,
 } from '/bb-vue/lib.js'
 
-//
-
 export default class ComponentManager {
   #appConfig
   #Sass
-  #sassResources
+  #scssResources
   #hasProcessed = false
   #rawComponents = new Set()
   #processingReports = []
 
-  constructor(appConfig, Sass, sassResources) {
+  constructor(appConfig, Sass) {
     this.#appConfig = appConfig
     this.#Sass = Sass
-    this.#sassResources = toStr(sassResources)
+    this.#scssResources = toStr(appConfig.scssResources)
   }
 
-  async add(...args) {
+  add(...args) {
     if (isBlank(args)) {
       throw new Error('Please provide one or more components to add')
     }
@@ -30,6 +28,8 @@ export default class ComponentManager {
       cmpDef = ComponentManager.Validate(cmpDef)
       this.#rawComponents.add(cmpDef)
     }
+
+    return this
   }
 
   async processAll() {
@@ -38,6 +38,8 @@ export default class ComponentManager {
       this.#processingReports.push(processed)
     }
     this.#hasProcessed = true
+
+    return this
   }
 
   registerWithVueApp(vueApp) {
@@ -136,7 +138,7 @@ export default class ComponentManager {
     scss = [cmpDef.scss, cmpDef.sass].find((x) => !isBlank(x))
     if (scss) {
       scss = this.#performTokenReplacements(scss, this.#appConfig.appId, cmpDef.name)
-      scss = `${this.#sassResources}\n${scss}`
+      scss = `${this.#scssResources}\n${scss}`
       try {
         scss = await this.#Sass.compileAsync(scss, {})
         didProcess = true

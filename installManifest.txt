@@ -27,8 +27,8 @@
       "installPath": "/bb-vue/components/Button.js"
     },
     {
-      "repoPath": "/src/bb-vue/components/concerns/useDragWin.js",
-      "installPath": "/bb-vue/components/concerns/useDragWin.js"
+      "repoPath": "/src/bb-vue/components/concerns/useDraggableWin.js",
+      "installPath": "/bb-vue/components/concerns/useDraggableWin.js"
     },
     {
       "repoPath": "/src/bb-vue/components/internal/ConsumerRoot.js",

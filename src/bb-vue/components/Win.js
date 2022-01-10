@@ -1,6 +1,6 @@
 import { nearestConsumerRootMount, html, css } from '/bb-vue/lib.js'
 import { WinStates } from '/bb-vue/components/_resources.js'
-import useDraggableWin from '/bb-vue/components/concerns/useDragWin.js'
+import useDraggableWin from '/bb-vue/components/concerns/useDraggableWin.js'
 
 export default {
   name: 'bbv-win',
@@ -9,8 +9,8 @@ export default {
       ref="thisWin"
       class="__CMP_NAME__"
       :class="{ isOpen: shouldDisplay }"
-      :style="draggable.style"
-      @click="bringToFont"
+      :style="windowStyle"
+      @pointerdown="bringToFront"
     >
       <div class="win_titlebar" ref="titleBar">
         <div class="win_title">{{ title }}<slot name="title" /></div>
@@ -75,21 +75,35 @@ export default {
       }
     },
   },
+  computed: {
+    windowStyle() {
+      return {
+        ...this.draggable.style,
+        zIndex: this.stackingIndex,
+      }
+    },
+  },
   created() {
     this.owner = nearestConsumerRootMount(this)
     this.appTrayConfigDefaults = { show: true, title: this.title }
   },
   mounted() {
-    if (this.$props.startOpen) {
-      this.winState = WinStates.open
-    }
+    const winManager = this.internals.winManager
+    winManager.addWin(this)
+
+    let startPosition = this.$props.startPosition ?? winManager.getRecommendedPosition(this)
+    let startPositionOffset = this.$props.startPositionOffset
+
     useDraggableWin(this.draggable, {
       titleBarRef: this.$refs.titleBar,
       draggableRef: this.$refs.thisWin,
-      startPosition: this.$props.startPosition,
-      startPositionOffset: this.$props.startPositionOffset,
+      startPosition,
+      startPositionOffset,
     })
-    this.internals.winManager.addWin(this)
+
+    if (this.$props.startOpen) {
+      this.winState = WinStates.open
+    }
   },
   beforeUnmount() {
     this.internals.winManager.removeWin(this)
@@ -98,13 +112,16 @@ export default {
     open() {
       this.winState = WinStates.open
       this.$emit('win-opened', this)
+      this.bringToFront()
     },
     close() {
       if (!this.canClose) return
       this.winState = WinStates.closed
       this.$emit('win-closed', this)
     },
-    bringToFont() {},
+    bringToFront() {
+      this.internals.winManager.bringToFront(this)
+    },
   },
   scss: css`
     .__CMP_NAME__ {

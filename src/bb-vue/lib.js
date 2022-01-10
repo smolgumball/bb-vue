@@ -47,15 +47,7 @@ if (!win[Keys.libKey]) win[Keys.libKey] = {}
  */
 
 export function setGlobal(key, value) {
-  if (key == Keys.vueModuleKey) {
-    // HACK: Ensure Vue is loaded where certain iife modules expect it
-    return lodash.set(globalThis, Keys.vueModuleKey, value)
-  } else if (key == Keys.vueUseModuleKey) {
-    // HACK: Ensure VueUse is loaded where certain iife modules expect it
-    return lodash.set(globalThis, Keys.vueUseModuleKey, value)
-  } else {
-    return lodash.set(win[Keys.libKey], key, value)
-  }
+  return lodash.set(win[Keys.libKey], key, value)
 }
 
 /**
@@ -65,27 +57,30 @@ export function setGlobal(key, value) {
  * @see https://lodash.com/docs/4.17.15#get
  */
 export function getGlobal(key, defaultValue) {
-  if (key == Keys.vueModuleKey) {
-    // HACK: Ensure Vue is retrieved from where certain iife modules expect it
-    return lodash['get'](globalThis, Keys.vueModuleKey)
-  } else if (key == Keys.vueUseModuleKey) {
-    // HACK: Ensure VueUse is retrieved from where certain iife modules expect it
-    return lodash['get'](globalThis, Keys.vueUseModuleKey)
-  } else {
-    return lodash['get'](win[Keys.libKey], key, defaultValue)
-  }
+  return lodash['get'](win[Keys.libKey], key, defaultValue)
 }
 
-export function setGlobalAppFactoryConfig(value) {
-  setGlobal(Keys.globalConfigKey, value)
+export function Vue() {
+  let vue = win[Keys.vueModuleKey]
+  if (!vue) throw new Error('Vue is not loaded on window global; check VueLoader:Get for issues')
+  return vue
 }
 
-export function getGlobalAppFactoryConfig() {
-  return getGlobal(Keys.globalConfigKey, {})
+export function VueUse() {
+  let vueUse = win[Keys.vueUseModuleKey]
+  if (!vueUse)
+    throw new Error('VueUse is not loaded on window global; check AppRoot:loadDeps for issues')
+  return vueUse
 }
 
-export function registerNewApp(appDef) {
-  return getGlobal(Keys.rootAppKey)?._instance?.ctx?.registerApp(appDef)
+export function Mitt() {
+  let mitt = getGlobal('Mitt')
+  if (!mitt) throw new Error('Mitt is not loaded on window global; check MittLoader:Get for issues')
+  return mitt
+}
+
+export function addConsumerRootDef(appDef) {
+  return getGlobal(Keys.rootAppKey)?._instance?.ctx?.addConsumerRootDef(appDef)
 }
 
 //

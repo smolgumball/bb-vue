@@ -1,5 +1,5 @@
 import { WinStates, TrayItemTypes } from '/bb-vue/components/_resources.js'
-import { css, doc, getGlobal, html } from '/bb-vue/lib.js'
+import { css, doc, html, VueUse } from '/bb-vue/lib.js'
 
 export default {
   name: 'bbv-app-tray',
@@ -65,7 +65,7 @@ export default {
   },
   methods: {
     watchGameDock() {
-      const { useIntervalFn } = getGlobal('VueUse')
+      const { useIntervalFn } = VueUse()
       let gameDockSelector = doc.querySelector('.MuiDrawer-root.MuiDrawer-docked')
 
       useIntervalFn(() => {

@@ -1,10 +1,9 @@
 import {
   doc,
-  getGlobalAppFactoryConfig,
   getGlobal,
   isBlank,
   lodash,
-  registerNewApp,
+  addConsumerRootDef,
   setGlobal,
   html,
   toStr,
@@ -107,7 +106,7 @@ export default class AppFactory {
       __finalStyles: componentManager.gatherAllProcessedStyles(),
     }
 
-    let consumerAppHandleFn = registerNewApp(processedConsumerRoot)
+    let consumerAppHandleFn = addConsumerRootDef(processedConsumerRoot)
 
     this.#mounted = true
 
@@ -125,8 +124,6 @@ export default class AppFactory {
   }
 
   #configure(instanceConfig = {}) {
-    let globalConfig = { ...getGlobalAppFactoryConfig() }
-
     if (isBlank(instanceConfig.id)) {
       throw new Error(
         `Every AppFactory needs a unique ID! ` +
@@ -141,7 +138,8 @@ export default class AppFactory {
       scssResources: '',
     }
 
-    this.#appConfig = Object.assign(defaultConfig, globalConfig, instanceConfig)
+    delete instanceConfig.id
+    this.#appConfig = Object.assign(defaultConfig, instanceConfig)
 
     if (!isBlank(this.#appConfig.scssResources)) {
       if (!lodash.isString(this.#appConfig.scssResources)) {

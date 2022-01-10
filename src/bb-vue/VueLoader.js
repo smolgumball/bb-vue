@@ -1,4 +1,4 @@
-import { getGlobal, Keys, setGlobal } from '/bb-vue/lib.js'
+import { getGlobal, Keys, win } from '/bb-vue/lib.js'
 
 export default class VueLoader {
   /**
@@ -11,7 +11,7 @@ export default class VueLoader {
 
     module = await import('https://cdn.jsdelivr.net/npm/vue@3.2.26/dist/vue.esm-browser.js')
 
-    setGlobal(Keys.vueModuleKey, module)
+    win[Keys.vueModuleKey] = module
 
     return module
   }

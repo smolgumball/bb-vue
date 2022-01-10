@@ -1,4 +1,4 @@
-import { doc, getGlobal } from '/bb-vue/lib.js'
+import { doc, Vue } from '/bb-vue/lib.js'
 
 class Utils {
   static isUndefined(x) {
@@ -50,7 +50,7 @@ class VueScriptX {
       props: self.props,
       // Uses render method with <slot>s, see: https://v3.vuejs.org/guide/render-function.html
       render() {
-        const { h } = getGlobal('Vue')
+        const { h } = Vue()
         return h(
           'div',
           { style: 'display:none' },

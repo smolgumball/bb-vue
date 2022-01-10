@@ -1,4 +1,4 @@
-import { css, getGlobal, html, lodash } from '/bb-vue/lib.js'
+import { css, html, Keys, Mitt, Vue, win } from '/bb-vue/lib.js'
 
 import ConsumerRoot from '/bb-vue/components/internal/ConsumerRoot.js'
 import CssManager from '/bb-vue/components/internal/CssManager.js'
@@ -29,14 +29,14 @@ export default {
   template: html`
     <transition name="rootAppIntro" appear>
       <main class="__CMP_NAME__" bbv-container v-if="depsLoaded">
-        <transition-group name="consumerAppIntro" appear>
+        <transition-group name="consumerRootIntro" appear>
           <bbv-consumer-root
-            v-for="app in consumerRootDefs"
-            :key="app.__name"
-            :id="app.__name"
-            :consumer-root-def="app"
-            @consumer-root-shutdown="onConsumerRootShutdown"
-            @consumer-root-mounted="onConsumerRootMounted"
+            v-for="def in consumerRootDefs"
+            :key="def.__name"
+            :id="def.__name"
+            :consumer-root-def="def"
+            @consumer-root-mounted="mountConsumerRoot"
+            @consumer-root-unmounted="unmountConsumerRoot"
           />
         </transition-group>
         <bbv-css-manager :consumer-root-defs="consumerRootDefs" />
@@ -46,9 +46,7 @@ export default {
     </transition>
   `,
   data() {
-    const Mitt = getGlobal('Mitt')
-    let bus = Mitt.createBus()
-
+    const bus = Mitt().createBus()
     return {
       depsLoaded: false,
       internals: {
@@ -77,27 +75,27 @@ export default {
   },
   methods: {
     async loadDeps() {
-      if (!getGlobal('VueUse')) {
-        // console.time('AppRoot:loadDeps')
+      // console.time('AppRoot:loadDeps')
+      if (!win[Keys.vueUseModuleKey]) {
         await this.$scriptx.load('https://unpkg.com/@vueuse/shared')
         await this.$scriptx.load('https://unpkg.com/@vueuse/core')
-        // console.timeEnd('AppRoot:loadDeps')
       }
       this.depsLoaded = true
+      // console.timeEnd('AppRoot:loadDeps')
     },
-    registerApp(consumerAppDef) {
-      const { markRaw } = getGlobal('Vue')
-      let rawAppDefinition = markRaw(consumerAppDef)
+    addConsumerRootDef(consumerRootDef) {
+      const { markRaw } = Vue()
+      let rawConsumerRootDef = markRaw(consumerRootDef)
       this.internals.store.consumerRootDefs = [
         ...this.internals.store.consumerRootDefs.filter((x) => {
-          return x.__name !== rawAppDefinition.__name
+          return x.__name !== rawConsumerRootDef.__name
         }),
-        rawAppDefinition,
+        rawConsumerRootDef,
       ]
 
-      return () => this.getConsumerRootMountIfAvailable(rawAppDefinition.__name)
+      return () => this.findConsumerRootMount(rawConsumerRootDef.__name)
     },
-    onConsumerRootMounted(consumerRootMountCtx) {
+    mountConsumerRoot(consumerRootMountCtx) {
       this.internals.store.consumerRootMounts = [
         ...this.internals.store.consumerRootMounts.filter((x) => {
           return x.$options.__name !== consumerRootMountCtx.$options.__name
@@ -105,7 +103,7 @@ export default {
         consumerRootMountCtx,
       ]
     },
-    async onConsumerRootShutdown(consumerRootMountCtx) {
+    async unmountConsumerRoot(consumerRootMountCtx) {
       await this.internals.winManager.closeAllWinsByRootMount(consumerRootMountCtx)
       this.internals.store.consumerRootMounts = this.internals.store.consumerRootMounts.filter(
         (x) => {
@@ -116,7 +114,7 @@ export default {
         return x.__name !== consumerRootMountCtx.$options.__name
       })
     },
-    getConsumerRootMountIfAvailable(rootMountName) {
+    findConsumerRootMount(rootMountName) {
       return (
         this.internals.store.consumerRootMounts.find((x) => {
           return rootMountName == x.$options.__name
@@ -213,15 +211,15 @@ export default {
     .__CMP_NAME__ {
       &.rootAppIntro-enter-active,
       &.rootAppIntro-leave-active,
-      &.consumerAppIntro-enter-active,
-      &.consumerAppIntro-leave-active {
+      &.consumerRootIntro-enter-active,
+      &.consumerRootIntro-leave-active {
         transition: opacity 0.4s ease, transform 0.4s ease, filter 1s ease;
       }
 
       &.rootAppIntro-enter-from,
       &.rootAppIntro-leave-to,
-      &.consumerAppIntro-enter-from,
-      &.consumerAppIntro-leave-to {
+      &.consumerRootIntro-enter-from,
+      &.consumerRootIntro-leave-to {
         opacity: 0;
       }
     }

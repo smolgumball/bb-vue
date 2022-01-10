@@ -19,7 +19,9 @@ export default {
     },
     styles() {
       let styles = { root: '' }
-      let consumerRootDefKeys = this.consumerRootDefs.map((x) => x.__name).join(':')
+      let consumerRootDefKeys = this.consumerRootDefs
+        .map((appDefinition) => appDefinition.__name)
+        .join(':')
       this.firstRun = false
 
       styles.root = this.rootOptions.__finalStyles

@@ -1,8 +1,8 @@
-import { doc, getGlobal, lodash } from '/bb-vue/lib.js'
+import { doc, lodash, Vue, VueUse } from '/bb-vue/lib.js'
 
 export default async function useDraggableWin(store, options = {}) {
-  const { reactive, nextTick } = getGlobal('Vue')
-  const { useDraggable, useElementBounding, until } = getGlobal('VueUse')
+  const { reactive, nextTick } = Vue()
+  const { useDraggable, useElementBounding, until } = VueUse()
 
   if (!lodash.isObjectLike(store)) {
     throw new Error('Must provide store as first arg')
@@ -14,7 +14,7 @@ export default async function useDraggableWin(store, options = {}) {
     startPosition: { x: 0, y: 0 },
     startPositionOffset: { x: 0, y: 0 },
     constrainDrag: true,
-    constrainPadding: 25,
+    constrainPadding: 10,
     ...lodash.omitBy(options, lodash.isNil),
   })
 
@@ -68,7 +68,7 @@ function updateStore(position, ctx) {
 }
 
 function constrainPosition(position, ctx) {
-  const { useClamp } = getGlobal('VueUse')
+  const { useClamp } = VueUse()
 
   let toRet = { x: 0, y: 0 }
   let padding = ctx.opts.constrainPadding

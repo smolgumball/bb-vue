@@ -7,14 +7,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/smolgumball/bitburner-vue"
+    "url": "https://github.com/smolgumball/bb-vue"
   },
   "bugs": {
-    "url": "https://github.com/smolgumball/bitburner-vue/issues"
+    "url": "https://github.com/smolgumball/bb-vue/issues"
   },
-  "homepage": "https://github.com/smolgumball/bitburner-vue#readme",
+  "homepage": "https://github.com/smolgumball/bb-vue#readme",
   "volta": {
-    "node": "16.13.1",
+    "node": "16.13.2",
     "npm": "8.3.0"
   },
   "devDependencies": {

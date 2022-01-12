@@ -1,5 +1,5 @@
 node_modules/
 tmp/
-src/jank
-src/lib
-src/tasks
+archived/jank
+archived/lib
+archived/tasks

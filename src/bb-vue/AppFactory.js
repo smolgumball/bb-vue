@@ -28,8 +28,9 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {
   let existingRootDom = doc.getElementById(rootConfig.appId)
   if (!forceReload && existingRootDom && getGlobal('rootApp')?._instance) {
     return getGlobal('rootApp')
-  } else if (existingRootDom) {
-    existingRootDom.remove()
+  } else if (forceReload) {
+    getGlobal('rootApp').unmount()
+    existingRootDom?.remove()
   }
 
   let componentManager = new ComponentManager(rootConfig, Sass)
@@ -163,7 +164,7 @@ export default class AppFactory {
     let cmpDef = { ...ComponentManager.Validate(componentDefinition) }
     cmpDef.__consumerRoot = true
     cmpDef.__appId = this.#appConfig.appId
-    cmpDef.__name = `${cmpDef.__appId}:${cmpDef.name}`
+    cmpDef.__uuid = `${cmpDef.name}-${crypto.randomUUID()}`
     this.#rootComponent = cmpDef
     this.#componentsInQueue.add(cmpDef)
 

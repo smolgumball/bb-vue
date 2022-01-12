@@ -1,4 +1,4 @@
-import { css, html, Keys, Mitt, Vue, win } from '/bb-vue/lib.js'
+import { css, doc, getGlobal, html, Keys, Mitt, Vue, win } from '/bb-vue/lib.js'
 
 import ConsumerRoot from '/bb-vue/components/internal/ConsumerRoot.js'
 import CssManager from '/bb-vue/components/internal/CssManager.js'
@@ -32,11 +32,12 @@ export default {
         <transition-group name="consumerRootIntro" appear>
           <bbv-consumer-root
             v-for="def in consumerRootDefs"
-            :key="def.__name"
-            :id="def.__name"
+            :key="def.__uuid"
+            :id="def.__uuid"
             :consumer-root-def="def"
             @consumer-root-mounted="mountConsumerRoot"
             @consumer-root-unmounted="unmountConsumerRoot"
+            @root-shutdown-requested="rootShutdown"
           />
         </transition-group>
         <bbv-css-manager :consumer-root-defs="consumerRootDefs" />
@@ -70,15 +71,15 @@ export default {
   },
   computed: {
     consumerRootDefs() {
-      return this.internals.store.consumerRootDefs
+      return this.internals.winManager ? this.internals.store.consumerRootDefs : []
     },
   },
   methods: {
     async loadDeps() {
       // console.time('AppRoot:loadDeps')
       if (!win[Keys.vueUseModuleKey]) {
-        await this.$scriptx.load('https://unpkg.com/@vueuse/shared')
-        await this.$scriptx.load('https://unpkg.com/@vueuse/core')
+        await this.$scriptx.load('https://unpkg.com/@vueuse/shared@7.5.3/index.iife.min.js')
+        await this.$scriptx.load('https://unpkg.com/@vueuse/core@7.5.3/index.iife.min.js')
       }
       this.depsLoaded = true
       // console.timeEnd('AppRoot:loadDeps')
@@ -88,17 +89,17 @@ export default {
       let rawConsumerRootDef = markRaw(consumerRootDef)
       this.internals.store.consumerRootDefs = [
         ...this.internals.store.consumerRootDefs.filter((x) => {
-          return x.__name !== rawConsumerRootDef.__name
+          return x.__uuid !== rawConsumerRootDef.__uuid
         }),
         rawConsumerRootDef,
       ]
 
-      return () => this.findConsumerRootMount(rawConsumerRootDef.__name)
+      return () => this.findConsumerRootMount(rawConsumerRootDef.__uuid)
     },
     mountConsumerRoot(consumerRootMountCtx) {
       this.internals.store.consumerRootMounts = [
         ...this.internals.store.consumerRootMounts.filter((x) => {
-          return x.$options.__name !== consumerRootMountCtx.$options.__name
+          return x.$options.__uuid !== consumerRootMountCtx.$options.__uuid
         }),
         consumerRootMountCtx,
       ]
@@ -107,19 +108,28 @@ export default {
       await this.internals.winManager.closeAllWinsByRootMount(consumerRootMountCtx)
       this.internals.store.consumerRootMounts = this.internals.store.consumerRootMounts.filter(
         (x) => {
-          return x.$options.__name !== consumerRootMountCtx.$options.__name
+          return x.$options.__uuid !== consumerRootMountCtx.$options.__uuid
         }
       )
       this.internals.store.consumerRootDefs = this.internals.store.consumerRootDefs.filter((x) => {
-        return x.__name !== consumerRootMountCtx.$options.__name
+        return x.__uuid !== consumerRootMountCtx.$options.__uuid
       })
     },
     findConsumerRootMount(rootMountName) {
       return (
         this.internals.store.consumerRootMounts.find((x) => {
-          return rootMountName == x.$options.__name
+          return rootMountName == x.$options.__uuid
         }) ?? null
       )
+    },
+    async rootShutdown() {
+      for (const x of this.internals.store.consumerRootMounts) {
+        await this.unmountConsumerRoot(x)
+      }
+      setTimeout(() => {
+        getGlobal('rootApp').unmount()
+        doc.querySelector('[bbv-root]')?.remove()
+      }, 500)
     },
   },
   scssResources: css`
@@ -213,7 +223,7 @@ export default {
       &.rootAppIntro-leave-active,
       &.consumerRootIntro-enter-active,
       &.consumerRootIntro-leave-active {
-        transition: opacity 0.4s ease, transform 0.4s ease, filter 1s ease;
+        transition: opacity 0.4s ease;
       }
 
       &.rootAppIntro-enter-from,

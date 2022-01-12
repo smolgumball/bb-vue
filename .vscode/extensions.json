@@ -2,8 +2,7 @@
   "recommendations": [
     "esbenp.prettier-vscode",
     "bitburner.bitburner-vscode-integration",
-    "bashmish.es6-string-css",
-    "tobermory.es6-string-html",
-    "dbaeumer.vscode-eslint"
+    "dbaeumer.vscode-eslint",
+    "pushqrdx.inline-html"
   ]
 }

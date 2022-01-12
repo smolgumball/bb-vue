@@ -13,9 +13,9 @@ export default {
   scss: css`
     .__CMP_NAME__ {
       display: flex;
-      padding: 2px;
-      box-shadow: inset 0px 0px 10px 0px var(--bbvBoxShadowColor1);
-      background-color: var(--bbvAppTrayBgColor);
+      padding: 4px;
+      box-shadow: 0px 0px 4px 1px var(--bbvBoxShadowColor2);
+      background-color: var(--bbvWinTitlebarBgColor);
       transition: opacity 0.4s ease, transform 0.4s ease;
 
       &:not(:first-child) {

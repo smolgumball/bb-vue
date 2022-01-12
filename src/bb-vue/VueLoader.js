@@ -1,4 +1,4 @@
-import { getGlobal, Keys, win } from '/bb-vue/lib.js'
+import { Keys, Vue, win } from '/bb-vue/lib.js'
 
 export default class VueLoader {
   /**
@@ -6,10 +6,13 @@ export default class VueLoader {
    * @returns {Promise<Vue>} Vue constructor
    */
   static async Get() {
-    let module = getGlobal(Keys.vueModuleKey)
+    let module = Vue({ silent: true })
     if (module) return module
 
-    module = await import('https://cdn.jsdelivr.net/npm/vue@3.2.26/dist/vue.esm-browser.js')
+    module = await import(
+      /* 'https://unpkg.com/vue@3.2.26/dist/vue.esm-browser.prod.js' */
+      'https://cdn.jsdelivr.net/npm/vue@3.2.26/dist/vue.esm-browser.js'
+    )
 
     win[Keys.vueModuleKey] = module
 

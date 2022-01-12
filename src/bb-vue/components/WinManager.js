@@ -30,14 +30,14 @@ export default {
     },
     bringToFront(winMount) {
       let otherWins = this.internals.store.winMounts.filter((x) => winMount.uuid != x.uuid)
-      winMount.stackingIndex = this.baseStackingIndex + otherWins.length + 1
+      winMount.stackingIndex = this.baseStackingIndex + otherWins.length
       let sortedOtherWins = [...otherWins].sort((a, b) => a.stackingIndex - b.stackingIndex)
       sortedOtherWins.forEach((x, i) => (x.stackingIndex = this.baseStackingIndex + i))
     },
     async closeAllWinsByRootMount(consumerRootMount) {
       return new Promise((resolve) => {
         this.internals.store.winMounts.forEach((winMount) => {
-          if (winMount.owner.$options.__name == consumerRootMount.$options.__name) {
+          if (winMount.owner.$options.__uuid == consumerRootMount.$options.__uuid) {
             winMount.close()
           }
         })

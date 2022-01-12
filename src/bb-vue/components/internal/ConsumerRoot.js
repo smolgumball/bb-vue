@@ -2,7 +2,7 @@ import { Mitt, Vue, VueUse } from '/bb-vue/lib.js'
 
 export default {
   name: 'bbv-consumer-root',
-  emits: ['consumer-root-mounted', 'consumer-root-unmounted'],
+  emits: ['consumer-root-mounted', 'consumer-root-unmounted', 'root-shutdown-requested'],
   props: {
     consumerRootDef: {
       type: Object,
@@ -21,11 +21,19 @@ export default {
       appListen: bus.on,
       appSend: this.appSendWrapper,
       appShutdown: this.appShutdownWrapper,
+      rootShutdown: this.rootShutdownWrapper,
     }
   },
   provide() {
     const { reactivePick } = VueUse()
-    return reactivePick(this.$data, 'appStore', 'appListen', 'appSend', 'appShutdown')
+    return reactivePick(
+      this.$data,
+      'appStore',
+      'appListen',
+      'appSend',
+      'appShutdown',
+      'rootShutdown'
+    )
   },
   methods: {
     appSendWrapper(event, data) {
@@ -45,10 +53,13 @@ export default {
         this.$emit('consumer-root-unmounted', this.private.consumerRootMount)
       }
     },
+    rootShutdownWrapper() {
+      this.$emit('root-shutdown-requested')
+    },
     consumerRootMounted(vnode) {
       this.private.consumerRootMount = vnode?.component?.ctx
       if (!this.private.consumerRootMount) {
-        console.warn(`App root is null for ${this.consumerRootDef.__name}`)
+        console.warn(`App root is null for ${this.consumerRootDef.__uuid}`)
       }
       this.$emit('consumer-root-mounted', this.private.consumerRootMount)
     },
@@ -59,7 +70,6 @@ export default {
       'section',
       { 'bbv-foreground': true },
       h(this.consumerRootDef, {
-        'app-id': this.consumerRootDef.__appId,
         onVnodeMounted: this.consumerRootMounted,
       })
     )

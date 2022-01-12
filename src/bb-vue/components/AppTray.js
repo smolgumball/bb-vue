@@ -9,9 +9,12 @@ export default {
         <template v-for="group in trayItems" :key="group.root.uuid">
           <bbv-app-tray-group>
             <template :key="win.uuid" v-for="win in group.winMounts">
-              <bbv-button :title="win.title" @click="toggleTrayItem(win)" small>
-                <template v-if="win.winState == WinStates.open">🔽</template>
-                <template v-else>{{ win.title }}</template>
+              <bbv-button
+                :title="win.title"
+                @click="toggleTrayItem(win)"
+                :class="{ isOpen: win.winState == WinStates.open }"
+              >
+                {{ win.title }}
               </bbv-button>
             </template>
           </bbv-app-tray-group>
@@ -20,16 +23,6 @@ export default {
     </div>
   `,
   inject: ['internals'],
-  props: {
-    appTrayConfigDefaults: {
-      type: Object,
-      default() {
-        return {
-          showWins: true,
-        }
-      },
-    },
-  },
   data() {
     return {
       WinStates,
@@ -39,18 +32,18 @@ export default {
   },
   computed: {
     trayItems() {
-      let winMounts = this.internals.store.winMounts
+      let winMountTrayItems = this.internals.store.winMounts
         .map((winMount) => this.buildTrayItemFor(TrayItemTypes.winMount, winMount))
         .filter((x) => !!x)
 
-      let consumerRootMounts = this.internals.store.consumerRootMounts
+      let consumerRootMountTrayItems = this.internals.store.consumerRootMounts
         .map((consumerRootMount) =>
           this.buildTrayItemFor(TrayItemTypes.consumerRootMount, consumerRootMount)
         )
         .filter((x) => !!x)
 
-      let winsByRoots = consumerRootMounts.reduce((acc, root) => {
-        let ownedWins = winMounts.filter((x) => x.owner == root.uuid)
+      let winsByRoots = consumerRootMountTrayItems.reduce((acc, root) => {
+        let ownedWins = winMountTrayItems.filter((x) => x.ownerUuid == root.uuid)
         if (ownedWins.length) {
           acc.push({ root, winMounts: ownedWins })
         }
@@ -86,32 +79,23 @@ export default {
     },
     buildTrayItemFor(trayItemType, trayCompatibleItem) {
       const winTrayItem = (winMount) => {
+        const ownerOpts = winMount.owner.$options
         return {
           kind: TrayItemTypes.winMount,
           uuid: winMount.uuid,
           title: winMount.title,
-          owner: winMount.owner.$options.__name,
+          ownerUuid: ownerOpts.__uuid,
           winState: winMount.winState,
           winMount: winMount,
-          trayConfigLocal: Object.assign(winMount.appTrayConfigDefaults, winMount.appTrayConfig),
-          trayConfigFromParent: Object.assign(
-            this.appTrayConfigDefaults,
-            winMount.owner.appTrayConfig
-          ),
         }
       }
 
       const rootTrayItem = (consumerRootMount) => {
-        const uuid = consumerRootMount.$options.__name
-        const name = consumerRootMount.$options.name
+        const opts = consumerRootMount.$options
         return {
           kind: TrayItemTypes.consumerRootMount,
-          uuid: uuid,
-          title: name,
-          trayConfigFromParent: Object.assign(
-            this.appTrayConfigDefaults,
-            consumerRootMount.appTrayConfig
-          ),
+          uuid: opts.__uuid,
+          title: opts.name,
         }
       }
 
@@ -126,30 +110,19 @@ export default {
       }
 
       if (trayItem.kind == TrayItemTypes.winMount) {
-        if (
-          trayItem.trayConfigLocal.show !== true ||
-          trayItem.trayConfigFromParent.showWins !== true
-        ) {
+        if (trayItem.winMount.trayHide !== false) {
           return null
         }
-        if (trayItem.trayConfigLocal.title) {
-          trayItem.title = trayItem.trayConfigLocal.title
+        if (trayItem.winMount.trayTitle) {
+          trayItem.title = trayItem.winMount.trayTitle
         }
       }
-
-      /* if (trayItem.kind == TrayItemTypes.consumerRootMount) {
-        if (trayItem.trayConfigFromParent.title) {
-          trayItem.title = trayItem.trayConfigFromParent.title
-        }
-      } */
 
       return trayItem
     },
   },
   scss: css`
     .__CMP_NAME__ {
-      @include bbv-scrollbar($height: 10px);
-
       pointer-events: auto;
       position: absolute;
       z-index: 1400;
@@ -158,35 +131,43 @@ export default {
       left: 0;
 
       display: flex;
+      align-items: stretch;
       padding: 10px;
       width: 249px;
-      max-height: 75px;
-      overflow-x: scroll;
+      height: 62px;
+      overflow-x: auto;
       overflow-y: hidden;
 
       box-shadow: inset 0px 0px 20px 0px var(--bbvBoxShadowColor1);
-      border-top: 4px solid var(--bbvBorderColor);
+      border-top: 1px solid var(--bbvBorderColor);
       background-color: var(--bbvAppTrayBgColor);
-      transition: width 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+      transition: width 0.2s cubic-bezier(0.86, 0, 0.07, 1), opacity 0.4s ease, transform 0.4s ease;
+
+      &:hover {
+        width: 100%;
+      }
 
       &.isCollapsed {
         width: 57px;
       }
 
       &.isHidden {
-        transform: translateY(75px);
+        transform: translateY(100px);
         opacity: 0;
       }
 
       .bbv-button {
         color: var(--bbvAppTrayFgColor);
-        padding: 6px 3px;
-        max-width: 50px;
-        min-width: 25px;
-        max-height: 30px;
+        padding: 5px 7px 7px 5px;
         overflow: hidden;
         white-space: nowrap;
-        border-bottom: 1px solid var(--bbvAppTrayBorderColor);
+        font-weight: normal;
+        border-bottom: 2px solid transparent;
+
+        &.isOpen {
+          border-bottom-color: var(--bbvAppTrayFgColor);
+          background-color: var(--bbvButtonHoverBgColor);
+        }
       }
 
       .bbv-button + .bbv-button {

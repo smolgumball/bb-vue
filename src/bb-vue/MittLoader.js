@@ -13,7 +13,6 @@ export default class MittLoader {
     let moduleWrapper = { createBus: module.default }
 
     setGlobal(Keys.mittModuleKey, moduleWrapper)
-    setGlobal(Keys.globalBusKey, moduleWrapper.createBus())
 
     return moduleWrapper
   }

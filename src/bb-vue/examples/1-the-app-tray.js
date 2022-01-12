@@ -52,21 +52,16 @@ const PrimaryAppRoot = {
   name: 'primary-app-root',
   inject: ['appShutdown'],
   template: html`
-    <bbv-win ref="myWin" class="__CMP_NAME__" title="Hello from my-app-one!">
+    <!--
+      Use the "tray-hide" prop to hide this window from the app tray
+    -->
+    <bbv-win tray-hide title="I'm hidden from the App Tray" class="__CMP_NAME__">
       <p>Beep boop</p>
       <template #actions>
-        <bbv-button @click="appShutdown">Shutdown App</bbv-button>
+        <bbv-button @click="appShutdown">Shutdown App (1 Window)</bbv-button>
       </template>
     </bbv-win>
   `,
-  data() {
-    return {
-      // Don't display windows from this app in the app tray
-      appTrayConfig: {
-        showWins: false,
-      },
-    }
-  },
   scss: css`
     .__CMP_NAME__ {
       p {
@@ -83,44 +78,32 @@ const DifferentAppRoot = {
   template: html`
     <main>
       <!--
-        Use the "app-tray-config" prop to show a specific title
+        Use the "tray-title" prop to show a specific title
         when this window is minimized in the app tray
       -->
-      <bbv-win
-        class="__CMP_NAME__"
-        title="Hello from my-app-two, win #1!"
-        :app-tray-config="{ title: '🥇' }"
-      >
+      <bbv-win title="I've got a special title in the tray" tray-title="🥇" class="__CMP_NAME__">
         <p>Boop beep</p>
         <template #actions>
-          <bbv-button @click="appShutdown">Shutdown App</bbv-button>
+          <bbv-button @click="appShutdown">Shutdown App (2 Windows)</bbv-button>
         </template>
       </bbv-win>
 
       <!--
-        Use the "app-tray-config" prop to show a specific title
+        Use the "tray-title" prop to show a specific title
         when this window is minimized in the app tray
       -->
       <bbv-win
+        title="I have a special title in the tray, too!"
+        tray-title="🥈"
         class="__CMP_NAME__"
-        title="Hello from my-app-two, win #2!"
-        :app-tray-config="{ title: '🥈' }"
       >
         <p>Boop beep</p>
         <template #actions>
-          <bbv-button @click="appShutdown">Shutdown App</bbv-button>
+          <bbv-button @click="appShutdown">Shutdown App (2 Windows)</bbv-button>
         </template>
       </bbv-win>
     </main>
   `,
-  data() {
-    return {
-      appTrayConfig: {
-        // Display windows from this app in the app tray normally (default)
-        showWins: true,
-      },
-    }
-  },
   scss: css`
     .__CMP_NAME__ {
       p {

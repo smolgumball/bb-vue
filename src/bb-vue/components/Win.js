@@ -1,4 +1,4 @@
-import { nearestConsumerRootMount, html, css } from '/bb-vue/lib.js'
+import { getClosestCrm, html, css } from '/bb-vue/lib.js'
 import { WinStates } from '/bb-vue/components/_resources.js'
 import useDraggableWin from '/bb-vue/components/concerns/useDraggableWin.js'
 
@@ -8,17 +8,17 @@ export default {
     <div
       ref="thisWin"
       class="__CMP_NAME__"
-      :class="{ isOpen: shouldDisplay }"
+      :class="{ shouldDisplay, isDragging: draggable.isDragging }"
       :style="windowStyle"
       @pointerdown="bringToFront"
     >
-      <div class="win_titlebar" ref="titleBar">
+      <div class="win_titlebar" ref="dragHandle">
         <div class="win_title">{{ title }}<slot name="title" /></div>
-        <div class="win_controls" v-if="canClose">
+        <div class="win_controls" ref="dragIgnore" v-if="canClose">
           <bbv-button v-if="canClose" class="win_close" @click="close">❌</bbv-button>
         </div>
       </div>
-      <div class="win_content">
+      <div class="win_content" :class="{ noPad: noPad !== false }">
         <slot name="default"></slot>
       </div>
       <div class="win_actions">
@@ -37,19 +37,31 @@ export default {
       type: Boolean,
       default: true,
     },
-    canClose: {
-      type: Boolean,
-      default: true,
-    },
     startPosition: {
       type: Object,
     },
     startPositionOffset: {
       type: Object,
     },
-    appTrayConfig: {
-      type: Object,
-      default: () => new Object(),
+    startWidth: {
+      type: String,
+    },
+    startHeight: {
+      type: String,
+    },
+    canClose: {
+      type: Boolean,
+      default: true,
+    },
+    noPad: {
+      default: false,
+    },
+    trayHide: {
+      type: Boolean,
+      default: false,
+    },
+    trayTitle: {
+      type: String,
     },
   },
   data() {
@@ -78,14 +90,15 @@ export default {
   computed: {
     windowStyle() {
       return {
+        width: this.$props.startWidth,
+        height: this.$props.startHeight,
         ...this.draggable.style,
         zIndex: this.stackingIndex,
       }
     },
   },
   created() {
-    this.owner = nearestConsumerRootMount(this)
-    this.appTrayConfigDefaults = { show: true, title: this.title }
+    this.owner = getClosestCrm(this)
   },
   mounted() {
     const winManager = this.internals.winManager
@@ -95,7 +108,8 @@ export default {
     let startPositionOffset = this.$props.startPositionOffset
 
     useDraggableWin(this.draggable, {
-      titleBarRef: this.$refs.titleBar,
+      dragHandleRef: this.$refs.dragHandle,
+      dragIgnoreRef: this.$refs.dragIgnore,
       draggableRef: this.$refs.thisWin,
       startPosition,
       startPositionOffset,
@@ -130,10 +144,11 @@ export default {
 
       display: flex;
       flex-direction: column;
+
+      resize: both;
       min-width: 250px;
       min-height: 250px;
 
-      resize: both;
       overflow: hidden;
       border: 2px solid var(--bbvBorderColor);
       border-radius: 10px;
@@ -142,12 +157,17 @@ export default {
       box-shadow: inset 0px 0px 70px 0px var(--bbvBoxShadowColor1),
         0px 0px 20px 0px var(--bbvBoxShadowColor2);
 
-      transition: opacity 0.4s ease, transform 0.4s ease;
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 
-      &:not(.isOpen) {
+      &:not(.shouldDisplay) {
         opacity: 0;
         pointer-events: none;
         transform: translateY(25px);
+      }
+
+      &.isDragging {
+        opacity: 0.8;
+        transform: scale(0.97);
       }
 
       .win_titlebar {
@@ -201,6 +221,10 @@ export default {
         flex-grow: 1;
         overflow-y: auto;
         color: var(--bbvFontLightColor);
+
+        &.noPad {
+          padding: 0;
+        }
 
         & > *:first-child {
           margin-top: 0;

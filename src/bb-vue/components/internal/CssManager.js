@@ -20,7 +20,7 @@ export default {
     styles() {
       let styles = { root: '' }
       let consumerRootDefKeys = this.consumerRootDefs
-        .map((appDefinition) => appDefinition.__name)
+        .map((appDefinition) => appDefinition.__uuid)
         .join(':')
       this.firstRun = false
 
@@ -28,7 +28,7 @@ export default {
       styles.root[0] = `/* ${consumerRootDefKeys} */ \n ${styles.root[0]}`
 
       this.consumerRootDefs.forEach((appDefinition) => {
-        styles[appDefinition.__name] = appDefinition.__finalStyles
+        styles[appDefinition.__uuid] = appDefinition.__finalStyles
       })
 
       return styles

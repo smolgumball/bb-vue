@@ -2,9 +2,9 @@
 //
 // NOTE:
 // Ideally some of these files would be in separate resource folders,
-// but I've been running into circular reference issues in-game.
-// -----------------------------------------
-//--------------------------------------------------------------
+// but I've been running into circular reference issues in-game :verysadge:
+//
+//
 
 //
 //
@@ -12,6 +12,9 @@
 // -----------------------------------------
 // --------------------------------------------------------------
 
+/**
+ * Keys used for globalThis storage and lookup
+ */
 export const Keys = Object.freeze({
   libKey: 'bbVue',
   vueModuleKey: 'Vue',
@@ -19,9 +22,11 @@ export const Keys = Object.freeze({
   mittModuleKey: 'Mitt',
   rootAppKey: 'rootApp',
   globalBusKey: 'rootBus',
-  globalConfigKey: 'appFactoryConfig',
 })
 
+/**
+ * Tokens used when processing a consumer app style and template values
+ */
 export const ReplacementTokens = Object.freeze({
   appId: '__APP_ID__',
   componentName: '__CMP_NAME__',
@@ -33,54 +38,114 @@ export const ReplacementTokens = Object.freeze({
 // -----------------------------------------
 // --------------------------------------------------------------
 
+/**
+ * Reference to window global
+ */
 export const win = globalThis['window']
-export const doc = globalThis['document']
-export const lodash = win._
-
-if (!win[Keys.libKey]) win[Keys.libKey] = {}
 
 /**
- * Use sparingly! Sets a value by key to internal library storage.
- * @param {String} key Path to set, utilizing lodash#set.
- * @param {any} value
- * * @see https://lodash.com/docs/4.17.15#set
+ * Reference to document global
  */
+export const doc = globalThis['document']
 
-export function setGlobal(key, value) {
-  return lodash.set(win[Keys.libKey], key, value)
+/**
+ * Reference to bundled lodash library
+ */
+export const lodash = win._
+
+/**
+ * Initialize globalThis storage
+ */
+if (lodash.isObjectLike(win[Keys.libKey]) === false) {
+  win[Keys.libKey] = {}
 }
 
 /**
- * Use sparingly! Retrieves a value by key from internal library storage.
- * @param {String} key Path to get, utilizing lodash#get.
- * @returns {any | undefined} Value from or undefined if not set
+ * Sets a value by key to internal library storage
+ * @param {String} key Path to set, utilizing `lodash.set`
+ * @param {any} value
+ * @returns {any} A reference to the value passed in, from the store
+ * * @see https://lodash.com/docs/4.17.15#set
+ */
+export function setGlobal(key, value) {
+  lodash.set(win[Keys.libKey], key, value)
+  return getGlobal(key)
+}
+
+/**
+ * Retrieves a value by key from internal library storage
+ * @param {String} key Path to get, utilizing `lodash.get`
+ * @returns {any} Value from or undefined if not set
  * @see https://lodash.com/docs/4.17.15#get
  */
 export function getGlobal(key, defaultValue) {
   return lodash['get'](win[Keys.libKey], key, defaultValue)
 }
 
-export function Vue() {
+/**
+ * Deletes a global key from globalThis
+ * @param {String} key Property to destroy
+ * @returns {void}
+ */
+export function deleteGlobal(key) {
+  delete win[Keys.libKey][key]
+}
+
+/**
+ * Load the Vue library from globalThis, if available. Throws an error if not defined unless
+ * the `options.silent` boolean is provided.
+ * @param {object} options
+ * @param {boolean} options.silent Silence lookup exceptions if library cannot be found
+ * @returns {Vue} An instance of Vue, or a falsy value indicating the library is not loaded
+ */
+export function Vue({ silent = false } = {}) {
   let vue = win[Keys.vueModuleKey]
-  if (!vue) throw new Error('Vue is not loaded on window global; check VueLoader:Get for issues')
+  if (!vue && !silent)
+    throw new Error('Vue is not loaded on window global; check VueLoader:Get for issues')
   return vue
 }
 
-export function VueUse() {
+/**
+ * Load the VueUse library from globalThis, if available. Throws an error if not defined unless
+ * the `options.silent` boolean is provided.
+ * @param {object} options
+ * @param {boolean} options.silent Silence lookup exceptions if library cannot be found
+ * @returns {VueUse} An instance of VueUse, or a falsy value indicating the library is not loaded
+ */
+export function VueUse({ silent = false } = {}) {
   let vueUse = win[Keys.vueUseModuleKey]
-  if (!vueUse)
+  if (!vueUse && !silent)
     throw new Error('VueUse is not loaded on window global; check AppRoot:loadDeps for issues')
   return vueUse
 }
 
-export function Mitt() {
+/**
+ * Load the Mitt library from globalThis, if available. Throws an error if not defined unless
+ * the `options.silent` boolean is provided.
+ * @param {object} options
+ * @param {boolean} options.silent Silence lookup exceptions if library cannot be found
+ * @returns {Mitt} An instance of Mitt, or a falsy value indicating the library is not loaded
+ */
+export function Mitt({ silent = false } = {}) {
   let mitt = getGlobal('Mitt')
-  if (!mitt) throw new Error('Mitt is not loaded on window global; check MittLoader:Get for issues')
+  if (!mitt && !silent)
+    throw new Error('Mitt is not loaded on window global; check MittLoader:Get for issues')
   return mitt
 }
 
+/**
+ * Registers a consumer app definition, to be mounted by the parent `bbVue.rootApp` instance as a CRM
+ * @param {consumerAppDef} appDef The definition of a consumer app
+ * @returns {function} Lookup function to retrieve consumer app instance
+ */
 export function addConsumerRootDef(appDef) {
-  return getGlobal(Keys.rootAppKey)?._instance?.ctx?.addConsumerRootDef(appDef)
+  try {
+    return getGlobal(Keys.rootAppKey)._instance.ctx.addConsumerRootDef(appDef)
+  } catch (error) {
+    throw new Error(
+      'bbVue.rootApp cannot be located, or there was an issue when mounting the consumer app definition'
+    )
+  }
 }
 
 //
@@ -89,6 +154,10 @@ export function addConsumerRootDef(appDef) {
 // -----------------------------------------
 // --------------------------------------------------------------
 
+/**
+ * Processing exception, most often originating from SCSS compiler usage in `ComponentManager`.
+ * Signifies an issue when preparing components for injection into `bbVue.rootApp`
+ */
 export class ProcessingException {
   constructor(step, originalError) {
     this.step = step
@@ -102,6 +171,10 @@ export class ProcessingException {
   }
 }
 
+/**
+ * Component validation exception thrown by `AppFactory`.
+ * Signifies an issue with components being provided to `AppFactory` by a consumer app definition.
+ */
 export class ComponentValidationException {
   constructor(message, cmpDef) {
     this.message = message
@@ -119,7 +192,13 @@ export class ComponentValidationException {
 // -----------------------------------------
 // --------------------------------------------------------------
 
-export function nearestConsumerRootMount(startingVm) {
+/**
+ * Walk the Vue VNode tree and find the closest parent consumer root mount (CRM)
+ * @param {componentInstanceVm} startingVm
+ * The view-model / `this` binding from the component where the search originates
+ * @returns {crmInstanceVm | null} The closest CRM instance or null
+ */
+export function getClosestCrm(startingVm) {
   let consumerRoot = null
   let parent = startingVm.$parent
   while (parent && !consumerRoot) {
@@ -131,7 +210,7 @@ export function nearestConsumerRootMount(startingVm) {
   return consumerRoot
 }
 
-// FUNCTIONS /////////////
+// GENERAL FUNCTIONS /////////////
 // -----------------------------------------
 // --------------------------------------------------------------
 
@@ -176,10 +255,23 @@ function templatePassthrough(strings, ...values) {
   return str
 }
 
+/**
+ * Attempts to convert a value to string using `lodash.toString`,
+ * and then trim the string with `lodash.trim`
+ * @param {any} value Value to coerce to string
+ * @returns {string} value
+ */
 export function toStr(value) {
   return lodash.trim(lodash.toString(value))
 }
 
+/**
+ * Attempts to decern a given value's "blankness" via:
+ * - `lodash.isNil` and
+ * - `lodash.isEmpty`
+ * @param {any} value Value to be checked for blankness
+ * @returns {boolean} Is value blank
+ */
 export function isBlank(value) {
   if (lodash.isNil(value)) return true
   if (lodash.isString(value) && lodash.isEmpty(value)) return true
@@ -187,7 +279,8 @@ export function isBlank(value) {
 }
 
 /**
- * Attempt to convert an object to JSON & fallback to a more robust JSON stringifier if needed
+ * Attempt to convert an object to JSON via `JSON.stringify`, or fallback
+ * to a more robust JSON stringifier if needed
  * @param {any} value
  * @returns {String} result
  */

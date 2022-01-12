@@ -21,7 +21,7 @@ dree.scan(
   `./`,
   {
     extensions: config.scanIncludeExtensions,
-    exclude: [/\/node_modules\//],
+    exclude: [/\/node_modules\//, /.git/],
     normalize: true,
   },
   (fileNode) => {

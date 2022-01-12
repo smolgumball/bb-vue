@@ -1,4 +1,4 @@
-# bitburner-vue
+# bb-vue
 
 Use Vue inside BitBurner!
 

@@ -1,7 +1,7 @@
 import { doc, lodash, Vue, VueUse, win } from '/bb-vue/lib.js'
 
 export default async function useDraggableWin(store, options = {}) {
-  const { reactive, nextTick } = Vue()
+  const { reactive, nextTick, unref } = Vue()
   const { useDraggable, useElementBounding, useIntervalFn, until } = VueUse()
 
   // Handle options + validations
@@ -48,7 +48,7 @@ export default async function useDraggableWin(store, options = {}) {
 
   // Wire draggable handle to allow window dragging via dragHandleRef
   store.isDragging = useDraggable(opts.dragHandleRef, {
-    initialValue: constrainWindow(store.position, { store, opts }).position,
+    initialValue: constrainWindow(opts.startPosition ?? store.position, { store, opts }).position,
     onMove: (p) => updateStore(p, { store, opts }),
     onStart: (p, e) => !e.path.some((x) => x == opts.dragIgnoreRef),
   }).isDragging
@@ -61,6 +61,8 @@ export default async function useDraggableWin(store, options = {}) {
   if (!opts.startPosition) {
     store.position = opts.winManager.getRecommendedPosition(store)
     updateStore(store.position, { store, opts })
+  } else {
+    updateStore(opts.startPosition, { store, opts })
   }
 
   // Set initial position to center of screen

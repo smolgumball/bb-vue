@@ -11,6 +11,7 @@ export default {
       :class="{ shouldDisplay, isDragging }"
       :style="style"
       @pointerdown="bringToFront"
+      @keydown.stop
     >
       <div class="win_titlebar" ref="dragHandle">
         <div class="win_title">{{ title }}<slot name="title" /></div>

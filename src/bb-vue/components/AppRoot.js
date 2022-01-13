@@ -190,6 +190,7 @@ export default {
       --bbvAppTrayFgColor: #89d3e4;
       --bbvAppTrayBorderColor: #4bb4c5;
       --bbvAppTrayBgColor: #274b64;
+      --bbvInputBorderPositiveColor: #358e3b;
     }
 
     [bbv-root] {

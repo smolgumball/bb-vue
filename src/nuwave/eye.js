@@ -29,17 +29,17 @@ const EyeRoot = {
           <label class="ez-input">
             <span>Target:</span>
             <input @keydown.enter="runHack" type="text" v-model="macroInputs.hack" />
-            <bbv-button @click="runHack">Hack</bbv-button>
+            <bbv-button no-focus @click="runHack">Hack</bbv-button>
           </label>
           <label class="ez-input">
             <span>Target:</span>
             <input @keydown.enter="runGrow" type="text" v-model="macroInputs.grow" />
-            <bbv-button @click="runGrow">Grow</bbv-button>
+            <bbv-button no-focus @click="runGrow">Grow</bbv-button>
           </label>
           <label class="ez-input">
             <span>Target:</span>
             <input @keydown.enter="runWeaken" type="text" v-model="macroInputs.weaken" />
-            <bbv-button @click="runWeaken">Weaken</bbv-button>
+            <bbv-button no-focus @click="runWeaken">Weaken</bbv-button>
           </label>
         </div>
         <div class="btn-zone">

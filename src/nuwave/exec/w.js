@@ -5,9 +5,9 @@ import { getGlobal } from '/bb-vue/lib.js'
 export async function main(ns) {
   await getGlobal('nuMain').scheduler.child(ns, async ({ resolve, reject, options }) => {
     try {
-      resolve(await ns.weaken(options.target))
+      await resolve(await ns.weaken(options.target))
     } catch (error) {
-      reject(error)
+      await reject(error)
     }
   })
 }

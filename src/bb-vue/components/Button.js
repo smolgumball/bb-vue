@@ -1,9 +1,14 @@
+// prettier-ignore
 import { css, html } from '/bb-vue/lib.js'
 
 export default {
   name: 'bbv-button',
   template: html`
-    <button class="__CMP_NAME__" :class="{ icon, small }">
+    <button
+      class="__CMP_NAME__"
+      :class="{ icon, small }"
+      :tabindex="noFocus === false ? undefined : '-1'"
+    >
       <slot />
     </button>
   `,
@@ -14,6 +19,9 @@ export default {
     },
     small: {
       type: Boolean,
+      default: false,
+    },
+    noFocus: {
       default: false,
     },
   },

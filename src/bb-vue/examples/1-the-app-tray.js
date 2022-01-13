@@ -1,7 +1,7 @@
 import AppFactory from '/bb-vue/AppFactory.js'
 import { css, html } from '/bb-vue/lib.js'
 
-/** @param {NS} ns **/
+/** @param { import("~/ns").NS } ns */
 export async function main(ns) {
   try {
     // App one

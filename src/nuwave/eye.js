@@ -25,8 +25,25 @@ const EyeRoot = {
     <main class="__CMP_NAME__">
       <!-- Main window -->
       <bbv-win title="🧿">
-        <div class="buttonZone">
-          <bbv-button @click="runTest">Scheduler Test #1</bbv-button>
+        <div class="macroInput">
+          <label class="ez-input">
+            <span>Target:</span>
+            <input @keydown.enter="runHack" type="text" v-model="macroInputs.hack" />
+            <bbv-button @click="runHack">Hack</bbv-button>
+          </label>
+          <label class="ez-input">
+            <span>Target:</span>
+            <input @keydown.enter="runGrow" type="text" v-model="macroInputs.grow" />
+            <bbv-button @click="runGrow">Grow</bbv-button>
+          </label>
+          <label class="ez-input">
+            <span>Target:</span>
+            <input @keydown.enter="runWeaken" type="text" v-model="macroInputs.weaken" />
+            <bbv-button @click="runWeaken">Weaken</bbv-button>
+          </label>
+        </div>
+        <div class="btn-zone">
+          <bbv-button @click="runTest">Scheduler Test</bbv-button>
         </div>
         <template #actions>
           <span><strong>Uptime:</strong> {{ uptime }}</span>
@@ -62,9 +79,10 @@ const EyeRoot = {
       <bbv-win
         ref="proc"
         no-pad
-        :start-open="false"
+        :start-open="true"
         start-width="40%"
         start-height="50%"
+        :start-position="{ x: 730, y: 55 }"
         title="🔢 Processes"
       >
         <bbv-json-display fill :data="store.proc" />
@@ -77,7 +95,7 @@ const EyeRoot = {
     </main>
   `,
   setup() {
-    const { inject, ref, computed } = Vue()
+    const { inject, ref, computed, reactive } = Vue()
     const { useTimestamp } = VueUse()
 
     // Windows
@@ -87,20 +105,52 @@ const EyeRoot = {
 
     // Store
     const store = getGlobal('nuMain.store.data')
+    const macroInputs = reactive({
+      hack: '',
+      grow: '',
+      weaken: '',
+    })
 
     // Uptime
     const startTime = Date.now()
     const timestamp = useTimestamp({ interval: 1000 })
     const uptime = computed(() => timeDiff(startTime, timestamp.value))
 
-    // Scheduler test
+    // Macros
     const runTest = () => {
       getGlobal('nuMain.bus').emit('nuScheduler:add', {
-        path: '/nuwave/exec/test.js',
+        path: '/nuwave/exec/_test.js',
         options: {
           bounceBack: 'hello there!',
         },
       })
+    }
+    const runHack = () => {
+      getGlobal('nuMain.bus').emit('nuScheduler:add', {
+        path: '/nuwave/exec/h.js',
+        options: {
+          target: macroInputs.hack,
+        },
+      })
+      macroInputs.hack = ''
+    }
+    const runGrow = () => {
+      getGlobal('nuMain.bus').emit('nuScheduler:add', {
+        path: '/nuwave/exec/g.js',
+        options: {
+          target: macroInputs.grow,
+        },
+      })
+      macroInputs.grow = ''
+    }
+    const runWeaken = () => {
+      getGlobal('nuMain.bus').emit('nuScheduler:add', {
+        path: '/nuwave/exec/w.js',
+        options: {
+          target: macroInputs.weaken,
+        },
+      })
+      macroInputs.weaken = ''
     }
 
     // Shutdown
@@ -116,6 +166,10 @@ const EyeRoot = {
       proc,
       store,
       uptime,
+      macroInputs,
+      runHack,
+      runGrow,
+      runWeaken,
       runTest,
       doShutdown,
     }
@@ -125,9 +179,43 @@ const EyeRoot = {
       .bbv-json-display {
       }
 
-      .buttonZone {
+      .btn-zone {
+        padding-top: 10px;
+        text-align: right;
+      }
+
+      .ez-input {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 10px;
+
+        & > span {
+          font-size: 14px;
+          width: 100%;
+        }
+
+        & > input {
+          width: 75%;
+          font-family: inherit;
+          font-size: inherit;
+          font-weight: inherit;
+          line-height: 1;
+          padding: 5px 3px;
+          border: none;
+          border-bottom: 2px solid var(--bbvInputBorderPositiveColor);
+          background-color: var(--bbvHackerDarkBgColor);
+          color: var(--bbvHackerDarkFgColor);
+
+          &:focus {
+            outline: none;
+          }
+        }
+
+        & > .bbv-button {
+          width: 20%;
+        }
       }
     }
   `,

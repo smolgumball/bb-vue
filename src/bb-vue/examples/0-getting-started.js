@@ -18,7 +18,7 @@ import { css, html } from '/bb-vue/lib.js'
 // Always start your bb-vue apps from standard BitBurner scripts since you will
 // need to pass a valid NS instance to the AppFactory constructor!
 
-/** @param {NS} ns **/
+/** @param { import("~/ns").NS } ns */
 export async function main(ns) {
   // Wrap your AppFactory usage with try/catch for better error messages
   try {

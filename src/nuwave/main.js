@@ -5,8 +5,11 @@ import Eye from '/nuwave/eye.js'
 import Scheduler from '/nuwave/scheduler.js'
 import Store from '/nuwave/store.js'
 
+/** @param { import("~/ns").NS } ns */
 export async function main(ns) {
   ns.disableLog('ALL')
+  ns.enableLog('exec')
+
   const nu = setGlobal('nuMain', { wantsShutdown: false, ns })
 
   await initAll(nu)

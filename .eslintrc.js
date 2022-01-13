@@ -9,6 +9,7 @@ module.exports = {
     ecmaVersion: 13,
     sourceType: 'module',
   },
+  ignorePatterns: ['*.d.ts'],
   rules: {
     'no-constant-condition': 0,
   },

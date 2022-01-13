@@ -115,6 +115,10 @@
       "installPath": "/bb-vue/new-examples/5-demo-app.js"
     },
     {
+      "repoPath": "/src/bb-vue/package.txt",
+      "installPath": "/bb-vue/package.txt"
+    },
+    {
       "repoPath": "/src/bb-vue/SassLoader.js",
       "installPath": "/bb-vue/SassLoader.js"
     },

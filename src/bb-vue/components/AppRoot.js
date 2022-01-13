@@ -1,3 +1,4 @@
+// prettier-ignore
 import { css, doc, getGlobal, html, Keys, Mitt, Vue, win } from '/bb-vue/lib.js'
 
 import ConsumerRoot from '/bb-vue/components/internal/ConsumerRoot.js'

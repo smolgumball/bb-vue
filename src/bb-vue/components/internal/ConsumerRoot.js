@@ -1,3 +1,4 @@
+// prettier-ignore
 import { Mitt, Vue, VueUse } from '/bb-vue/lib.js'
 
 export default {

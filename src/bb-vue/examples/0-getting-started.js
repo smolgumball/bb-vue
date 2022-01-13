@@ -12,6 +12,8 @@ import AppFactory from '/bb-vue/AppFactory.js'
  * Specifically the `prettier - code formatter`, `es6-string-css` and `es6-string-html`
  * extensions can be used.You can safely remove these imports, as long as you remove references to them below.
  **/
+
+// prettier-ignore
 import { css, html } from '/bb-vue/lib.js'
 
 // Note the standard BitBurner function signature here.

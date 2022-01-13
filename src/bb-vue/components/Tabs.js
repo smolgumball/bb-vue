@@ -1,3 +1,4 @@
+// prettier-ignore
 import { css, html } from '/bb-vue/lib.js'
 
 export default {

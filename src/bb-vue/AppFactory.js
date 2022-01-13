@@ -1,13 +1,5 @@
-import {
-  doc,
-  getGlobal,
-  isBlank,
-  lodash,
-  addConsumerRootDef,
-  setGlobal,
-  html,
-  toStr,
-} from '/bb-vue/lib.js'
+// prettier-ignore
+import { doc, getGlobal, isBlank, lodash, addConsumerRootDef, setGlobal, html, toStr } from '/bb-vue/lib.js'
 
 import ComponentManager from '/bb-vue/ComponentManager.js'
 import MittLoader from '/bb-vue/MittLoader.js'
@@ -15,6 +7,8 @@ import SassLoader from '/bb-vue/SassLoader.js'
 import VueLoader from '/bb-vue/VueLoader.js'
 
 import ScriptX from '/bb-vue/components/internal/ScriptX.js'
+
+// prettier-ignore
 import { default as AppRoot, ComponentLibrary } from '/bb-vue/components/AppRoot.js'
 
 const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {

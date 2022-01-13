@@ -1,3 +1,4 @@
+// prettier-ignore
 import { lodash } from '/bb-vue/lib.js'
 
 export default {

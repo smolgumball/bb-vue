@@ -1,9 +1,8 @@
+// prettier-ignore
 import { isBlank, lodash, toStr } from '/bb-vue/lib.js'
-import {
-  ComponentValidationException,
-  ProcessingException,
-  ReplacementTokens,
-} from '/bb-vue/lib.js'
+
+// prettier-ignore
+import { ComponentValidationException, ProcessingException, ReplacementTokens } from '/bb-vue/lib.js'
 
 export default class ComponentManager {
   #appConfig

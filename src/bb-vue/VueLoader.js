@@ -1,3 +1,4 @@
+// prettier-ignore
 import { Keys, Vue, win } from '/bb-vue/lib.js'
 
 export default class VueLoader {

@@ -1,3 +1,4 @@
+// prettier-ignore
 import { getGlobal, Keys, setGlobal } from '/bb-vue/lib.js'
 
 export default class MittLoader {

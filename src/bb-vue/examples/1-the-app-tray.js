@@ -1,4 +1,6 @@
 import AppFactory from '/bb-vue/AppFactory.js'
+
+// prettier-ignore
 import { css, html } from '/bb-vue/lib.js'
 
 /** @param { import("~/ns").NS } ns */

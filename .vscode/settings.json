@@ -4,5 +4,6 @@
   "bitburner.authToken": "ztBL1BCx5YDMS8m40FpBuuaHbEGRRAFwxYThEUkIzSfZaZu5K06wdlaVtPLQeOuk",
   "bitburner.fileWatcher.enable": true,
   "bitburner.showFileWatcherEnabledNotification": true,
-  "bitburner.showPushSuccessNotification": true
+  "bitburner.showPushSuccessNotification": true,
+  "npm.packageManager": "npm"
 }

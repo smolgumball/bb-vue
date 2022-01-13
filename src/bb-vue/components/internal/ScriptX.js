@@ -1,3 +1,4 @@
+// prettier-ignore
 import { doc, Vue } from '/bb-vue/lib.js'
 
 class Utils {

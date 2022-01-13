@@ -1,3 +1,4 @@
+// prettier-ignore
 import { doc, lodash, Vue, VueUse, win } from '/bb-vue/lib.js'
 
 export default async function useDraggableWin(store, options = {}) {

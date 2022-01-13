@@ -1,3 +1,4 @@
+// prettier-ignore
 import { doc, toStr, win } from '/bb-vue/lib.js'
 
 export default class SassLoader {

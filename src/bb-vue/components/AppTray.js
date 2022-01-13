@@ -1,4 +1,7 @@
+// prettier-ignore
 import { WinStates, TrayItemTypes } from '/bb-vue/components/_resources.js'
+
+// prettier-ignore
 import { css, doc, html, VueUse } from '/bb-vue/lib.js'
 
 export default {

@@ -1,6 +1,7 @@
+NSDefs.d.ts
 node_modules/
 tmp/
 archived/jank
 archived/lib
 archived/tasks
-NSDefs.d.ts
+src/bitpacks

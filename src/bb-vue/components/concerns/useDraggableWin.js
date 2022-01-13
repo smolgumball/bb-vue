@@ -6,22 +6,21 @@ export default async function useDraggableWin(store, options = {}) {
 
   // Handle options + validations
   let opts = reactive({
+    winManager: null,
     dragHandleRef: null,
     draggableRef: null,
     dragIgnoreRef: null,
-    startPosition: { x: 0, y: 0 },
-    startPositionOffset: { x: 0, y: 0 },
+    startPosition: null,
     constrain: true,
     constrainPadding: 0,
-    minWidth: 0,
-    minHeight: 0,
     ...lodash.omitBy(options, lodash.isNil),
   })
-
   if (!lodash.isObjectLike(store)) {
     throw new Error('Must provide store as first arg')
   }
-
+  if (!lodash.isObjectLike(opts.winManager)) {
+    throw new Error('Must provide winManager in options')
+  }
   if (!opts.dragHandleRef) {
     throw new Error('Must provide dragHandleRef in options')
   }
@@ -44,34 +43,34 @@ export default async function useDraggableWin(store, options = {}) {
   })
 
   // Sync minWidth / minHeight from CSS styles applied to window
-  opts.minWidth = parseInt(win.getComputedStyle(opts.draggableRef).minWidth)
-  opts.minHeight = parseInt(win.getComputedStyle(opts.draggableRef).minHeight)
-
-  // Set initial position to center of screen
-  store.position = {
-    x: store.fixedRoot.width / 2 - store.draggableTarget.width / 2,
-    y: store.fixedRoot.height / 2 - store.draggableTarget.height / 2,
-  }
-  if (opts.startPositionOffset) {
-    store.position.x += opts.startPositionOffset?.x ?? 0
-    store.position.y += opts.startPositionOffset?.y ?? 0
-  }
-
-  const onMove = (p) => updateStore(p, { store, opts })
-  const onStart = (p, e) => !e.path.some((x) => x == opts.dragIgnoreRef)
+  store.minWidth = parseInt(win.getComputedStyle(opts.draggableRef).minWidth)
+  store.minHeight = parseInt(win.getComputedStyle(opts.draggableRef).minHeight)
 
   // Wire draggable handle to allow window dragging via dragHandleRef
   store.isDragging = useDraggable(opts.dragHandleRef, {
     initialValue: constrainWindow(store.position, { store, opts }).position,
-    onMove,
-    onStart,
+    onMove: (p) => updateStore(p, { store, opts }),
+    onStart: (p, e) => !e.path.some((x) => x == opts.dragIgnoreRef),
   }).isDragging
 
-  // Position on start
+  // Position immediately to avoid nulls
   await nextTick()
-  updateStore(store.position, { store, opts })
+  updateStore({ x: 0, y: 0 }, { store, opts })
 
-  // Ensure window stays within boundary
+  // Set initial position, if none is provided, based on winManager recommendation
+  if (!opts.startPosition) {
+    store.position = opts.winManager.getRecommendedPosition(store)
+    updateStore(store.position, { store, opts })
+  }
+
+  // Set initial position to center of screen
+  // store.position = {
+  //   x: store.fixedRoot.width / 2 - store.draggableTarget.width / 2,
+  //   y: store.fixedRoot.height / 2 - store.draggableTarget.height / 2,
+  // }
+
+  // Add a running check to ensure window stays within boundary
+  // Auto-shuts-down once DOM node is no longer present
   const { pause: pauseConstrain } = useIntervalFn(() => {
     if (!opts.draggableRef?.isConnected) {
       pauseConstrain()
@@ -112,8 +111,8 @@ function constrainWindow(curPos, ctx) {
   let root = ctx.store.fixedRoot
   let draggable = ctx.store.draggableTarget
 
-  size.width = useClamp(draggable.width, ctx.opts.minWidth, root.width - padding * 2)
-  size.height = useClamp(draggable.height, ctx.opts.minHeight, root.height - padding * 2)
+  size.width = useClamp(draggable.width, ctx.store.minWidth, root.width - padding * 2)
+  size.height = useClamp(draggable.height, ctx.store.minHeight, root.height - padding * 2)
 
   pos.x = useClamp(curPos.x, padding, root.width - size.width.value - padding)
   pos.y = useClamp(curPos.y, padding, root.bottom - size.height.value - padding)

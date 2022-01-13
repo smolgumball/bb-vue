@@ -6,18 +6,19 @@ import Scheduler from '/nuwave/scheduler.js'
 import Store from '/nuwave/store.js'
 
 export async function main(ns) {
+  ns.disableLog('ALL')
   const nu = setGlobal('nuMain', { wantsShutdown: false, ns })
 
   await initAll(nu)
-  nu.bus.on('nu:shutdown', () => (nu.wantsShutdown = true))
+  nu.bus.on('nuMain:shutdown', () => (nu.wantsShutdown = true))
 
   let tick = 0
   const rate = 200
   while (nu.wantsShutdown === false) {
-    nu.scheduler.checkHealth(tick)
-    await ns.asleep(rate * 0.5)
-    nu.collector.collect(tick)
-    await ns.asleep(rate * 0.5)
+    await nu.scheduler.checkHealth(tick)
+    await nu.scheduler.runQueue(tick)
+    await nu.collector.collect(tick)
+    await ns.sleep(rate)
     tick += rate
   }
 

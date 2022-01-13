@@ -8,15 +8,17 @@ export default {
     <div
       ref="thisWin"
       class="__CMP_NAME__"
-      :class="{ shouldDisplay, isDragging: draggable.isDragging }"
-      :style="windowStyle"
+      :class="{ shouldDisplay, isDragging }"
+      :style="style"
       @pointerdown="bringToFront"
     >
       <div class="win_titlebar" ref="dragHandle">
         <div class="win_title">{{ title }}<slot name="title" /></div>
-        <div class="win_controls" ref="dragIgnore" v-if="canClose">
-          <bbv-button v-if="canClose" class="win_close" @click="close">❌</bbv-button>
-        </div>
+        <template v-if="canClose">
+          <div class="win_controls" ref="dragIgnore">
+            <bbv-button class="win_close" @click="close">❎</bbv-button>
+          </div>
+        </template>
       </div>
       <div class="win_content" :class="{ noPad: noPad !== false }">
         <slot name="default"></slot>
@@ -24,10 +26,14 @@ export default {
       <div class="win_actions">
         <slot name="actions"></slot>
       </div>
+      <!-- Hack to disable selection on other parts of document while dragging windows -->
+      <template v-if="isDragging">
+        <component is="style" type="text/css"> body *::selection { all: inherit; } </component>
+      </template>
     </div>
   `,
   inject: ['internals'],
-  emits: ['win-closed', 'win-opened'],
+  emits: ['open', 'close'],
   props: {
     title: {
       type: String,
@@ -38,9 +44,6 @@ export default {
       default: true,
     },
     startPosition: {
-      type: Object,
-    },
-    startPositionOffset: {
       type: Object,
     },
     startWidth: {
@@ -76,19 +79,19 @@ export default {
     }
   },
   watch: {
-    winState(newVal, oldVal) {
-      if (oldVal == WinStates.closed && newVal == WinStates.open) {
+    async winState(newVal, oldVal) {
+      if (newVal == WinStates.open && oldVal == WinStates.closed) {
         // Lag win opens just a bit to ensure CSS transitions are applied
-        setTimeout(() => {
-          this.shouldDisplay = true
-        }, 50)
-      } else if (oldVal == WinStates.open && newVal == WinStates.closed) {
+        await this.$nextTick()
+        this.shouldDisplay = true
+        this.bringToFront()
+      } else if (newVal == WinStates.closed) {
         this.shouldDisplay = false
       }
     },
   },
   computed: {
-    windowStyle() {
+    style() {
       return {
         width: this.$props.startWidth,
         height: this.$props.startHeight,
@@ -96,23 +99,23 @@ export default {
         zIndex: this.stackingIndex,
       }
     },
+    isDragging() {
+      return this.draggable.isDragging
+    },
   },
   created() {
     this.owner = getClosestCrm(this)
   },
-  mounted() {
+  async mounted() {
     const winManager = this.internals.winManager
     winManager.addWin(this)
 
-    let startPosition = this.$props.startPosition ?? winManager.getRecommendedPosition(this)
-    let startPositionOffset = this.$props.startPositionOffset
-
     useDraggableWin(this.draggable, {
+      winManager: winManager,
       dragHandleRef: this.$refs.dragHandle,
       dragIgnoreRef: this.$refs.dragIgnore,
       draggableRef: this.$refs.thisWin,
-      startPosition,
-      startPositionOffset,
+      startPosition: this.$props.startPosition,
     })
 
     if (this.$props.startOpen) {
@@ -124,14 +127,14 @@ export default {
   },
   methods: {
     open() {
+      if (this.winState == WinStates.open) return
       this.winState = WinStates.open
-      this.$emit('win-opened', this)
-      this.bringToFront()
+      this.$emit('open', this)
     },
     close() {
-      if (!this.canClose) return
+      if (this.winState == WinStates.closed) return
       this.winState = WinStates.closed
-      this.$emit('win-closed', this)
+      this.$emit('close', this)
     },
     bringToFront() {
       this.internals.winManager.bringToFront(this)
@@ -166,8 +169,7 @@ export default {
       }
 
       &.isDragging {
-        opacity: 0.8;
-        transform: scale(0.97);
+        opacity: 0.9;
       }
 
       .win_titlebar {
@@ -187,7 +189,7 @@ export default {
         display: flex;
         flex-grow: 1;
         font-weight: bold;
-        padding: 7px 15px 5px 15px;
+        padding: 7px 15px 5px 7px;
       }
 
       .win_controls {
@@ -204,7 +206,7 @@ export default {
           border-radius: 5px;
 
           &:last-child {
-            margin-right: 12px;
+            margin-right: 6px;
           }
         }
       }

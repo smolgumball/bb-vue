@@ -23,17 +23,18 @@ const EyeRoot = {
   name: 'eye-root',
   template: html`
     <main class="__CMP_NAME__">
-      <bbv-win title="🧿 nuEye">
+      <!-- Main window -->
+      <bbv-win title="🧿">
         <div class="buttonZone">
-          <bbv-button @click="() => player.open()">✨</bbv-button>
-          <bbv-button @click="() => srv.open()">💽</bbv-button>
-          <bbv-button @click="() => proc.open()">🔢</bbv-button>
+          <bbv-button @click="runTest">Scheduler Test #1</bbv-button>
         </div>
         <template #actions>
           <span><strong>Uptime:</strong> {{ uptime }}</span>
           <bbv-button @click="doShutdown" small>🛑 Shutdown</bbv-button>
         </template>
       </bbv-win>
+
+      <!-- Player window -->
       <bbv-win
         ref="player"
         no-pad
@@ -44,26 +45,35 @@ const EyeRoot = {
       >
         <bbv-json-display fill :data="store.player" />
       </bbv-win>
+
+      <!-- Servers window -->
       <bbv-win
         ref="srv"
         no-pad
         :start-open="false"
         start-width="40%"
         start-height="50%"
-        title="💽 Srv"
+        title="💽 Servers"
       >
         <bbv-json-display fill :data="store.srv" />
       </bbv-win>
+
+      <!-- Processes window -->
       <bbv-win
         ref="proc"
         no-pad
         :start-open="false"
         start-width="40%"
         start-height="50%"
-        title="🔢 Proc"
+        title="🔢 Processes"
       >
         <bbv-json-display fill :data="store.proc" />
       </bbv-win>
+
+      <!-- Add actions to tray -->
+      <teleport to="#app-tray">
+        <bbv-button @click="doShutdown">🛑</bbv-button>
+      </teleport>
     </main>
   `,
   setup() {
@@ -83,11 +93,21 @@ const EyeRoot = {
     const timestamp = useTimestamp({ interval: 1000 })
     const uptime = computed(() => timeDiff(startTime, timestamp.value))
 
+    // Scheduler test
+    const runTest = () => {
+      getGlobal('nuMain.bus').emit('nuScheduler:add', {
+        path: '/nuwave/exec/test.js',
+        options: {
+          bounceBack: 'hello there!',
+        },
+      })
+    }
+
     // Shutdown
     const rootShutdown = inject('rootShutdown')
     const doShutdown = () => {
       rootShutdown()
-      getGlobal('nuMain.bus').emit('nu:shutdown')
+      getGlobal('nuMain.bus').emit('nuMain:shutdown')
     }
 
     return {
@@ -96,6 +116,7 @@ const EyeRoot = {
       proc,
       store,
       uptime,
+      runTest,
       doShutdown,
     }
   },

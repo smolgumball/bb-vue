@@ -55,11 +55,17 @@ const PrimaryAppRoot = {
     <!--
       Use the "tray-hide" prop to hide this window from the app tray
     -->
-    <bbv-win tray-hide title="I'm hidden from the App Tray" class="__CMP_NAME__">
-      <p>Beep boop</p>
-      <template #actions>
-        <bbv-button @click="appShutdown">Shutdown App (1 Window)</bbv-button>
-      </template>
+    <bbv-win
+      tray-hide
+      title="I'm hidden from the App Tray"
+      class="__CMP_NAME__"
+      start-width="20%"
+      @close="appShutdown"
+    >
+      <p>
+        This window doesn't appear in the app tray, and instead this window is configured to
+        shutdown the app where it's mounted when it's closed.
+      </p>
     </bbv-win>
   `,
   scss: css`

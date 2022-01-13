@@ -4,10 +4,11 @@ import { css, doc, html, VueUse } from '/bb-vue/lib.js'
 export default {
   name: 'bbv-app-tray',
   template: html`
-    <div class="__CMP_NAME__" :class="{ isCollapsed, isHidden: !trayItems.length }">
+    <div class="__CMP_NAME__" :class="{ isCollapsed, shouldDisplay }">
       <transition-group name="appTrayItemFadeUp" appear>
+        <bbv-app-tray-group key="actions" tray-teleport />
         <template v-for="group in trayItems" :key="group.root.uuid">
-          <bbv-app-tray-group>
+          <bbv-app-tray-group :app-title="group.root.title">
             <template :key="win.uuid" v-for="win in group.winMounts">
               <bbv-button
                 :title="win.title"
@@ -28,6 +29,7 @@ export default {
       WinStates,
       TrayItemTypes,
       isCollapsed: false,
+      isHidden: false,
     }
   },
   computed: {
@@ -52,6 +54,9 @@ export default {
 
       return winsByRoots
     },
+    shouldDisplay() {
+      return this.isHidden === false && this.trayItems.length
+    },
   },
   mounted() {
     this.watchGameDock()
@@ -59,10 +64,14 @@ export default {
   methods: {
     watchGameDock() {
       const { useIntervalFn } = VueUse()
-      let gameDockSelector = doc.querySelector('.MuiDrawer-root.MuiDrawer-docked')
-
       useIntervalFn(() => {
-        let width = gameDockSelector.clientWidth
+        let gameDockSelector = doc.querySelector('.MuiDrawer-root.MuiDrawer-docked')
+        let width = gameDockSelector?.clientWidth
+        if (!width) {
+          this.isHidden = true
+          return
+        }
+        this.isHidden = false
         if (width < 240) {
           this.isCollapsed = true
         } else {
@@ -135,8 +144,7 @@ export default {
       padding: 10px;
       width: 249px;
       height: 62px;
-      overflow-x: auto;
-      overflow-y: hidden;
+      clip-path: inset(-60px 0 0 0);
 
       box-shadow: inset 0px 0px 20px 0px var(--bbvBoxShadowColor1);
       border-top: 1px solid var(--bbvBorderColor);
@@ -145,33 +153,19 @@ export default {
 
       &:hover {
         width: 100%;
+
+        &.isCollapsed {
+          width: 100%;
+        }
       }
 
       &.isCollapsed {
         width: 57px;
       }
 
-      &.isHidden {
+      &:not(.shouldDisplay) {
         transform: translateY(100px);
         opacity: 0;
-      }
-
-      .bbv-button {
-        color: var(--bbvAppTrayFgColor);
-        padding: 5px 7px 7px 5px;
-        overflow: hidden;
-        white-space: nowrap;
-        font-weight: normal;
-        border-bottom: 2px solid transparent;
-
-        &.isOpen {
-          border-bottom-color: var(--bbvAppTrayFgColor);
-          background-color: var(--bbvButtonHoverBgColor);
-        }
-      }
-
-      .bbv-button + .bbv-button {
-        margin-left: 8px;
       }
 
       .appTrayItemFadeUp-enter-active,

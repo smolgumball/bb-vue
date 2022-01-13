@@ -1,3 +1,5 @@
+import { lodash } from '/bb-vue/lib.js'
+
 export default {
   name: 'bbv-win-manager',
   inject: ['internals'],
@@ -7,7 +9,6 @@ export default {
       baseStackingIndex: 1510,
     }
   },
-  computed: {},
   created() {
     this.internals.winManager = this
   },
@@ -20,13 +21,34 @@ export default {
         return x.uuid != winMount.uuid
       })
     },
-    getRecommendedPosition(winMount) {
-      /**
-       * 1. Find largest open winMount
-       * 2. Offset from top left of that winMount
-       * 3. Apply position constraits as needed
-       * 4. Return absolute coordinates in screen space
-       */
+    getRecommendedPosition(winMountStore) {
+      const rootOffset = { x: 310, y: 55 }
+      const standardOffset = { x: 20, y: 45 }
+      let curOffset = standardOffset
+      let targetWinMount = lodash.findLast(
+        this.internals.store.winMounts,
+        (x) => x.draggable?.wasOffsetByWinManager
+      )
+      if (!targetWinMount) {
+        this.internals.store.winMounts.forEach((winMount) => {
+          let width = parseInt(winMount?.style?.width ?? 0)
+          let height = parseInt(winMount?.style?.height ?? 0)
+          let largestWidth = parseInt(targetWinMount?.style?.width ?? 0)
+          let largestHeight = parseInt(targetWinMount?.style?.height ?? 0)
+          if (width > largestWidth && height > largestHeight) {
+            curOffset = rootOffset
+            targetWinMount = winMount
+            winMountStore.wasOffsetByWinManager = true
+          }
+        })
+        if (!targetWinMount) return rootOffset
+      } else {
+        winMountStore.wasOffsetByWinManager = true
+      }
+      return {
+        x: parseInt(targetWinMount.style.left) + curOffset.x,
+        y: parseInt(targetWinMount.style.top) + curOffset.y,
+      }
     },
     bringToFront(winMount) {
       let otherWins = this.internals.store.winMounts.filter((x) => winMount.uuid != x.uuid)

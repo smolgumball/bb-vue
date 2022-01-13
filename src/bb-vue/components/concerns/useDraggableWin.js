@@ -1,7 +1,7 @@
 import { doc, lodash, Vue, VueUse, win } from '/bb-vue/lib.js'
 
 export default async function useDraggableWin(store, options = {}) {
-  const { reactive, nextTick, unref } = Vue()
+  const { reactive, nextTick } = Vue()
   const { useDraggable, useElementBounding, useIntervalFn, until } = VueUse()
 
   // Handle options + validations

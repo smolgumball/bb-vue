@@ -9,14 +9,11 @@ import asciichart from '/bb-vue/misc-examples/asciichart.js'
 /** @param { import("~/ns").NS } ns */
 export async function main(ns) {
   try {
-    const myAppFactory = new AppFactory(ns)
-    const myAppHandleFn = await myAppFactory.mount({
+    await new AppFactory(ns).mount({
       config: { id: 'ascii-chart-app' },
       rootComponent: MyAppComponent,
     })
-    console.debug(myAppHandleFn())
   } catch (error) {
-    // In case something goes wrong, log it out and halt the program
     console.error(error)
     ns.tprint(error.toString())
     ns.exit()
@@ -27,9 +24,14 @@ const MyAppComponent = {
   name: 'ascii-chart',
   inject: ['appShutdown'],
   template: html`
-    <bbv-win class="__CMP_NAME__" title="ASCII Chart">
-      <p>ASCII Chart:</p>
-      <code><pre>{{ this.chartOutput }}</pre></code>
+    <bbv-win class="__CMP_NAME__" title="ASCII Chart" no-pad start-width="50%" start-height="400px">
+      <!-- prettier-ignore -->
+      <pre
+        class="chartDisplay"
+        ref="chartDisplay"
+        @pointerenter="pauseAutoScroll = true"
+        @pointerleave="pauseAutoScroll = false"
+      >{{ this.chartOutput }}</pre>
       <template #actions>
         <bbv-button @click="appShutdown">🛑 Shutdown</bbv-button>
       </template>
@@ -49,6 +51,13 @@ const MyAppComponent = {
     },
   },
 
+  watch: {
+    chartOutput() {
+      if (this.pauseAutoScroll) return
+      this.$refs.chartDisplay?.scrollTo(Number.MAX_SAFE_INTEGER, 0)
+    },
+  },
+
   mounted() {
     let bus = getGlobal('asciiBus')
     if (!bus) {
@@ -61,11 +70,33 @@ const MyAppComponent = {
   methods: {
     handleBusEvent(data) {
       this.chartHistory.push(data?.value)
+      if (this.chartHistory.length > 350) {
+        this.chartHistory.shift()
+      }
     },
   },
 
   scss: css`
+    @font-face {
+      font-family: 'FreeMono';
+      src: url('https://gumballcdn.netlify.app/freemono.ttf') format('ttf');
+    }
+
     .__CMP_NAME__ {
+      .win_content {
+        display: flex;
+        align-items: center;
+      }
+
+      .chartDisplay {
+        @include bbv-scrollbar;
+
+        font-family: 'FreeMono';
+        width: 100%;
+        overflow: auto;
+        font-weight: bold;
+        margin: 0;
+      }
     }
   `,
 }

@@ -10,6 +10,6 @@ export async function main(ns) {
 
   while (true) {
     bus.emit('dataFromScript', { value: Math.random() * 10 })
-    await ns.sleep(500)
+    await ns.sleep(100)
   }
 }

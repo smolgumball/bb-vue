@@ -9,7 +9,7 @@ export async function main(ns) {
   }
 
   while (true) {
-    bus.emit('dataFromScript', { value: Math.random() * 10 })
+    bus.emit('asciiChartCollector', { value: Math.random() * 10 })
     await ns.sleep(100)
   }
 }

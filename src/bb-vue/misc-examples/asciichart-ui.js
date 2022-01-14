@@ -4,7 +4,7 @@ import AppFactory from '/bb-vue/AppFactory.js'
 import { css, getGlobal, html, setGlobal } from '/bb-vue/lib.js'
 
 // ascii dep
-import asciichart from '/bb-vue/misc-examples/asciichart.js'
+import asciichart from '/bb-vue/misc-examples/asciichart-lib.js'
 
 /** @param { import("~/ns").NS } ns */
 export async function main(ns) {
@@ -64,7 +64,7 @@ const MyAppComponent = {
       bus = getGlobal('Mitt').createBus()
       setGlobal('asciiBus', bus)
     }
-    bus.on('dataFromScript', this.handleBusEvent)
+    bus.on('asciiChartCollector', this.handleBusEvent)
   },
 
   methods: {
@@ -79,7 +79,7 @@ const MyAppComponent = {
   scss: css`
     @font-face {
       font-family: 'FreeMono';
-      src: url('https://gumballcdn.netlify.app/freemono.ttf') format('ttf');
+      src: url('https://gumballcdn.netlify.app/FreeMono.woff2') format('woff2');
     }
 
     .__CMP_NAME__ {

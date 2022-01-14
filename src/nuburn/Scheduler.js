@@ -64,7 +64,7 @@ export default class Scheduler {
   }
 
   queueAdd(data) {
-    this.queue.push(data)
+    this.queue.push({ ...data, timeQueued: Date.now() })
   }
 
   async execRun({ path, host = 'home', threads = 1, options = {}, args = [] } = {}) {

@@ -1,9 +1,10 @@
 import { deleteGlobal, getGlobal, setGlobal, sleep } from '/bb-vue/lib.js'
+
 import MittLoader from '/bb-vue/MittLoader.js'
-import Collector from '/nuwave/collector.js'
-import Eye from '/nuwave/eye.js'
-import Scheduler from '/nuwave/scheduler.js'
-import Store from '/nuwave/store.js'
+import Collector from '/nuburn/Collector.js'
+import Eye from '/nuburn/Eye.js'
+import Scheduler from '/nuburn/Scheduler.js'
+import Store from '/nuburn/Store.js'
 
 /** @param { import("~/ns").NS } ns */
 export async function main(ns) {

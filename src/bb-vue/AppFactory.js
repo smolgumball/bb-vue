@@ -1,5 +1,5 @@
 // prettier-ignore
-import { doc, getGlobal, isBlank, lodash, addConsumerRootDef, setGlobal, html, toStr } from '/bb-vue/lib.js'
+import { isBlank, lodash, toStr, toJson, RootApp } from '/bb-vue/lib.js'
 
 import ComponentManager from '/bb-vue/ComponentManager.js'
 import MittLoader from '/bb-vue/MittLoader.js'
@@ -19,12 +19,10 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {
 
   // console.time('CreateOrGetRootVueApp')
 
-  let existingRootDom = doc.getElementById(rootConfig.appId)
-  if (!forceReload && existingRootDom && getGlobal('rootApp')?._instance) {
-    return getGlobal('rootApp')
-  } else if (forceReload) {
-    getGlobal('rootApp').unmount()
-    existingRootDom?.remove()
+  if (forceReload == true) {
+    await RootApp.cleanup()
+  } else if (RootApp.raw()) {
+    return RootApp.raw()
   }
 
   let componentManager = new ComponentManager(rootConfig, Sass)
@@ -41,9 +39,9 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {
   rootApp.use(ScriptX)
   componentManager.registerWithVueApp(rootApp)
 
-  doc.body.insertAdjacentHTML('afterbegin', html`<div id="${rootConfig.appId}" bbv-root></div>`)
+  await RootApp.addDom(rootConfig.appId)
   rootApp.mount(`#${rootConfig.appId}`)
-  setGlobal('rootApp', rootApp)
+  RootApp.set(rootApp)
 
   // console.timeEnd('CreateOrGetRootVueApp')
 
@@ -86,6 +84,7 @@ export default class AppFactory {
 
     const { Vue, Sass } = await this.#runLoaders()
 
+    // Mount root app
     let rootVueApp = await CreateOrGetRootVueApp(Vue, Sass, this.#appConfig.forceReload)
     let componentManager = new ComponentManager(
       this.#appConfig,
@@ -101,7 +100,7 @@ export default class AppFactory {
       __finalStyles: componentManager.gatherAllProcessedStyles(),
     }
 
-    let consumerAppHandleFn = addConsumerRootDef(processedConsumerRoot)
+    let consumerAppHandleFn = addConsumerRootDef(this.#ns, processedConsumerRoot)
 
     this.#mounted = true
 
@@ -130,6 +129,8 @@ export default class AppFactory {
       appId: toStr(instanceConfig.id),
       showTips: true,
       forceReload: false,
+      shutdownWithPid: null,
+      shutdownRootWithPid: null,
       scssResources: '',
     }
 
@@ -159,6 +160,7 @@ export default class AppFactory {
     cmpDef.__consumerRoot = true
     cmpDef.__appId = this.#appConfig.appId
     cmpDef.__uuid = `${cmpDef.name}-${crypto.randomUUID()}`
+    cmpDef.__config = this.#appConfig
     this.#rootComponent = cmpDef
     this.#componentsInQueue.add(cmpDef)
 
@@ -188,5 +190,56 @@ export default class AppFactory {
     if (this.#mounted === true) {
       throw new Error('You can only mount an AppFactory instance once')
     }
+  }
+}
+
+/**
+ * Registers a consumer app definition, to be mounted by the parent `bbVue.rootApp` instance as a CRM
+ * @param {consumerAppDef} appDef The definition of a consumer app
+ * @returns {function} Lookup function to retrieve consumer app instance
+ */
+function addConsumerRootDef(ns, appDef) {
+  try {
+    // Lookup rootApp ctx
+    let rootApp = RootApp.component()
+
+    // Hook in orphan protection if requested
+    // BUGGED: ns race conditions due to repeated ns.getRunningScript() calls
+    /* if (appDef.__config.shutdownWithPid || appDef.__config.shutdownRootWithPid) {
+      // Watch pid on interval
+      const pidWatchRate = 500
+      const pidWatch = setInterval(async () => {
+        // Attempt to find running PID
+        let pid = ns?.getRunningScript()?.pid
+
+        // Eject if pid is healthy
+        if (pid > 0) return
+
+        // Try to shutdown either AppRoot or consumer root as needed
+        try {
+          if (appDef.__config.shutdownRootWithPid) {
+            await rootApp.rootShutdown()
+          } else {
+            await rootApp.unmountConsumerRootByUuid(appDef.__uuid)
+          }
+        } catch (error) {
+          ns.tprint(
+            `ERROR: bb-vue app "${appDef.name}" is orphaned but ending process failed:\n${toJson(
+              error
+            )}`
+          )
+        } finally {
+          // Whatever the result of the cleanup, end the interval
+          clearInterval(pidWatch)
+        }
+      }, pidWatchRate)
+    } */
+
+    // Add appDef to rootApp and return app handle to consumer
+    return rootApp.addConsumerRootDef(appDef)
+  } catch (error) {
+    throw new Error(
+      `rootApp cannot be located, or issue mounting consumer appDef:\n${toJson(error)}`
+    )
   }
 }

@@ -232,7 +232,7 @@ export default {
           padding: 0;
         }
 
-        & > *:first-child {
+        &:not(.noPad) > *:first-child {
           margin-top: 0;
           padding-top: 0;
         }

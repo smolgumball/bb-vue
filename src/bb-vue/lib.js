@@ -38,6 +38,38 @@ export const ReplacementTokens = Object.freeze({
 // -----------------------------------------
 // --------------------------------------------------------------
 
+export const RootApp = {
+  rootAttr: 'bbv-root',
+  raw() {
+    return getGlobal(Keys.rootAppKey)
+  },
+  instance() {
+    return getGlobal(Keys.rootAppKey)?._instance
+  },
+  component() {
+    return this.instance()?.ctx
+  },
+  set(val) {
+    return setGlobal(Keys.rootAppKey, val)
+  },
+  async cleanup() {
+    await sleep(50)
+    this.raw()?.unmount()
+    await sleep(50)
+    this.removeDom()
+    await sleep(50)
+    deleteGlobal(Keys.rootAppKey)
+  },
+  async removeDom() {
+    await sleep(50)
+    doc.querySelector(`[${this.rootAttr}]`)?.remove()
+  },
+  async addDom(appId) {
+    await sleep(50)
+    doc.body.insertAdjacentHTML('afterbegin', html`<div id="${appId}" bbv-root></div>`)
+  },
+}
+
 /**
  * Reference to window global
  */
@@ -133,21 +165,6 @@ export function Mitt({ silent = false } = {}) {
   return mitt
 }
 
-/**
- * Registers a consumer app definition, to be mounted by the parent `bbVue.rootApp` instance as a CRM
- * @param {consumerAppDef} appDef The definition of a consumer app
- * @returns {function} Lookup function to retrieve consumer app instance
- */
-export function addConsumerRootDef(appDef) {
-  try {
-    return getGlobal(Keys.rootAppKey)._instance.ctx.addConsumerRootDef(appDef)
-  } catch (error) {
-    throw new Error(
-      'bbVue.rootApp cannot be located, or there was an issue when mounting the consumer app definition'
-    )
-  }
-}
-
 //
 //
 // EXCEPTIONS /////////////
@@ -219,7 +236,7 @@ export function getClosestCrm(startingVm) {
  * @param {Number} ms Millis to wait
  * @returns {Promise<void>}
  */
-export async function wait(ms) {
+export async function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(() => resolve(), ms)
   })

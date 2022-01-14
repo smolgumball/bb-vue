@@ -1,4 +1,4 @@
-import { deleteGlobal, getGlobal, setGlobal, wait } from '/bb-vue/lib.js'
+import { deleteGlobal, getGlobal, setGlobal, sleep } from '/bb-vue/lib.js'
 import MittLoader from '/bb-vue/MittLoader.js'
 import Collector from '/nuwave/collector.js'
 import Eye from '/nuwave/eye.js'
@@ -13,8 +13,8 @@ export async function main(ns) {
   const nu = setGlobal('nuMain', { wantsShutdown: false, ns })
   await initAll(nu)
 
-  // Cleans up on kill from outside script / app
-  registerAtExit(nu)
+  // Allows for cleanup on kill
+  atExit(nu)
 
   let tick = 0
   const rate = 200
@@ -76,11 +76,11 @@ async function eyeInit(nu) {
   return eye
 }
 
-function registerAtExit(nu) {
+function atExit(nu) {
+  nu.bus.on('nuMain:shutdown', () => (nu.wantsShutdown = true))
   nu.ns.atExit(async () => {
-    console.log(getGlobal('nuMain.eye').appHandle())
     getGlobal('nuMain.eye')?.appHandle()?.doShutdown()
-    await wait(250)
+    await sleep(250)
     deleteGlobal('nuMain')
   })
 }

@@ -15,8 +15,8 @@ export async function main(ns) {
 
   ns.tprint(`Running rmDeep with these options: \n${toJson(options)}`)
 
-  let startsWith = options['starts-with']
-  let endsWith = options['ends-with']
+  let startsWith = options['starts-with'] ?? ns.args[0]
+  let endsWith = options['ends-with'] ?? ns.args[1]
   let files = ns.ls(options.host)
   let filesToRemove = []
 

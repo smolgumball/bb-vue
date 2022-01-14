@@ -57,10 +57,10 @@ export default {
       let sortedOtherWins = [...otherWins].sort((a, b) => a.stackingIndex - b.stackingIndex)
       sortedOtherWins.forEach((x, i) => (x.stackingIndex = this.baseStackingIndex + i))
     },
-    async closeAllWinsByRootMount(consumerRootMount) {
+    async closeAllWinsByCrmUuid(crmUuid) {
       return new Promise((resolve) => {
         this.internals.store.winMounts.forEach((winMount) => {
-          if (winMount.owner.$options.__uuid == consumerRootMount.$options.__uuid) {
+          if (winMount.owner.$options.__uuid == crmUuid) {
             winMount.close()
           }
         })

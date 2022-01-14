@@ -1,5 +1,5 @@
 // prettier-ignore
-import { css, doc, getGlobal, html, Keys, Mitt, Vue, win } from '/bb-vue/lib.js'
+import { css, html, Keys, Mitt, RootApp, Vue, win } from '/bb-vue/lib.js'
 
 import ConsumerRoot from '/bb-vue/components/internal/ConsumerRoot.js'
 import CssManager from '/bb-vue/components/internal/CssManager.js'
@@ -37,7 +37,7 @@ export default {
             :id="def.__uuid"
             :consumer-root-def="def"
             @consumer-root-mounted="mountConsumerRoot"
-            @consumer-root-unmounted="unmountConsumerRoot"
+            @consumer-root-unmount-requested="unmountConsumerRootByUuid"
             @root-shutdown-requested="rootShutdown"
           />
         </transition-group>
@@ -71,8 +71,17 @@ export default {
     return this.$data
   },
   computed: {
+    isReady() {
+      return this.internals.winManager
+    },
     consumerRootDefs() {
-      return this.internals.winManager ? this.internals.store.consumerRootDefs : []
+      return this.isReady ? this.allCrds : []
+    },
+    allCrds() {
+      return this.internals.store.consumerRootDefs
+    },
+    allCrms() {
+      return this.internals.store.consumerRootMounts
     },
   },
   methods: {
@@ -89,7 +98,7 @@ export default {
       const { markRaw } = Vue()
       let rawConsumerRootDef = markRaw(consumerRootDef)
       this.internals.store.consumerRootDefs = [
-        ...this.internals.store.consumerRootDefs.filter((x) => {
+        ...this.allCrds.filter((x) => {
           return x.__uuid !== rawConsumerRootDef.__uuid
         }),
         rawConsumerRootDef,
@@ -97,40 +106,37 @@ export default {
 
       return () => this.findConsumerRootMount(rawConsumerRootDef.__uuid)
     },
-    mountConsumerRoot(consumerRootMountCtx) {
+    mountConsumerRoot(consumerRootMount) {
       this.internals.store.consumerRootMounts = [
-        ...this.internals.store.consumerRootMounts.filter((x) => {
-          return x.$options.__uuid !== consumerRootMountCtx.$options.__uuid
+        ...this.allCrms.filter((x) => {
+          return x.$options.__uuid !== consumerRootMount.$options.__uuid
         }),
-        consumerRootMountCtx,
+        consumerRootMount,
       ]
     },
-    async unmountConsumerRoot(consumerRootMountCtx) {
-      await this.internals.winManager.closeAllWinsByRootMount(consumerRootMountCtx)
-      this.internals.store.consumerRootMounts = this.internals.store.consumerRootMounts.filter(
-        (x) => {
-          return x.$options.__uuid !== consumerRootMountCtx.$options.__uuid
-        }
-      )
-      this.internals.store.consumerRootDefs = this.internals.store.consumerRootDefs.filter((x) => {
-        return x.__uuid !== consumerRootMountCtx.$options.__uuid
+    async unmountConsumerRootByUuid(crmUuid) {
+      await this.internals.winManager.closeAllWinsByCrmUuid(crmUuid)
+      this.internals.store.consumerRootMounts = this.allCrms.filter((x) => {
+        return x.$options.__uuid !== crmUuid
+      })
+      this.internals.store.consumerRootDefs = this.allCrds.filter((x) => {
+        return x.__uuid !== crmUuid
       })
     },
     findConsumerRootMount(rootMountName) {
       return (
-        this.internals.store.consumerRootMounts.find((x) => {
+        this.allCrms.find((x) => {
           return rootMountName == x.$options.__uuid
         }) ?? null
       )
     },
     async rootShutdown() {
-      for (const x of this.internals.store.consumerRootMounts) {
-        await this.unmountConsumerRoot(x)
+      for (const x of this.allCrms) {
+        await this.unmountConsumerRootByUuid(x.$options.__uuid)
       }
       setTimeout(() => {
-        getGlobal('rootApp').unmount()
-        doc.querySelector('[bbv-root]')?.remove()
-      }, 500)
+        RootApp.cleanup()
+      }, 50)
     },
   },
   scssResources: css`
@@ -188,6 +194,7 @@ export default {
       --bbvWinActionsBgColor: #0f4878;
       --bbvHackerDarkFgColor: #c5c255;
       --bbvHackerDarkBgColor: #171c23;
+      --bbvHackerDarkAltBgColor: #333146;
       --bbvAppTrayFgColor: #89d3e4;
       --bbvAppTrayBorderColor: #4bb4c5;
       --bbvAppTrayBgColor: #274b64;

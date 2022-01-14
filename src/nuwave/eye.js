@@ -13,7 +13,12 @@ export default class Eye {
   async init() {
     const app = new AppFactory(this.ns)
     this.appHandle = await app.mount({
-      config: { id: crypto.randomUUID(), showTips: false },
+      config: {
+        id: crypto.randomUUID(),
+        showTips: false,
+        shutdownRootWithPid: this.ns.getRunningScript().pid,
+        forceReload: true,
+      },
       rootComponent: EyeRoot,
     })
   }
@@ -24,8 +29,8 @@ const EyeRoot = {
   template: html`
     <main class="__CMP_NAME__">
       <!-- Main window -->
-      <bbv-win title="🧿">
-        <div class="macroInput">
+      <bbv-win title="🧿" no-pad>
+        <div class="ez-macros">
           <label class="ez-input">
             <span>Target:</span>
             <input @keydown.enter="runHack" type="text" v-model="macroInputs.hack" />
@@ -41,9 +46,9 @@ const EyeRoot = {
             <input @keydown.enter="runWeaken" type="text" v-model="macroInputs.weaken" />
             <bbv-button no-focus @click="runWeaken">Weaken</bbv-button>
           </label>
-        </div>
-        <div class="btn-zone">
-          <bbv-button @click="runTest">Scheduler Test</bbv-button>
+          <div class="ez-buttons">
+            <bbv-button @click="runTest">Scheduler Test</bbv-button>
+          </div>
         </div>
         <template #actions>
           <span><strong>Uptime:</strong> {{ uptime }}</span>
@@ -178,44 +183,49 @@ const EyeRoot = {
     .__CMP_NAME__ {
       .bbv-json-display {
       }
+    }
 
-      .btn-zone {
-        padding-top: 10px;
-        text-align: right;
+    .ez-macros {
+      padding: 1em;
+      background-color: var(--bbvHackerDarkBgColor);
+    }
+
+    .ez-buttons {
+      padding-top: 10px;
+      text-align: right;
+    }
+
+    .ez-input {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 10px;
+
+      & > span {
+        font-size: 14px;
+        width: 100%;
       }
 
-      .ez-input {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-bottom: 10px;
+      & > input {
+        width: 75%;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: 1;
+        padding: 5px 3px;
+        border: none;
+        border-bottom: 2px solid var(--bbvInputBorderPositiveColor);
+        background-color: var(--bbvHackerDarkAltBgColor);
+        color: var(--bbvHackerDarkFgColor);
 
-        & > span {
-          font-size: 14px;
-          width: 100%;
+        &:focus {
+          outline: none;
         }
+      }
 
-        & > input {
-          width: 75%;
-          font-family: inherit;
-          font-size: inherit;
-          font-weight: inherit;
-          line-height: 1;
-          padding: 5px 3px;
-          border: none;
-          border-bottom: 2px solid var(--bbvInputBorderPositiveColor);
-          background-color: var(--bbvHackerDarkBgColor);
-          color: var(--bbvHackerDarkFgColor);
-
-          &:focus {
-            outline: none;
-          }
-        }
-
-        & > .bbv-button {
-          width: 20%;
-        }
+      & > .bbv-button {
+        width: 20%;
       }
     }
   `,

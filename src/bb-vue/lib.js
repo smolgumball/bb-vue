@@ -44,7 +44,10 @@ export const RootApp = {
     return getGlobal(Keys.rootAppKey)
   },
   instance() {
-    return getGlobal(Keys.rootAppKey)?._instance
+    return this.raw()?._instance
+  },
+  appDef() {
+    return this.raw()?._component
   },
   component() {
     return this.instance()?.ctx

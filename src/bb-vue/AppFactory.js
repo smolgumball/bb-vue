@@ -14,7 +14,6 @@ import { default as AppRoot, ComponentLibrary } from '/bb-vue/components/AppRoot
 const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {
   const rootConfig = {
     appId: 'bb-vue-root',
-    scssResources: AppRoot.scssResources,
   }
 
   // console.time('CreateOrGetRootVueApp')
@@ -25,7 +24,7 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {
     return RootApp.raw()
   }
 
-  let componentManager = new ComponentManager(rootConfig, Sass)
+  let componentManager = new ComponentManager(rootConfig, Sass, AppRoot.scssResources)
   componentManager.add(AppRoot, ...ComponentLibrary)
   await componentManager.processAll()
 
@@ -86,10 +85,12 @@ export default class AppFactory {
 
     // Mount root app
     let rootVueApp = await CreateOrGetRootVueApp(Vue, Sass, this.#appConfig.forceReload)
+
+    console.log([RootApp.appDef().scssResources, this.#appConfig.scssResources].join('\n\n'))
     let componentManager = new ComponentManager(
       this.#appConfig,
       Sass,
-      this.#appConfig.scssResources
+      [RootApp.appDef().scssResources, this.#appConfig.scssResources].join('\n\n')
     )
     componentManager.add(...this.#componentsInQueue)
     await componentManager.processAll()

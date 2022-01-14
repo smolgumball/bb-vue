@@ -103,6 +103,14 @@
       "installPath": "/bb-vue/misc-examples/asciichart-ui.js"
     },
     {
+      "repoPath": "/src/bb-vue/misc-examples/svgchart-builder.js",
+      "installPath": "/bb-vue/misc-examples/svgchart-builder.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/misc-examples/svgchart-ui.js",
+      "installPath": "/bb-vue/misc-examples/svgchart-ui.js"
+    },
+    {
       "repoPath": "/src/bb-vue/MittLoader.js",
       "installPath": "/bb-vue/MittLoader.js"
     },

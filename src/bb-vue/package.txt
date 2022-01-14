@@ -3,7 +3,7 @@
   "author": "smolgumball",
   "descriptiveName": "Run Vue 3 apps inside BitBurner.",
   "shortDescription": "Extension for UI development using Vue 3 + SCSS in game. Learn more at https://tinyurl.com/p35wdjc9.",
-  "longDescription": "Includes starter components, examples and lots of quality-of-life features for rapid UI development and extension inside BitBurner. Supports SCSS compilation of component styles, global SCSS mixins, loading of external stylesheets + scripts, and more. Learn more at https://tinyurl.com/p35wdjc9.",
+  "longDescription": "Includes starter components, examples, and lots of quality-of-life features for rapid UI development and extension inside BitBurner. Supports SCSS compilation of component styles, global SCSS mixins, loading of external stylesheets + scripts, and more. Learn more at https://tinyurl.com/p35wdjc9.",
   "tags": [
     "library",
     "ui",

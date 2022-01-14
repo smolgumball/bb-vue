@@ -15,6 +15,10 @@
       "installPath": "/bb-vue/components/AppRoot.js"
     },
     {
+      "repoPath": "/src/bb-vue/components/AppRoot.Styles.js",
+      "installPath": "/bb-vue/components/AppRoot.Styles.js"
+    },
+    {
       "repoPath": "/src/bb-vue/components/AppTray.js",
       "installPath": "/bb-vue/components/AppTray.js"
     },
@@ -87,16 +91,16 @@
       "installPath": "/bb-vue/lib.js"
     },
     {
-      "repoPath": "/src/bb-vue/misc-examples/asciichart-app.js",
-      "installPath": "/bb-vue/misc-examples/asciichart-app.js"
+      "repoPath": "/src/bb-vue/misc-examples/asciichart-collector.js",
+      "installPath": "/bb-vue/misc-examples/asciichart-collector.js"
     },
     {
-      "repoPath": "/src/bb-vue/misc-examples/asciichart-data.js",
-      "installPath": "/bb-vue/misc-examples/asciichart-data.js"
+      "repoPath": "/src/bb-vue/misc-examples/asciichart-lib.js",
+      "installPath": "/bb-vue/misc-examples/asciichart-lib.js"
     },
     {
-      "repoPath": "/src/bb-vue/misc-examples/asciichart.js",
-      "installPath": "/bb-vue/misc-examples/asciichart.js"
+      "repoPath": "/src/bb-vue/misc-examples/asciichart-ui.js",
+      "installPath": "/bb-vue/misc-examples/asciichart-ui.js"
     },
     {
       "repoPath": "/src/bb-vue/MittLoader.js",

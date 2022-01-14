@@ -2,17 +2,28 @@
 
 Use Vue inside BitBurner!
 
-![bitburner_jmT3LDJN0J](https://user-images.githubusercontent.com/53015256/147802003-5aba9bc9-6ef9-4902-b4a1-0d6c5286672a.png)
+![image](https://user-images.githubusercontent.com/53015256/149429912-798a70a2-44ce-4692-ac90-09dbdc4ccf3b.png)
+
+## Getting Started
+
+* Move to home device, root dir in game
+* `nano bbv-inst.js`
+  * Copy in script from [install.js](https://raw.githubusercontent.com/smolgumball/bb-vue/dev/install.js) and save
+* Back to terminal
+  * `run /bbv-inst.js dev`
+  * `run /bb-vue/examples/0-getting-started.js`
+* Run bb-vue
+  * `run /bb-vue/examples/1-the-app-tray.js`
+* Explore examples
+  * `nano /bb-vue/examples/0-getting-started.js`
+  * nano `/bb-vue/examples/1-the-app-tray.js`
+* Open an issue if you run into any problems, or hit me up in the BitBurner discord!
 
 ## In Development
 
 Most recent changes for those who want to browse the source:
 * Take a [peek at the `/src/bb-vue/*` tree](https://github.com/smolgumball/bb-vue/tree/dev/src/bb-vue) of the `dev` branch
 * Pop over here and [heed the call for testers](https://github.com/smolgumball/bb-vue/issues/11) if you'd like to lend a hand in shaping the growth of `bb-vue` with your feedback
-
-## Stable / Legacy Installation
-
-Copy contents of `install.js` from this repo into your BitBurner game and run to install!
 
 ## Changelog
 

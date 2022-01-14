@@ -10,7 +10,7 @@ Use Vue inside BitBurner!
 * `nano bbv-inst.js`
   * Copy in script from [install.js](https://raw.githubusercontent.com/smolgumball/bb-vue/dev/install.js) and save
 * Back to terminal
-  * `run /bbv-inst.js dev`
+  * `run /bbv-inst.js dev` 👈 _make sure to include the `dev` argument!_
   * `run /bb-vue/examples/0-getting-started.js`
 * Run bb-vue
   * `run /bb-vue/examples/1-the-app-tray.js`

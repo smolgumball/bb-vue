@@ -1,5 +1,5 @@
 // prettier-ignore
-import { css, html, Keys, Mitt, RootApp, Vue, win } from '/bb-vue/lib.js'
+import { html, Keys, Mitt, RootApp, Vue, win } from '/bb-vue/lib.js'
 
 import ConsumerRoot from '/bb-vue/components/internal/ConsumerRoot.js'
 import CssManager from '/bb-vue/components/internal/CssManager.js'
@@ -11,6 +11,7 @@ import AppTrayGroup from '/bb-vue/components/AppTrayGroup.js'
 import Button from '/bb-vue/components/Button.js'
 import JsonDisplay from '/bb-vue/components/JsonDisplay.js'
 import Tabs from '/bb-vue/components/Tabs.js'
+import AppRootStyles from '/bb-vue/components/AppRoot.Styles.js'
 
 export const ComponentLibrary = [
   ConsumerRoot,
@@ -139,108 +140,5 @@ export default {
       }, 50)
     },
   },
-  scssResources: css`
-    @mixin typo-basic {
-      & {
-        font-family: 'Lucida Console', monospace;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 1.1;
-      }
-    }
-
-    @mixin bbv-scrollbar($size: 4px, $width: $size, $height: $size) {
-      &::-webkit-scrollbar {
-        display: initial;
-
-        @if $width {
-          width: $width;
-        } @else {
-          width: $size;
-        }
-
-        @if $height {
-          height: $height;
-        } @else {
-          height: $size;
-        }
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background-color: var(--bbvButtonFgColor);
-      }
-
-      &::-webkit-scrollbar-track {
-        background-color: var(--bbvButtonBgColor);
-      }
-    }
-  `,
-  scss: css`
-    body {
-      --bbvBorderColor: #0f4878;
-      --bbvBoxShadowColor1: #0000007a;
-      --bbvBoxShadowColor2: #040f18;
-      --bbvAppInnerFgColor: #89d3e4;
-      --bbvAppInnerBgColor: #274b64;
-      --bbvFontLightColor: #89d3e4;
-      --bbvFontLightAltColor: #89d3e4;
-      --bbvButtonFgColor: #12b3e3;
-      --bbvButtonBgColor: #0b1420;
-      --bbvButtonHoverFgColor: #00fff3;
-      --bbvButtonHoverBgColor: #162a47;
-      --bbvWinTitlebarFgColor: #89d3e4;
-      --bbvWinTitlebarBgColor: #0f4878;
-      --bbvWinActionsFgColor: #83d5d9;
-      --bbvWinActionsBgColor: #0f4878;
-      --bbvHackerDarkFgColor: #c5c255;
-      --bbvHackerDarkBgColor: #171c23;
-      --bbvHackerDarkAltBgColor: #333146;
-      --bbvAppTrayFgColor: #89d3e4;
-      --bbvAppTrayBorderColor: #4bb4c5;
-      --bbvAppTrayBgColor: #274b64;
-      --bbvInputBorderPositiveColor: #358e3b;
-    }
-
-    [bbv-root] {
-      position: fixed;
-      z-index: 1500;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      pointer-events: none;
-    }
-
-    [bbv-container] {
-      @include typo-basic;
-
-      * {
-        box-sizing: border-box;
-      }
-    }
-
-    [bbv-foreground] {
-      z-index: 1500;
-
-      & > * {
-        pointer-events: auto;
-      }
-    }
-
-    .__CMP_NAME__ {
-      &.rootAppIntro-enter-active,
-      &.rootAppIntro-leave-active,
-      &.consumerRootIntro-enter-active,
-      &.consumerRootIntro-leave-active {
-        transition: opacity 0.4s ease;
-      }
-
-      &.rootAppIntro-enter-from,
-      &.rootAppIntro-leave-to,
-      &.consumerRootIntro-enter-from,
-      &.consumerRootIntro-leave-to {
-        opacity: 0;
-      }
-    }
-  `,
+  ...AppRootStyles,
 }

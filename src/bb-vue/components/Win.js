@@ -24,7 +24,7 @@ export default {
           </div>
         </template>
       </div>
-      <div class="win_content" :class="{ noPad: noPad !== false }">
+      <div class="win_content" :class="{ noPad: noPad !== false, noScroll: noScroll !== false }">
         <slot name="default"></slot>
       </div>
       <div class="win_actions">
@@ -61,6 +61,9 @@ export default {
       default: true,
     },
     noPad: {
+      default: false,
+    },
+    noScroll: {
       default: false,
     },
     trayHide: {
@@ -235,6 +238,10 @@ export default {
         &:not(.noPad) > *:first-child {
           margin-top: 0;
           padding-top: 0;
+        }
+
+        &.noScroll {
+          overflow: hidden;
         }
       }
 

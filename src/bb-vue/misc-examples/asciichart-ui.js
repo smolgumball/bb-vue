@@ -54,15 +54,7 @@ const MyAppComponent = {
     pauseEvents(newVal) {
       if (newVal !== true) {
         this.$refs.chartDisplay?.scrollTo({ left: 0, behavior: 'smooth' })
-        ;(async () => {
-          for (let i = this.eventBuffer.length - 1; i >= 0; i--) {
-            let entry = this.eventBuffer[i]
-            if (!entry) return
-            this.bus.emit('asciiChartCollector', entry)
-            this.eventBuffer.pop()
-            await sleep(10)
-          }
-        })()
+        this.flushBuffer()
       }
     },
   },
@@ -85,6 +77,15 @@ const MyAppComponent = {
       }
       if (this.chartHistory.length > 600) {
         this.chartHistory.pop()
+      }
+    },
+    async flushBuffer() {
+      for (let i = this.eventBuffer.length - 1; i >= 0; i--) {
+        let entry = this.eventBuffer[i]
+        if (!entry) return
+        this.bus.emit('asciiChartCollector', entry)
+        this.eventBuffer.pop()
+        await sleep(10)
       }
     },
   },

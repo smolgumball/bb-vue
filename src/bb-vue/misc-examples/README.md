@@ -1,5 +1,5 @@
 # misc. integration examples
-> inspired by community projects + discussions spa
+> inspired by community projects + discussions
 <br>
 
 ## asciichart window example

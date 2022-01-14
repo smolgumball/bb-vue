@@ -16,8 +16,8 @@ Use Vue inside BitBurner!
   * `run /bb-vue/examples/1-the-app-tray.js`
 * Explore examples
   * `nano /bb-vue/examples/0-getting-started.js`
-  * nano `/bb-vue/examples/1-the-app-tray.js`
-* Open an issue if you run into any problems, or hit me up in the BitBurner discord!
+  * `nano /bb-vue/examples/1-the-app-tray.js`
+* Open an issue if you run into any problems, or hit me up in [the BitBurner discord](https://discord.gg/XKEGvHqVr3).
 
 ## In Development
 
@@ -47,6 +47,4 @@ Most recent changes for those who want to browse the source:
 
 ## Troubleshooting
 
-* Please create a GitHub issue if you run into any snags with installation or use. 
-* If anything crashes, kill the script pid and run `_smolGumball.ui.vueApp.unmount()` in devtools / debug console to tear it down. 
-  * Doing a hard restart of your game will work too. 
+* Please create a GitHub issue if you run into any snags with installation or use, or reach out to me on [the BitBurner discord](https://discord.gg/XKEGvHqVr3).

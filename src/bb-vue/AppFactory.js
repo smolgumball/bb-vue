@@ -86,7 +86,6 @@ export default class AppFactory {
     // Mount root app
     let rootVueApp = await CreateOrGetRootVueApp(Vue, Sass, this.#appConfig.forceReload)
 
-    console.log([RootApp.appDef().scssResources, this.#appConfig.scssResources].join('\n\n'))
     let componentManager = new ComponentManager(
       this.#appConfig,
       Sass,

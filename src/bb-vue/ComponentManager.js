@@ -138,7 +138,6 @@ export default class ComponentManager {
     if (scss) {
       scss = this.#performTokenReplacements(scss, this.#appConfig.appId, cmpDef.name)
       scss = `${this.#scssResources}\n${scss}`
-      console.log(scss)
       try {
         scss = await this.#Sass.compileAsync(scss, {})
         didProcess = true

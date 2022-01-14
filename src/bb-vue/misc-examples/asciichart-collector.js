@@ -1,15 +1,14 @@
-import { getGlobal, setGlobal } from '/bb-vue/lib.js'
+import { getGlobal } from '/bb-vue/lib.js'
 
 /** @param { import("~/ns").NS } ns */
 export async function main(ns) {
   let bus = getGlobal('asciiBus')
   if (!bus) {
-    bus = getGlobal('Mitt').createBus()
-    setGlobal('asciiBus', bus)
+    throw new Error('Run the asciichart-ui.js script first!')
   }
 
   while (true) {
-    bus.emit('asciiChartCollector', { value: Math.random() * 10 })
-    await ns.sleep(150)
+    bus.emit('asciiChartCollector', { value: (Math.random() - 0.5) * 10 })
+    await ns.sleep(50)
   }
 }

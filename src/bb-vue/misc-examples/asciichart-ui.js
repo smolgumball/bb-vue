@@ -25,14 +25,8 @@ const MyAppComponent = {
   inject: ['appShutdown'],
   template: html`
     <bbv-win class="__CMP_NAME__" title="ASCII Chart" no-pad start-width="50%">
-      <div class="chartBg">
-        <!-- prettier-ignore -->
-        <pre
-          class="chartDisplay"
-          ref="chartDisplay"
-          @pointerenter="pauseEvents = true"
-          @pointerleave="pauseEvents = false"
-        >{{ this.chartOutput }}</pre>
+      <div class="chartBg" @pointerenter="pauseEvents = true" @pointerleave="pauseEvents = false">
+        <pre class="chartDisplay" ref="chartDisplay">{{ this.chartOutput }}</pre>
       </div>
       <template #actions>
         <bbv-button @click="appShutdown">🛑 Shutdown</bbv-button>
@@ -57,12 +51,9 @@ const MyAppComponent = {
   },
 
   watch: {
-    chartOutput() {
-      if (this.pauseEvents) return
-      this.$refs.chartDisplay?.scrollTo(0, 0)
-    },
     pauseEvents(newVal) {
       if (newVal !== true) {
+        this.$refs.chartDisplay?.scrollTo({ left: 0, behavior: 'smooth' })
         ;(async () => {
           for (let i = this.eventBuffer.length - 1; i >= 0; i--) {
             let entry = this.eventBuffer[i]
@@ -116,13 +107,14 @@ const MyAppComponent = {
         width: 100%;
         min-height: 350px;
         background-color: var(--bbvHackerDarkBgColor);
+        padding: 30px 0;
       }
 
       .chartDisplay {
         @include bbv-scrollbar;
 
         overflow: auto;
-        padding: 60px 0;
+        padding: 30px 0;
         font-family: 'FreeMono';
         font-weight: bold;
         cursor: default;

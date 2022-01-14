@@ -1,11 +1,14 @@
+/* eslint-disable no-undef */
 const util = require('util')
 const dree = require('dree')
 const { writeFileSync, rmSync } = require('fs')
 const { trimTrailingSlash, trimLeadingSlash, joinPaths } = require('./lib.js')
+/* eslint-enable no-undef */
 
 const config = {
   scanRoot: 'src',
   scanIncludeExtensions: ['js', 'ns', 'txt'],
+  scanExcludes: [/\/node_modules\//, /.git/, /publishing-key\.txt/],
   importRoot: '/bb-vue/',
   entryFile: '/bb-vue/examples/0-getting-started.js',
   manifestFile: 'installManifest.txt',
@@ -21,7 +24,7 @@ dree.scan(
   `./`,
   {
     extensions: config.scanIncludeExtensions,
-    exclude: [/\/node_modules\//, /.git/, /publishing-key\.txt/],
+    exclude: config.scanExcludes,
     normalize: true,
   },
   (fileNode) => {

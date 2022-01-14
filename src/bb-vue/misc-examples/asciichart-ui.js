@@ -1,7 +1,7 @@
 import AppFactory from '/bb-vue/AppFactory.js'
 
 // prettier-ignore
-import { css, getGlobal, html, setGlobal } from '/bb-vue/lib.js'
+import { css, getGlobal, html, setGlobal, sleep } from '/bb-vue/lib.js'
 
 // ascii dep
 import asciichart from '/bb-vue/misc-examples/asciichart-lib.js'
@@ -24,20 +24,16 @@ const MyAppComponent = {
   name: 'ascii-chart',
   inject: ['appShutdown'],
   template: html`
-    <bbv-win
-      class="__CMP_NAME__"
-      title="ASCII Chart"
-      no-pad
-      start-width="50%"
-      start-height="400px"
-      @pointerenter="pauseAutoScroll = true"
-      @pointerleave="pauseAutoScroll = false"
-    >
-      <!-- prettier-ignore -->
-      <pre
-        class="chartDisplay"
-        ref="chartDisplay"
-      >{{ this.chartOutput }}</pre>
+    <bbv-win class="__CMP_NAME__" title="ASCII Chart" no-pad start-width="50%">
+      <div class="chartBg">
+        <!-- prettier-ignore -->
+        <pre
+          class="chartDisplay"
+          ref="chartDisplay"
+          @pointerenter="pauseEvents = true"
+          @pointerleave="pauseEvents = false"
+        >{{ this.chartOutput }}</pre>
+      </div>
       <template #actions>
         <bbv-button @click="appShutdown">🛑 Shutdown</bbv-button>
       </template>
@@ -46,7 +42,10 @@ const MyAppComponent = {
 
   data() {
     return {
+      bus: null,
       chartHistory: [],
+      eventBuffer: [],
+      pauseEvents: false,
     }
   },
 
@@ -59,23 +58,40 @@ const MyAppComponent = {
 
   watch: {
     chartOutput() {
-      if (this.pauseAutoScroll) return
+      if (this.pauseEvents) return
       this.$refs.chartDisplay?.scrollTo(0, 0)
+    },
+    pauseEvents(newVal) {
+      if (newVal !== true) {
+        ;(async () => {
+          for (let i = this.eventBuffer.length - 1; i >= 0; i--) {
+            let entry = this.eventBuffer[i]
+            if (!entry) return
+            this.bus.emit('asciiChartCollector', entry)
+            this.eventBuffer.pop()
+            await sleep(10)
+          }
+        })()
+      }
     },
   },
 
   mounted() {
-    let bus = getGlobal('asciiBus')
-    if (!bus) {
-      bus = getGlobal('Mitt').createBus()
-      setGlobal('asciiBus', bus)
+    this.bus = getGlobal('asciiBus')
+    if (!this.bus) {
+      this.bus = getGlobal('Mitt').createBus()
+      setGlobal('asciiBus', this.bus)
     }
-    bus.on('asciiChartCollector', this.handleBusEvent)
+    this.bus.on('asciiChartCollector', this.handleBusEvent)
   },
 
   methods: {
     handleBusEvent(data) {
-      this.chartHistory = [data?.value, ...this.chartHistory]
+      if (this.pauseEvents) {
+        this.eventBuffer = [data, ...this.eventBuffer]
+      } else {
+        this.chartHistory = [data?.value, ...this.chartHistory]
+      }
       if (this.chartHistory.length > 600) {
         this.chartHistory.pop()
       }
@@ -94,14 +110,23 @@ const MyAppComponent = {
         align-items: center;
       }
 
-      .chartDisplay {
-        @include bbv-scrollbar;
+      .chartBg {
+        @include bbv-scrollbar($height: 8px);
 
-        font-family: 'FreeMono';
+        display: flex;
+        align-items: center;
         width: 100%;
+        min-height: 300px;
         overflow: auto;
+        background-color: var(--bbvHackerDarkBgColor);
+      }
+
+      .chartDisplay {
+        padding: 30px 0;
+        font-family: 'FreeMono';
         font-weight: bold;
-        margin: 0;
+        cursor: default;
+        user-select: none;
       }
     }
   `,

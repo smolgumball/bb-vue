@@ -1,7 +1,7 @@
 const argsSchema = [
   ['host', 'home'],
-  ['starts-with', ''],
-  ['ends-with', ''],
+  ['starts-with', null],
+  ['ends-with', null],
 ]
 
 export function autocomplete(data) {
@@ -27,11 +27,11 @@ export async function main(ns) {
   }
 
   if (!startsWith && endsWith) {
-    filesToRemove.push(...files.filter((f) => f.endsWith(startsWith)))
+    filesToRemove.push(...files.filter((f) => f.endsWith(endsWith)))
   }
 
   if (startsWith && endsWith) {
-    filesToRemove.push(...files.filter((f) => f.startsWith(endsWith) && f.endsWith(endsWith)))
+    filesToRemove.push(...files.filter((f) => f.startsWith(startsWith) && f.endsWith(endsWith)))
   }
 
   if (!startsWith && !endsWith) {

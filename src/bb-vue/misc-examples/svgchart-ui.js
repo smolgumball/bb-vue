@@ -1,7 +1,7 @@
 import AppFactory from '/bb-vue/AppFactory.js'
 
 // prettier-ignore
-import { css, getGlobal, html, setGlobal, sleep } from '/bb-vue/lib.js'
+import { css, html } from '/bb-vue/lib.js'
 
 /** @param { import("~/ns").NS } ns */
 export async function main(ns) {

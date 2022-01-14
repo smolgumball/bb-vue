@@ -1,6 +1,6 @@
 # bb-vue
 
-Use Vue inside BitBurner!
+**Use Vue inside BitBurner!** Built with Vue 3, SCSS support, an app tray, a window manager, and various components to help you get started with custom UI extensions and reactive data storage. Hacking in BitBurner has never been easier, or nicer to look at 😎
 
 ![image](https://user-images.githubusercontent.com/53015256/149429912-798a70a2-44ce-4692-ac90-09dbdc4ccf3b.png)
 

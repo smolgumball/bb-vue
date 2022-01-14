@@ -4,12 +4,8 @@ For the `latest bb-vue developments` please [`see the dev branch`](https://githu
 
 <br>
 <br>
-<br>
-<br>
-<br>
-<br>
 
-<details><summary><code>Click Here</code> for The Old Stuff 🚧</summary>
+<details><summary><code>Click Here</code> for The Old Stuff</summary>
 <p>
 
 Use Vue inside BitBurner!

@@ -111,18 +111,18 @@ const MyAppComponent = {
       }
 
       .chartBg {
-        @include bbv-scrollbar($height: 8px);
-
         display: flex;
         align-items: center;
         width: 100%;
-        min-height: 300px;
-        overflow: auto;
+        min-height: 350px;
         background-color: var(--bbvHackerDarkBgColor);
       }
 
       .chartDisplay {
-        padding: 30px 0;
+        @include bbv-scrollbar;
+
+        overflow: auto;
+        padding: 60px 0;
         font-family: 'FreeMono';
         font-weight: bold;
         cursor: default;

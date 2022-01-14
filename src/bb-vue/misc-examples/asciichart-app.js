@@ -1,7 +1,7 @@
 import AppFactory from '/bb-vue/AppFactory.js'
 
 // prettier-ignore
-import { css, html } from '/bb-vue/lib.js'
+import { css, getGlobal, html, setGlobal } from '/bb-vue/lib.js'
 
 // ascii dep
 import asciichart from '/bb-vue/misc-examples/asciichart.js'
@@ -38,19 +38,29 @@ const MyAppComponent = {
 
   data() {
     return {
-      chartOutput: '',
+      chartHistory: [],
     }
   },
 
-  async mounted() {
-    this.runAsciiChart()
+  computed: {
+    chartOutput() {
+      if (this.chartHistory.length < 1) return ''
+      return asciichart.plot(this.chartHistory)
+    },
+  },
+
+  mounted() {
+    let bus = getGlobal('asciiBus')
+    if (!bus) {
+      bus = getGlobal('Mitt').createBus()
+      setGlobal('asciiBus', bus)
+    }
+    bus.on('dataFromScript', this.handleBusEvent)
   },
 
   methods: {
-    runAsciiChart() {
-      var s0 = new Array(120)
-      for (var i = 0; i < s0.length; i++) s0[i] = 15 * Math.sin(i * ((Math.PI * 4) / s0.length))
-      this.chartOutput = asciichart.plot(s0)
+    handleBusEvent(data) {
+      this.chartHistory.push(data?.value)
     },
   },
 

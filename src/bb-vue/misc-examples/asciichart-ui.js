@@ -24,13 +24,19 @@ const MyAppComponent = {
   name: 'ascii-chart',
   inject: ['appShutdown'],
   template: html`
-    <bbv-win class="__CMP_NAME__" title="ASCII Chart" no-pad start-width="50%" start-height="400px">
+    <bbv-win
+      class="__CMP_NAME__"
+      title="ASCII Chart"
+      no-pad
+      start-width="50%"
+      start-height="400px"
+      @pointerenter="pauseAutoScroll = true"
+      @pointerleave="pauseAutoScroll = false"
+    >
       <!-- prettier-ignore -->
       <pre
         class="chartDisplay"
         ref="chartDisplay"
-        @pointerenter="pauseAutoScroll = true"
-        @pointerleave="pauseAutoScroll = false"
       >{{ this.chartOutput }}</pre>
       <template #actions>
         <bbv-button @click="appShutdown">🛑 Shutdown</bbv-button>
@@ -54,7 +60,7 @@ const MyAppComponent = {
   watch: {
     chartOutput() {
       if (this.pauseAutoScroll) return
-      this.$refs.chartDisplay?.scrollTo(Number.MAX_SAFE_INTEGER, 0)
+      this.$refs.chartDisplay?.scrollTo(0, 0)
     },
   },
 
@@ -69,9 +75,9 @@ const MyAppComponent = {
 
   methods: {
     handleBusEvent(data) {
-      this.chartHistory.push(data?.value)
-      if (this.chartHistory.length > 350) {
-        this.chartHistory.shift()
+      this.chartHistory = [data?.value, ...this.chartHistory]
+      if (this.chartHistory.length > 600) {
+        this.chartHistory.pop()
       }
     },
   },

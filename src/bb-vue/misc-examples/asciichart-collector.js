@@ -10,6 +10,6 @@ export async function main(ns) {
 
   while (true) {
     bus.emit('asciiChartCollector', { value: Math.random() * 10 })
-    await ns.sleep(100)
+    await ns.sleep(150)
   }
 }

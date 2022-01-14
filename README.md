@@ -1,6 +1,15 @@
 # bb-vue
 
-Use Vue inside BitBurner!
+**Use Vue inside BitBurner!** 
+
+- Built with Vue 3 and SCSS support
+- Includes an app tray for all your apps
+- Window manager to drag, minimize, and dynamically position windows
+- Various components to help you get started
+
+From custom UI extensions to reactive data storage, hacking in BitBurner has never been easier 😎
+<br>
+<br>
 
 ![image](https://user-images.githubusercontent.com/53015256/149429912-798a70a2-44ce-4692-ac90-09dbdc4ccf3b.png)
 
@@ -10,14 +19,14 @@ Use Vue inside BitBurner!
 * `nano bbv-inst.js`
   * Copy in script from [install.js](https://raw.githubusercontent.com/smolgumball/bb-vue/dev/install.js) and save
 * Back to terminal
-  * `run /bbv-inst.js dev`
+  * `run /bbv-inst.js dev` 👈 _make sure to include the `dev` argument!_
   * `run /bb-vue/examples/0-getting-started.js`
 * Run bb-vue
   * `run /bb-vue/examples/1-the-app-tray.js`
 * Explore examples
   * `nano /bb-vue/examples/0-getting-started.js`
-  * nano `/bb-vue/examples/1-the-app-tray.js`
-* Open an issue if you run into any problems, or hit me up in the BitBurner discord!
+  * `nano /bb-vue/examples/1-the-app-tray.js`
+* Open an issue if you run into any problems, or hit me up in [the BitBurner discord](https://discord.gg/XKEGvHqVr3).
 
 ## In Development
 
@@ -47,6 +56,4 @@ Most recent changes for those who want to browse the source:
 
 ## Troubleshooting
 
-* Please create a GitHub issue if you run into any snags with installation or use. 
-* If anything crashes, kill the script pid and run `_smolGumball.ui.vueApp.unmount()` in devtools / debug console to tear it down. 
-  * Doing a hard restart of your game will work too. 
+* Please create a GitHub issue if you run into any snags with installation or use, or reach out to me on [the BitBurner discord](https://discord.gg/XKEGvHqVr3).

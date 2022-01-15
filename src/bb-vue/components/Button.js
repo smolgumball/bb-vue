@@ -29,8 +29,7 @@ export default {
     .__CMP_NAME__ {
       font-family: inherit;
       font-size: inherit;
-      font-weight: 600;
-      font-size: 14px;
+      font-weight: bold;
       padding: 8px;
       cursor: pointer;
       border: none;
@@ -49,13 +48,11 @@ export default {
         padding: 6px;
         font-size: 12px;
         line-height: 1.1;
-        font-weight: normal;
       }
 
       &.icon {
         padding: 2px;
         line-height: 1.5;
-        font-weight: normal;
       }
     }
   `,

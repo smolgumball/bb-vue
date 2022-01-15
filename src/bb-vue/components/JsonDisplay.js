@@ -36,6 +36,7 @@ export default {
         max-height: 300px;
         overflow: auto;
         white-space: pre;
+        font-weight: bold;
         color: var(--bbvHackerDarkFgColor);
         background-color: var(--bbvHackerDarkBgColor);
         border-radius: 5px;

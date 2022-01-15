@@ -135,6 +135,8 @@ export default {
   },
   scss: css`
     .__CMP_NAME__ {
+      @include typo-basic;
+
       pointer-events: auto;
       position: absolute;
       z-index: 1400;

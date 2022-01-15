@@ -43,4 +43,5 @@ writeFileSync(`./${config.manifestFile}`, JSON.stringify(manifestData, null, '  
 
 console.log(util.inspect(manifestData, { depth: null }))
 
+// eslint-disable-next-line no-undef
 module.exports = config

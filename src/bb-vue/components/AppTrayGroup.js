@@ -77,7 +77,6 @@ export default {
         padding: 6px 7px;
         overflow: hidden;
         white-space: nowrap;
-        font-weight: normal;
         border-bottom: 2px solid transparent;
         transition: border-color 0.2s ease;
         line-height: 1;

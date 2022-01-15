@@ -4,18 +4,9 @@ export default {
   scssResources: css`
     @mixin typo-basic {
       & {
-        font-family: 'Lucida Console', monospace;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 1.1;
-      }
-    }
-
-    @mixin typo-mono {
-      @include typo-basic;
-
-      & {
         font-family: 'FreeMono', monospace;
+        font-size: 14px;
+        line-height: 1.1;
       }
     }
 
@@ -37,11 +28,11 @@ export default {
       }
 
       &::-webkit-scrollbar-thumb {
-        background-color: var(--bbvButtonFgColor);
+        background-color: var(--bbvScrollbarFgColor);
       }
 
       &::-webkit-scrollbar-track {
-        background-color: var(--bbvButtonBgColor);
+        background-color: var(--bbvScrollbarBgColor);
       }
     }
   `,
@@ -52,6 +43,8 @@ export default {
     }
 
     body {
+      --bbvScrollbarFgColor: #12b3e3;
+      --bbvScrollbarBgColor: #0b1420;
       --bbvBorderColor: #0f4878;
       --bbvBoxShadowColor1: #0000007a;
       --bbvBoxShadowColor2: #040f18;
@@ -73,10 +66,16 @@ export default {
       --bbvAppTrayFgColor: #89d3e4;
       --bbvAppTrayBorderColor: #4bb4c5;
       --bbvAppTrayBgColor: #274b64;
-      --bbvInputBorderPositiveColor: #358e3b;
+      --bbvInputBorderColor: #357073;
+      --bbvInputBgColor: #{fade-out(#274b64, 0.5)};
+      --bbvActiveColor: #954ea7;
+      --bbvSuccessColor: #4fb168;
+      --bbvErrorColor: #984e4e;
     }
 
     [bbv-root] {
+      @include typo-basic;
+
       position: fixed;
       z-index: 1500;
       top: 0;
@@ -84,14 +83,6 @@ export default {
       bottom: 0;
       left: 0;
       pointer-events: none;
-    }
-
-    [bbv-container] {
-      @include typo-basic;
-
-      * {
-        box-sizing: border-box;
-      }
     }
 
     [bbv-foreground] {
@@ -102,11 +93,20 @@ export default {
       }
     }
 
-    code {
-      @include typo-mono;
-    }
-
     .__CMP_NAME__ {
+      * {
+        box-sizing: border-box;
+      }
+
+      code,
+      button,
+      input,
+      th,
+      td,
+      tr {
+        @include typo-basic;
+      }
+
       &.rootAppIntro-enter-active,
       &.rootAppIntro-leave-active,
       &.consumerRootIntro-enter-active,

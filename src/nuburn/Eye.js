@@ -35,7 +35,7 @@ const EyeRoot = {
   template: html`
     <main class="__CMP_NAME__">
       <!-- Main window -->
-      <bbv-win title="🧿" no-pad>
+      <bbv-win title="🧿" no-pad start-width="390px" start-height="320px">
         <eye-macros />
         <template #actions>
           <span><strong>Uptime:</strong> {{ uptime }}</span>
@@ -53,18 +53,6 @@ const EyeRoot = {
         <bbv-json-display fill :data="store.srv" />
       </bbv-win>
 
-      <!-- Raw proc window -->
-      <bbv-win
-        no-pad
-        :start-open="true"
-        start-width="40%"
-        start-height="50%"
-        :start-position="{ x: 730, y: 55 }"
-        title="🔢 Raw Proc"
-      >
-        <bbv-json-display fill :data="store.proc" />
-      </bbv-win>
-
       <!-- Processes window -->
       <bbv-win
         no-pad
@@ -72,10 +60,22 @@ const EyeRoot = {
         :start-open="true"
         start-width="40%"
         start-height="50%"
-        :start-position="{ x: 730, y: 400 }"
+        :start-position="{ x: 740, y: 55 }"
         title="🔢 Pretty Proc"
       >
         <eye-proc-list />
+      </bbv-win>
+
+      <!-- Raw proc window -->
+      <bbv-win
+        no-pad
+        :start-open="true"
+        start-width="40%"
+        start-height="50%"
+        :start-position="{ x: 780, y: 400 }"
+        title="🔢 Raw Proc"
+      >
+        <bbv-json-display fill :data="store.proc" />
       </bbv-win>
 
       <!-- Add actions to tray -->

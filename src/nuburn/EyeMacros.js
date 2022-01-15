@@ -46,7 +46,6 @@ export default {
           target: macroInputs.hack,
         },
       })
-      macroInputs.hack = ''
     }
     const runGrow = () => {
       nuEmit('nuScheduler:add', {
@@ -55,7 +54,6 @@ export default {
           target: macroInputs.grow,
         },
       })
-      macroInputs.grow = ''
     }
     const runWeaken = () => {
       nuEmit('nuScheduler:add', {
@@ -64,7 +62,6 @@ export default {
           target: macroInputs.weaken,
         },
       })
-      macroInputs.weaken = ''
     }
     const runTest = () => {
       nuEmit('nuScheduler:add', {

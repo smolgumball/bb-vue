@@ -26,23 +26,22 @@ export default {
       justify-content: space-between;
       flex-wrap: wrap;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
 
       & > span {
-        font-size: 14px;
         width: 100%;
+        color: var(--bbvInputBorderColor);
+        font-weight: bold;
       }
 
       & > input {
         width: 75%;
-        font-family: inherit;
-        font-size: inherit;
-        font-weight: inherit;
         line-height: 1;
-        padding: 5px;
+        padding: 5px 0;
         border: none;
-        border-bottom: 2px solid var(--bbvInputBorderPositiveColor);
-        background-color: var(--bbvHackerDarkAltBgColor);
+        font-weight: bold;
+        border-bottom: 1px solid var(--bbvInputBorderColor);
+        background-color: var(--bbvInputBgColor);
         color: var(--bbvHackerDarkFgColor);
 
         &:focus {

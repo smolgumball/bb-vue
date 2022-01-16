@@ -4,7 +4,7 @@ import { css, html, toJson } from '/bb-vue/lib.js'
 export default {
   name: 'bbv-json-display',
   template: html`
-    <div class="__CMP_NAME__" :class="{ fill: fill !== false }">
+    <div class="__CMP_NAME__" :class="{ fill: fill !== false, wrap: wrap !== false }">
       <div class="json_inner">{{ toJson(data) }}</div>
     </div>
   `,
@@ -13,6 +13,9 @@ export default {
       default: {},
     },
     fill: {
+      default: false,
+    },
+    wrap: {
       default: false,
     },
   },
@@ -28,6 +31,12 @@ export default {
         }
       }
 
+      &.wrap {
+        .json_inner {
+          white-space: pre-wrap;
+        }
+      }
+
       .json_inner {
         @include bbv-scrollbar;
 
@@ -36,7 +45,6 @@ export default {
         max-height: 300px;
         overflow: auto;
         white-space: pre;
-        font-weight: bold;
         color: var(--bbvHackerDarkFgColor);
         background-color: var(--bbvHackerDarkBgColor);
         border-radius: 5px;

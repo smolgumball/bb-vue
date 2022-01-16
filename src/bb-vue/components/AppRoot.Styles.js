@@ -6,6 +6,7 @@ export default {
       & {
         font-family: 'FreeMono', monospace;
         font-size: 14px;
+        font-weight: bold;
         line-height: 1.1;
       }
     }

@@ -117,7 +117,6 @@ const MyAppComponent = {
         overflow: auto;
         padding: 30px 0;
         font-family: 'FreeMono';
-        font-weight: bold;
         cursor: default;
         user-select: none;
       }

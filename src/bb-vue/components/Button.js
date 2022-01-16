@@ -29,7 +29,6 @@ export default {
     .__CMP_NAME__ {
       font-family: inherit;
       font-size: inherit;
-      font-weight: bold;
       padding: 8px;
       cursor: pointer;
       border: none;
@@ -53,6 +52,12 @@ export default {
       &.icon {
         padding: 2px;
         line-height: 1.5;
+      }
+
+      & > code {
+        padding: 2px;
+        background-color: var(--bbvWinActionsBgColor);
+        border-radius: 4px;
       }
     }
   `,

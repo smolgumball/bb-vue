@@ -1,5 +1,5 @@
 // prettier-ignore
-import { getClosestCrm, html, css } from '/bb-vue/lib.js'
+import { getClosestCrm, html, css, sleep } from '/bb-vue/lib.js'
 
 // prettier-ignore
 import { WinStates } from '/bb-vue/components/_resources.js'
@@ -19,8 +19,8 @@ export default {
       <div class="win_titlebar" ref="dragHandle">
         <div class="win_title">{{ title }}<slot name="title" /></div>
         <template v-if="canClose">
-          <div class="win_controls" ref="dragIgnore">
-            <bbv-button class="win_close" @click="close">❎</bbv-button>
+          <div class="win_controls">
+            <bbv-button class="win_close" ref="winClose" @click="close">❎</bbv-button>
           </div>
         </template>
       </div>
@@ -120,7 +120,7 @@ export default {
     useDraggableWin(this.draggable, {
       winManager: winManager,
       dragHandleRef: this.$refs.dragHandle,
-      dragIgnoreRef: this.$refs.dragIgnore,
+      dragIgnoreRef: this.$refs.winClose.$el,
       draggableRef: this.$refs.thisWin,
       startPosition: this.$props.startPosition,
     })
@@ -133,17 +133,20 @@ export default {
     this.internals.winManager.removeWin(this)
   },
   methods: {
-    open() {
+    async open() {
       if (this.winState == WinStates.open) return
       this.winState = WinStates.open
+      await sleep(200)
       this.$emit('open', this)
     },
-    close() {
+    async close() {
       if (this.winState == WinStates.closed) return
       this.winState = WinStates.closed
+      await sleep(200)
       this.$emit('close', this)
     },
-    bringToFront() {
+    bringToFront(event) {
+      if (event && event.path.some((x) => x == this.$refs.winClose.$el)) return
       this.internals.winManager.bringToFront(this)
     },
   },
@@ -195,7 +198,6 @@ export default {
       .win_title {
         display: flex;
         flex-grow: 1;
-        font-weight: bold;
         padding: 7px 15px 5px 7px;
       }
 

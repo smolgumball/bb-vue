@@ -1,4 +1,4 @@
-import { css, html, Vue, VueUse } from '/bb-vue/lib.js'
+import { css, html, RootApp, sleep, Vue, VueUse, win } from '/bb-vue/lib.js'
 import { timeDiff } from '/nuburn/lib/date.js'
 import { nuEmit, nuStore } from '/nuburn/lib/getters.js'
 
@@ -6,6 +6,7 @@ import AppFactory from '/bb-vue/AppFactory.js'
 import EyeMacros from '/nuburn/EyeMacros.js'
 import EyeInput from '/nuburn/EyeInput.js'
 import EyeProcList from '/nuburn/EyeProcList.js'
+import { termRun } from '/nuburn/lib/term.js'
 
 export default class Eye {
   ns
@@ -53,6 +54,18 @@ const EyeRoot = {
         <bbv-json-display fill :data="store.srv" />
       </bbv-win>
 
+      <!-- Raw proc window -->
+      <bbv-win
+        no-pad
+        :start-open="true"
+        start-width="40%"
+        start-height="50%"
+        :start-position="{ x: 780, y: 400 }"
+        title="🔢 Raw Proc"
+      >
+        <bbv-json-display fill :data="store.proc" />
+      </bbv-win>
+
       <!-- Processes window -->
       <bbv-win
         no-pad
@@ -66,21 +79,10 @@ const EyeRoot = {
         <eye-proc-list />
       </bbv-win>
 
-      <!-- Raw proc window -->
-      <bbv-win
-        no-pad
-        :start-open="true"
-        start-width="40%"
-        start-height="50%"
-        :start-position="{ x: 780, y: 400 }"
-        title="🔢 Raw Proc"
-      >
-        <bbv-json-display fill :data="store.proc" />
-      </bbv-win>
-
       <!-- Add actions to tray -->
       <teleport to="#app-tray">
-        <bbv-button @click="doShutdown">🛑</bbv-button>
+        <bbv-button title="Reboot" @click="doReboot">💫</bbv-button>
+        <bbv-button title="Shutdown" @click="doShutdown">🛑</bbv-button>
       </teleport>
     </main>
   `,
@@ -102,11 +104,17 @@ const EyeRoot = {
       rootShutdown()
       nuEmit('nuMain:shutdown')
     }
+    const doReboot = async () => {
+      doShutdown()
+      await sleep(500)
+      await termRun('run /nuburn/Main.js')
+    }
 
     return {
       store,
       uptime,
       doShutdown,
+      doReboot,
     }
   },
   scss: css`

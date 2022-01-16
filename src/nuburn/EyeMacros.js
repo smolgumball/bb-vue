@@ -1,4 +1,4 @@
-import { css, html, Vue } from '/bb-vue/lib.js'
+import { css, html, sleep, Vue } from '/bb-vue/lib.js'
 import { nuEmit } from '/nuburn/lib/getters.js'
 
 export default {
@@ -25,6 +25,7 @@ export default {
       />
       <div class="other-buttons">
         <bbv-button @click="runTest">Scheduler Test</bbv-button>
+        <bbv-button @click="runTestBatch">Test <code>Batch</code></bbv-button>
       </div>
     </div>
   `,
@@ -71,6 +72,17 @@ export default {
         },
       })
     }
+    const runTestBatch = async () => {
+      for (let index = 0; index < 250; index++) {
+        nuEmit('nuScheduler:add', {
+          path: '/nuburn/exec/_test.js',
+          options: {
+            bounceBack: 'test #' + index,
+          },
+        })
+        await sleep(Math.random() * 10)
+      }
+    }
 
     // Shutdown
     const rootShutdown = inject('rootShutdown')
@@ -85,6 +97,7 @@ export default {
       runGrow,
       runWeaken,
       runTest,
+      runTestBatch,
       doShutdown,
     }
   },
@@ -94,8 +107,12 @@ export default {
       background-color: var(--bbvHackerDarkBgColor);
 
       & > .other-buttons {
-        padding-top: 10px;
+        padding-top: 5px;
         text-align: right;
+
+        & > *:not(:last-child) {
+          margin-right: 5px;
+        }
       }
     }
   `,

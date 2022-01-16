@@ -6,6 +6,14 @@ import Eye from '/nuburn/Eye.js'
 import Scheduler from '/nuburn/Scheduler.js'
 import Store from '/nuburn/Store.js'
 
+const storeSchema = () => {
+  return {
+    player: {},
+    srv: {},
+    proc: {},
+  }
+}
+
 /** @param { import("~/ns").NS } ns */
 export async function main(ns) {
   ns.disableLog('ALL')
@@ -17,14 +25,15 @@ export async function main(ns) {
   // Allows for cleanup on kill
   atExit(nu)
 
-  let tick = 0
-  const rate = 200
+  let tick = 1
+  const sleepRate = 200
   while (nu.wantsShutdown === false) {
+    await nu.collector.collect(tick)
     await nu.scheduler.checkHealth(tick)
     await nu.scheduler.runQueue(tick)
-    await nu.collector.collect(tick)
-    await ns.sleep(rate)
-    tick += rate
+    await nu.scheduler.syncStore(tick)
+    await ns.sleep(sleepRate)
+    tick++
   }
 
   // Once while falls through, exit program
@@ -52,11 +61,7 @@ async function initAll(nu) {
 
 async function storeInit(nu) {
   const store = new Store(nu.ns)
-  store.init({
-    player: {},
-    srv: {},
-    proc: {},
-  })
+  store.init(storeSchema())
   return store
 }
 

@@ -31,7 +31,6 @@ export default {
       & > span {
         width: 100%;
         color: var(--bbvInputBorderColor);
-        font-weight: bold;
       }
 
       & > input {
@@ -39,7 +38,6 @@ export default {
         line-height: 1;
         padding: 5px 0;
         border: none;
-        font-weight: bold;
         border-bottom: 1px solid var(--bbvInputBorderColor);
         background-color: var(--bbvInputBgColor);
         color: var(--bbvHackerDarkFgColor);

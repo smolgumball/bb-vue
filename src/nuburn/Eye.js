@@ -105,7 +105,7 @@ const EyeRoot = {
     }
     const doReboot = async () => {
       doShutdown()
-      await sleep(500)
+      await sleep(1000)
       await termRun('run /nuburn/Main.js')
     }
 

@@ -45,11 +45,12 @@ export default {
     <template v-for="proc in inspectedProcData" :key="proc.uuid">
       <bbv-win
         no-pad
-        :title="'#' + (proc.pid)"
+        :title="'🐞 Proc #' + (proc.pid)"
         @open="inspectProc(proc)"
         @close="uninspectProc(proc)"
       >
-        <bbv-json-display fill wrap :data="proc" />
+        <!-- <bbv-json-display fill wrap :data="proc" /> -->
+        <bbv-object-display :data="proc" />
       </bbv-win>
     </template>
   `,

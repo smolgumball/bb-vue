@@ -39,8 +39,7 @@ export default async function useDraggableWin(store, options = {}) {
 
   // Wait until draggableTarget is mounted, might be a better way?
   await until(store.draggableTarget).toMatch((x) => x.width > 0, {
-    timeout: 50,
-    throwOnTimeout: true,
+    timeout: 2000,
   })
 
   // Sync minWidth / minHeight from CSS styles applied to window

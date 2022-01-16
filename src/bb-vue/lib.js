@@ -57,7 +57,11 @@ export const RootApp = {
   },
   async cleanup() {
     await sleep(50)
-    this.raw()?.unmount()
+    try {
+      this.raw()?.unmount()
+    } catch (error) {
+      delete win[Keys.rootAppKey]
+    }
     await sleep(50)
     this.removeDom()
     await sleep(50)

@@ -12,6 +12,7 @@ import Button from '/bb-vue/components/Button.js'
 import JsonDisplay from '/bb-vue/components/JsonDisplay.js'
 import Tabs from '/bb-vue/components/Tabs.js'
 import AppRootStyles from '/bb-vue/components/AppRoot.Styles.js'
+import ObjectDisplay from '/bb-vue/components/ObjectDisplay.js'
 
 export const ComponentLibrary = [
   ConsumerRoot,
@@ -22,6 +23,7 @@ export const ComponentLibrary = [
   AppTrayGroup,
   Button,
   JsonDisplay,
+  ObjectDisplay,
   Tabs,
 ]
 

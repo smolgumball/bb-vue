@@ -1,0 +1,66 @@
+{
+  "importRoot": "/nuburn/",
+  "entryFile": "/nuburn/Main.js",
+  "manifestPaths": [
+    {
+      "repoPath": "/src/nuburn/Collector.js",
+      "installPath": "/nuburn/Collector.js"
+    },
+    {
+      "repoPath": "/src/nuburn/exec/g.js",
+      "installPath": "/nuburn/exec/g.js"
+    },
+    {
+      "repoPath": "/src/nuburn/exec/h.js",
+      "installPath": "/nuburn/exec/h.js"
+    },
+    {
+      "repoPath": "/src/nuburn/exec/w.js",
+      "installPath": "/nuburn/exec/w.js"
+    },
+    {
+      "repoPath": "/src/nuburn/exec/_test.js",
+      "installPath": "/nuburn/exec/_test.js"
+    },
+    {
+      "repoPath": "/src/nuburn/Eye.js",
+      "installPath": "/nuburn/Eye.js"
+    },
+    {
+      "repoPath": "/src/nuburn/EyeInput.js",
+      "installPath": "/nuburn/EyeInput.js"
+    },
+    {
+      "repoPath": "/src/nuburn/EyeMacros.js",
+      "installPath": "/nuburn/EyeMacros.js"
+    },
+    {
+      "repoPath": "/src/nuburn/EyeProcList.js",
+      "installPath": "/nuburn/EyeProcList.js"
+    },
+    {
+      "repoPath": "/src/nuburn/lib/date.js",
+      "installPath": "/nuburn/lib/date.js"
+    },
+    {
+      "repoPath": "/src/nuburn/lib/getters.js",
+      "installPath": "/nuburn/lib/getters.js"
+    },
+    {
+      "repoPath": "/src/nuburn/lib/term.js",
+      "installPath": "/nuburn/lib/term.js"
+    },
+    {
+      "repoPath": "/src/nuburn/Main.js",
+      "installPath": "/nuburn/Main.js"
+    },
+    {
+      "repoPath": "/src/nuburn/Scheduler.js",
+      "installPath": "/nuburn/Scheduler.js"
+    },
+    {
+      "repoPath": "/src/nuburn/Store.js",
+      "installPath": "/nuburn/Store.js"
+    }
+  ]
+}

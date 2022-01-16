@@ -1,10 +1,10 @@
 {
-  "name": "bitburner-scripts",
-  "version": "0.0.1",
+  "name": "bb-vue",
+  "version": "0.5.0",
   "author": "smolgumball",
   "scripts": {
     "defs": "node updateTypes.js",
-    "prepInstallManifest": "node prepInstallManifest.js"
+    "manifests": "node manifests.js"
   },
   "repository": {
     "type": "git",

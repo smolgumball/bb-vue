@@ -1,9 +1,9 @@
 /*
- _     _
-| |__ | |__      __   ___   _  ___
-| '_ \| '_ \ ____\ \ / / | | |/ _ \
-| |_) | |_) |_____\ V /| |_| |  __/
-|_.__/|_.__/       \_/  \__,_|\___|
+             _
+ _ __  _   _| |__  _   _ _ __ _ __
+| '_ \| | | | '_ \| | | | '__| '_ \
+| | | | |_| | |_) | |_| | |  | | | |
+|_| |_|\__,_|_.__/ \__,_|_|  |_| |_|
 
 */ /**
  * CONFIGURATION
@@ -11,7 +11,7 @@
  */
 
 /**
- * `bb-vue` installs to a unique subdirectory by default. To place it somewhere other than
+ * `nuburn` installs to a unique subdirectory by default. To place it somewhere other than
  * your root directory in BitBurner, set the prefixDirectory config as needed. Do not use a
  * relative path such as './myDirectory' - always use absolute paths like '/myDirectory'
  */
@@ -26,8 +26,8 @@ let prefixDirectory = ''
 let requiredHost = 'home'
 let repoRoot = 'https://raw.githubusercontent.com/smolgumball/bb-vue'
 let repoBranch = 'dev'
-let manifestFile = 'installManifest.txt'
-let manifestTmpPath = '/tmp/installManifest__bb-vue.txt'
+let manifestFile = 'installManifestNuburn.txt'
+let manifestTmpPath = '/tmp/installManifest__nuburn.txt'
 
 export async function main(ns) {
   if (ns.getHostname() !== requiredHost) {
@@ -65,7 +65,9 @@ export async function main(ns) {
   // prettier-ignore
   ns.tprint(`Install complete! 🎉
 
-Run the following in your home terminal for an example that uses bb-vue:
+🚧 Make sure bb-vue is ALSO installed before running nuburn!
+
+Run the following in your home terminal to launch nuburn:
 
 run ${mainJsPath}
 

@@ -1,4 +1,4 @@
-import { css, html, RootApp, sleep, Vue, VueUse, win } from '/bb-vue/lib.js'
+import { css, html, sleep, Vue, VueUse } from '/bb-vue/lib.js'
 import { timeDiff } from '/nuburn/lib/date.js'
 import { nuEmit, nuStore } from '/nuburn/lib/getters.js'
 
@@ -22,7 +22,6 @@ export default class Eye {
       config: {
         id: crypto.randomUUID(),
         showTips: false,
-        shutdownRootWithPid: this.ns.getRunningScript().pid,
         forceReload: true,
       },
       rootComponent: EyeRoot,

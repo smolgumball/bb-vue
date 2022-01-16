@@ -1,7 +1,5 @@
-NSDefs.d.ts
 node_modules/
 tmp/
 archived/
-src/bitpacks
-publishing-key.txt
 src/bb-vue/misc-examples/ticker-ui.js
+publishing-key.txt

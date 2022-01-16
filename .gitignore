@@ -1,9 +1,7 @@
 NSDefs.d.ts
 node_modules/
 tmp/
-archived/jank
-archived/lib
-archived/tasks
+archived/
 src/bitpacks
 publishing-key.txt
 src/bb-vue/misc-examples/ticker-ui.js

@@ -4,7 +4,7 @@
 
 - Built with Vue 3 and SCSS support
 - Includes an app tray for all your apps
-- Window manager to drag, minimize, and dynamically position windows
+- Window manager to drag, minimize, resize, and dynamically position windows
 - Various components to help you get started
 
 From custom UI extensions to reactive data storage, hacking in BitBurner has never been easier 😎

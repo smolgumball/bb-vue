@@ -1,5 +1,5 @@
 import { css, html, sleep, Vue } from '/bb-vue/lib.js'
-import { nuEmit } from '/nuburn/lib/getters.js'
+import { nuEmit } from '/nuburn/lib/globals.js'
 
 export default {
   name: 'eye-macros',
@@ -24,13 +24,13 @@ export default {
         @activate="runWeaken"
       />
       <div class="other-buttons">
-        <bbv-button @click="runTest">Scheduler Test</bbv-button>
+        <bbv-button @click="runTest">Runner Test</bbv-button>
         <bbv-button @click="runTestBatch">Test <code>Batch</code></bbv-button>
       </div>
     </div>
   `,
   setup() {
-    const { inject, reactive } = Vue()
+    const { reactive } = Vue()
 
     // Store
     const macroInputs = reactive({
@@ -41,7 +41,7 @@ export default {
 
     // Macros
     const runHack = () => {
-      nuEmit('nuScheduler:add', {
+      nuEmit('nuRunner:add', {
         path: '/nuburn/exec/h.js',
         options: {
           target: macroInputs.hack,
@@ -49,7 +49,7 @@ export default {
       })
     }
     const runGrow = () => {
-      nuEmit('nuScheduler:add', {
+      nuEmit('nuRunner:add', {
         path: '/nuburn/exec/g.js',
         options: {
           target: macroInputs.grow,
@@ -57,7 +57,7 @@ export default {
       })
     }
     const runWeaken = () => {
-      nuEmit('nuScheduler:add', {
+      nuEmit('nuRunner:add', {
         path: '/nuburn/exec/w.js',
         options: {
           target: macroInputs.weaken,
@@ -65,7 +65,7 @@ export default {
       })
     }
     const runTest = () => {
-      nuEmit('nuScheduler:add', {
+      nuEmit('nuRunner:add', {
         path: '/nuburn/exec/_test.js',
         options: {
           bounceBack: 'hello there!',
@@ -74,7 +74,7 @@ export default {
     }
     const runTestBatch = async () => {
       for (let index = 0; index < 250; index++) {
-        nuEmit('nuScheduler:add', {
+        nuEmit('nuRunner:add', {
           path: '/nuburn/exec/_test.js',
           options: {
             bounceBack: 'test #' + index,
@@ -84,13 +84,6 @@ export default {
       }
     }
 
-    // Shutdown
-    const rootShutdown = inject('rootShutdown')
-    const doShutdown = () => {
-      rootShutdown()
-      nuEmit('nuMain:shutdown')
-    }
-
     return {
       macroInputs,
       runHack,
@@ -98,7 +91,6 @@ export default {
       runWeaken,
       runTest,
       runTestBatch,
-      doShutdown,
     }
   },
   scss: css`

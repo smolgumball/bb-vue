@@ -1,5 +1,5 @@
 import { css, html, lodash, Vue } from '/bb-vue/lib.js'
-import { nuStore } from '/nuburn/lib/getters.js'
+import { nuStore } from '/nuburn/lib/globals.js'
 
 export default {
   name: 'eye-proc-list',
@@ -41,18 +41,18 @@ export default {
           </transition-group>
         </div>
       </div>
+      <template v-for="proc in inspectedProcData" :key="proc.uuid">
+        <bbv-win
+          no-pad
+          :title="'🐞 Proc #' + (proc.pid)"
+          @open="inspectProc(proc)"
+          @close="uninspectProc(proc)"
+        >
+          <!-- <bbv-json-display fill wrap :data="proc" /> -->
+          <bbv-object-display :data="proc" />
+        </bbv-win>
+      </template>
     </div>
-    <template v-for="proc in inspectedProcData" :key="proc.uuid">
-      <bbv-win
-        no-pad
-        :title="'🐞 Proc #' + (proc.pid)"
-        @open="inspectProc(proc)"
-        @close="uninspectProc(proc)"
-      >
-        <!-- <bbv-json-display fill wrap :data="proc" /> -->
-        <bbv-object-display :data="proc" />
-      </bbv-win>
-    </template>
   `,
   setup() {
     const { computed, reactive } = Vue()

@@ -9,7 +9,7 @@ import VueLoader from '/bb-vue/VueLoader.js'
 import ScriptX from '/bb-vue/components/internal/ScriptX.js'
 
 // prettier-ignore
-import { default as AppRoot, ComponentLibrary } from '/bb-vue/components/AppRoot.js'
+import { default as AppRoot, ComponentLibrary } from '/bb-vue/components/internal/AppRoot.js'
 
 const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {
   const rootConfig = {

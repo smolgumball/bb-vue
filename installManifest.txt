@@ -11,28 +11,28 @@
       "installPath": "/bb-vue/ComponentManager.js"
     },
     {
-      "repoPath": "/src/bb-vue/components/AppRoot.js",
-      "installPath": "/bb-vue/components/AppRoot.js"
-    },
-    {
-      "repoPath": "/src/bb-vue/components/AppRoot.Styles.js",
-      "installPath": "/bb-vue/components/AppRoot.Styles.js"
-    },
-    {
-      "repoPath": "/src/bb-vue/components/AppTray.js",
-      "installPath": "/bb-vue/components/AppTray.js"
-    },
-    {
-      "repoPath": "/src/bb-vue/components/AppTrayGroup.js",
-      "installPath": "/bb-vue/components/AppTrayGroup.js"
-    },
-    {
       "repoPath": "/src/bb-vue/components/Button.js",
       "installPath": "/bb-vue/components/Button.js"
     },
     {
       "repoPath": "/src/bb-vue/components/concerns/useDraggableWin.js",
       "installPath": "/bb-vue/components/concerns/useDraggableWin.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/internal/AppRoot.js",
+      "installPath": "/bb-vue/components/internal/AppRoot.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/internal/AppRoot.Styles.js",
+      "installPath": "/bb-vue/components/internal/AppRoot.Styles.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/internal/AppTray.js",
+      "installPath": "/bb-vue/components/internal/AppTray.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/internal/AppTrayGroup.js",
+      "installPath": "/bb-vue/components/internal/AppTrayGroup.js"
     },
     {
       "repoPath": "/src/bb-vue/components/internal/ConsumerRoot.js",
@@ -47,24 +47,28 @@
       "installPath": "/bb-vue/components/internal/ScriptX.js"
     },
     {
+      "repoPath": "/src/bb-vue/components/internal/Win.js",
+      "installPath": "/bb-vue/components/internal/Win.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/internal/WinManager.js",
+      "installPath": "/bb-vue/components/internal/WinManager.js"
+    },
+    {
+      "repoPath": "/src/bb-vue/components/internal/_resources.js",
+      "installPath": "/bb-vue/components/internal/_resources.js"
+    },
+    {
       "repoPath": "/src/bb-vue/components/JsonDisplay.js",
       "installPath": "/bb-vue/components/JsonDisplay.js"
     },
     {
+      "repoPath": "/src/bb-vue/components/ObjectDisplay.js",
+      "installPath": "/bb-vue/components/ObjectDisplay.js"
+    },
+    {
       "repoPath": "/src/bb-vue/components/Tabs.js",
       "installPath": "/bb-vue/components/Tabs.js"
-    },
-    {
-      "repoPath": "/src/bb-vue/components/Win.js",
-      "installPath": "/bb-vue/components/Win.js"
-    },
-    {
-      "repoPath": "/src/bb-vue/components/WinManager.js",
-      "installPath": "/bb-vue/components/WinManager.js"
-    },
-    {
-      "repoPath": "/src/bb-vue/components/_resources.js",
-      "installPath": "/bb-vue/components/_resources.js"
     },
     {
       "repoPath": "/src/bb-vue/examples/0-getting-started.js",

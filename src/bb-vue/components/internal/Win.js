@@ -2,7 +2,7 @@
 import { getClosestCrm, html, css, sleep } from '/bb-vue/lib.js'
 
 // prettier-ignore
-import { WinStates } from '/bb-vue/components/_resources.js'
+import { WinStates } from '/bb-vue/components/internal/_resources.js'
 import useDraggableWin from '/bb-vue/components/concerns/useDraggableWin.js'
 
 export default {

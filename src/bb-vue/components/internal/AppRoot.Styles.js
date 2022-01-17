@@ -68,6 +68,7 @@ export default {
       --bbvAppTrayBorderColor: #4bb4c5;
       --bbvAppTrayBgColor: #274b64;
       --bbvInputBorderColor: #357073;
+      --bbvInputBorderFadeColor: #{fade-out(#357073, 0.5)};
       --bbvInputBgColor: #{fade-out(#274b64, 0.5)};
       --bbvActiveColor: #954ea7;
       --bbvSuccessColor: #4fb168;

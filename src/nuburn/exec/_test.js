@@ -1,4 +1,4 @@
-import { nuChild } from '/nuburn/lib/getters.js'
+import { nuChild } from '/nuburn/lib/globals.js'
 
 /** @param { import("~/ns").NS } ns */
 export async function main(ns) {

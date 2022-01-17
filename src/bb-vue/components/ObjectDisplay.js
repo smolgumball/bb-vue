@@ -53,8 +53,12 @@ export default {
   },
   computed: {
     objectPrinter() {
+      if (!lodash.isObjectLike(this.data)) return
+
       // Build object array from entries
       let objArray = Object.entries(this.data).map(([label, value]) => {
+        label = label.trim()
+
         const dateTimeMatcher = new RegExp(/.*[tT]ime|[dD]ate.*/, 'gm')
         let type = 'default'
         let subType = 'default'
@@ -77,14 +81,6 @@ export default {
           }
         }
 
-        // Recommended key detection
-        // if (label == 'uuid') recommendedKey = 'uuid'
-        // else if (label == 'id') recommendedKey = 'id'
-        // else if (label == 'pid') recommendedKey = 'pid'
-        // else if (label == 'timeStart') recommendedKey = 'timeStart'
-        // else recommendedKey = 'shallowHash'
-        // key: hash([label, value]),
-
         return {
           label,
           value,
@@ -94,22 +90,22 @@ export default {
       })
 
       // Sort object entries based on known keys + common datatypes
+      // prettier-ignore
+      let labelOrders = [
+        'state', 'result', 'error', 'pid', 'script', 'path',
+        'host', 'uuid', 'options', 'timeStart', 'timeEnd', 'logs',
+      ]
+      let typeOrders = ['date', 'string', 'number', 'array', 'object']
+      let labelOrdering = Object.fromEntries(labelOrders.map((x, i) => [x, i]))
+      let typeOrdering = Object.fromEntries(typeOrders.map((x, i) => [x, i]))
       objArray.sort((a, b) => {
-        if (a.label == 'path' && b.label != 'path') return 14
-        if (a.label == 'host' && b.label != 'host') return 13
-        if (a.label == 'uuid' && b.label != 'uuid') return 12
-        if (a.label == 'options' && b.label != 'options') return 11
-        if (a.label == 'timeStart' && b.label != 'timeStart') return 10
-        if (a.label == 'timeEnd' && b.label != 'timeEnd') return 9
-        if (a.label == 'logs' && b.label != 'logs') return 8
-        if (a.label == 'result' && b.label != 'result') return 7
-        if (a.label == 'error' && b.label != 'error') return 6
-        if (a.type == 'date' && b.type != 'date') return -1
-        if (a.type == 'string' && b.type != 'string') return -2
-        if (a.type == 'number' && b.type != 'number') return -3
-        if (a.type == 'array' && b.type != 'array') return -4
-        if (a.type == 'object' && b.type != 'object') return -5
-        return -6
+        if (labelOrders.some((x) => x == a.label || x == b.label)) {
+          return labelOrdering[a.label] - labelOrdering[b.label]
+        } else if (typeOrders.some((x) => x == a.type || x == b.type)) {
+          return typeOrdering[a.type] - typeOrdering[b.type]
+        } else {
+          return a.label.localeCompare(b.label)
+        }
       })
 
       return objArray
@@ -122,6 +118,7 @@ export default {
 
       width: 100%;
       overflow: auto;
+      box-shadow: 0px 0px 10px 0px var(--bbvBoxShadowColor1);
 
       .objectRow {
         display: flex;
@@ -136,12 +133,18 @@ export default {
             padding-bottom: 8px;
           }
         }
+
+        &:last-child {
+          .label {
+            border-color: transparent;
+          }
+        }
       }
 
       .label {
         width: 120px;
         padding: 3px 12px 3px 8px;
-        border-bottom: 1px solid var(--bbvInputBorderColor);
+        border-bottom: 1px solid var(--bbvInputBorderFadeColor);
         flex-shrink: 0;
         overflow: hidden;
         white-space: nowrap;
@@ -155,7 +158,7 @@ export default {
         padding: 4px 4px 4px 8px;
         color: var(--bbvHackerDarkFgColor);
         background-color: var(--bbvHackerDarkBgColor);
-        border-left: 2px solid var(--bbvInputBorderColor);
+        border-left: 2px solid var(--bbvInputBorderFadeColor);
       }
 
       .number {

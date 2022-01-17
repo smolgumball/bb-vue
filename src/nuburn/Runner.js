@@ -1,28 +1,27 @@
-import { getGlobal, lodash, toJson } from '/bb-vue/lib.js'
+import { lodash, toJson } from '/bb-vue/lib.js'
+import { nuEmit, nuListen } from '/nuburn/lib/globals.js'
 
-export default class Scheduler {
-  ns
+export default class Runner {
+  core
   running = []
   successful = []
   failed = []
   queue = []
   phantom = []
 
-  /** @param { import("~/ns").NS } ns */
-  constructor(ns) {
-    this.ns = ns
+  constructor(core) {
+    this.core = core
   }
 
   async init() {
-    const bus = getGlobal('nuMain.bus')
-    bus.on('nuScheduler:add', this.queueAdd.bind(this))
-    bus.on('nuScheduler:execResolve', this.execResolve.bind(this))
+    nuListen('nuRunner:add', this.queueAdd.bind(this))
+    nuListen('nuRunner:execResolve', this.execResolve.bind(this))
   }
 
   async runQueue(tick) {
     if (tick % 1 === 0) {
       for (const queuedExec of this.queue) {
-        if (getGlobal('nuMain').wantsShutdown) return
+        if (this.core.wantsShutdown) return
         if (await this.execRun(queuedExec)) {
           this.queue.splice(this.queue.indexOf(queuedExec), 1)
         }
@@ -31,7 +30,7 @@ export default class Scheduler {
   }
 
   async syncStore(tick) {
-    let data = getGlobal('nuMain.store').data
+    let data = this.core.store.data
     if (tick % 1 === 0) {
       data.proc = {
         queue: this.queue,
@@ -45,12 +44,12 @@ export default class Scheduler {
   }
 
   async checkHealth(tick) {
-    let ns = this.ns
+    let ns = this.core.ns
 
     if (tick % 5 === 0) {
       this.running.forEach((proc, i) => {
         if (!ns.getRunningScript(proc.pid)) {
-          ns.tprint(`nuMain.scheduler removing phantom:\n${toJson(proc)}`)
+          ns.tprint(`nuCore.runner removing phantom:\n${toJson(proc)}`)
           this.removeByUuid(this.running, proc.uuid)
           this.phantom.push({ ...proc, timeEnd: Date.now() })
         } else {
@@ -61,7 +60,7 @@ export default class Scheduler {
   }
 
   gatherRunningLogs(proc) {
-    return this.filterLogs(this.ns.getRunningScript(proc.pid).logs)
+    return this.filterLogs(this.core.ns.getRunningScript(proc.pid).logs)
   }
 
   filterLogs(logs = []) {
@@ -73,7 +72,7 @@ export default class Scheduler {
   }
 
   async execRun({ path, uuid, host = 'home', threads = 1, options = {}, args = [] } = {}) {
-    let ns = this.ns
+    let ns = this.core.ns
 
     // RAM check
     let srv = ns.getServer(host)
@@ -128,8 +127,7 @@ export default class Scheduler {
   }
 
   removeByUuid(arr, uuid) {
-    let toDel = this.findByUuid(arr, uuid)
-    arr.splice(arr.indexOf(toDel), 1)
+    arr.splice(arr.indexOf(this.findByUuid(arr, uuid)), 1)
   }
 
   findByUuid(arr, uuid) {
@@ -139,18 +137,11 @@ export default class Scheduler {
   /** @param { import("~/ns").NS } ns */
   async child(ns, scriptFn) {
     ns.disableLog('sleep')
-    const bus = getGlobal('nuMain.bus')
 
-    /**
-     * @type {{
-     *  pid: string,
-     *  args: (string | number | boolean)[]>
-     * }}
-     **/
     const uuid = ns.args[0]
     const argsJson = JSON.parse(ns.args[1])
     const resolve = async (result) => {
-      bus.emit('nuScheduler:execResolve', {
+      nuEmit('nuRunner:execResolve', {
         logs: this.filterLogs(ns.getScriptLogs()),
         uuid,
         result,
@@ -164,10 +155,10 @@ export default class Scheduler {
           .replaceAll('<br>', '')
           .replaceAll('Stack:', '')
       }
-      bus.emit('nuScheduler:execResolve', {
+      nuEmit('nuRunner:execResolve', {
         logs: this.filterLogs(ns.getScriptLogs()),
         uuid,
-        error,
+        error: error ?? ':: rejected without error ::',
       })
     }
     await scriptFn({

@@ -1,16 +1,12 @@
-import { getGlobal } from '/bb-vue/lib.js'
-
 export default class Collector {
-  ns
-  store
+  core
 
-  constructor(ns) {
-    this.ns = ns
-    this.store = getGlobal('nuMain.store')
+  constructor(core) {
+    this.core = core
   }
 
   async collect(tick) {
-    let data = this.store.data
+    let data = this.core.store.data
 
     if (tick % 5 === 0) {
       data.player = this.player()
@@ -30,26 +26,26 @@ export default class Collector {
   }
 
   player() {
-    return this.ns.getPlayer()
+    return this.core.ns.getPlayer()
   }
 
   hackableServers() {
-    let ns = this.ns
-    let data = this.store.data
+    let ns = this.core.ns
+    let data = this.core.store.data
     return data.srv.serversFlat.filter(
       (x) => ns.hasRootAccess(x) && data.player.hacking <= ns.getServerRequiredHackingLevel(x)
     )
   }
 
   rootedServers() {
-    let ns = this.ns
-    let data = this.store.data
+    let ns = this.core.ns
+    let data = this.core.store.data
     return data.srv.serversFlat.filter((x) => ns.hasRootAccess(x))
   }
 
   serverDetails() {
-    let ns = this.ns
-    let data = this.store.data
+    let ns = this.core.ns
+    let data = this.core.store.data
     let details = {}
     data.srv.serversFlat.forEach((x) => {
       details[x] = ns.getServer(x)
@@ -57,17 +53,8 @@ export default class Collector {
     return details
   }
 
-  allServers() {
-    const ns = this.ns
-    const hostnames = ['home']
-    for (const hostname of hostnames) {
-      hostnames.push(...ns.scan(hostname).filter((host) => !hostnames.includes(host)))
-    }
-    return hostnames
-  }
-
   allServersMap() {
-    const ns = this.ns
+    const ns = this.core.ns
     const tree = { home: {} }
     const flat = new Set()
 

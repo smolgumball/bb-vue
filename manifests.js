@@ -19,7 +19,7 @@ const appsToPackage = {
     scanRoot: 'src',
     scanIncludeExtensions: ['js', 'ns', 'txt'],
     scanExcludes: [/\/node_modules\//, /.git/, /publishing-key\.txt/],
-    entryFile: '/nuburn/Main.js',
+    entryFile: '/nuburn/start.js',
     manifestFile: 'installManifestNuburn.txt',
   },
 }

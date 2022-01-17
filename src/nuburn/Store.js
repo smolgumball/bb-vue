@@ -1,11 +1,11 @@
 import VueLoader from '/bb-vue/VueLoader.js'
 
 export default class Store {
-  ns
+  core
   data
 
-  constructor(ns) {
-    this.ns = ns
+  constructor(core) {
+    this.core = core
   }
 
   async init(schema) {

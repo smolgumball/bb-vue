@@ -1,17 +1,17 @@
 // prettier-ignore
 import { html, Keys, Mitt, RootApp, Vue, win } from '/bb-vue/lib.js'
 
+import AppRootStyles from '/bb-vue/components/internal/AppRoot.Styles.js'
 import ConsumerRoot from '/bb-vue/components/internal/ConsumerRoot.js'
 import CssManager from '/bb-vue/components/internal/CssManager.js'
+import WinManager from '/bb-vue/components/internal/WinManager.js'
+import AppTray from '/bb-vue/components/internal/AppTray.js'
+import AppTrayGroup from '/bb-vue/components/internal/AppTrayGroup.js'
+import Win from '/bb-vue/components/internal/Win.js'
 
-import Win from '/bb-vue/components/Win.js'
-import WinManager from '/bb-vue/components/WinManager.js'
-import AppTray from '/bb-vue/components/AppTray.js'
-import AppTrayGroup from '/bb-vue/components/AppTrayGroup.js'
 import Button from '/bb-vue/components/Button.js'
 import JsonDisplay from '/bb-vue/components/JsonDisplay.js'
 import Tabs from '/bb-vue/components/Tabs.js'
-import AppRootStyles from '/bb-vue/components/AppRoot.Styles.js'
 import ObjectDisplay from '/bb-vue/components/ObjectDisplay.js'
 
 export const ComponentLibrary = [

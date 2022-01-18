@@ -5,6 +5,7 @@ import VueLoader from '/bb-vue/VueLoader.js'
 
 import { ReplEvents, ReplStates } from '/nuburn/lib/globals.js'
 import ReplRoot from '/nuburn/ui/ReplRoot.js'
+import PrismEditorComponent from '/nuburn/vendor/PrismEditorComponent.js'
 
 /** @param { import("~/ns").NS } ns */
 export async function main(ns) {
@@ -65,6 +66,7 @@ class Repl {
         forceReload: true,
       },
       rootComponent: ReplRoot,
+      components: [PrismEditorComponent()],
     })
   }
 

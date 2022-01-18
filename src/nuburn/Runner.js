@@ -1,5 +1,6 @@
 import { lodash, toJson } from '/bb-vue/lib.js'
 import { nuEmit, nuListen } from '/nuburn/lib/globals.js'
+import { cleanupError } from '/nuburn/lib/util.js'
 
 export default class Runner {
   core
@@ -149,11 +150,7 @@ export default class Runner {
     }
     const reject = async (error) => {
       if (lodash.isString(error)) {
-        error = error
-          .replace('|DELIMITER|', '')
-          .replaceAll('|DELIMITER|', ' » ')
-          .replaceAll('<br>', '')
-          .replaceAll('Stack:', '')
+        error = cleanupError(error)
       }
       nuEmit('nuRunner:execResolve', {
         logs: this.filterLogs(ns.getScriptLogs()),

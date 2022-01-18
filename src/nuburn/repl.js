@@ -1,3 +1,22 @@
+/*
+
+// Sample script
+
+let targets = ['n00dles', 'joesguns']
+let procs = ['hack', 'grow', 'weaken']
+let ram = [ns.weaken, ns.grow, ns.hack ]
+
+while(true) {
+  for (const t of targets) {
+    for (const p of procs) {
+      ns.print(`${p} -> ${t}`)
+      await ns[p](t)
+    }
+  }
+}
+
+*/
+
 import AppFactory from '/bb-vue/AppFactory.js'
 import { doc, isBlank, setGlobal, win } from '/bb-vue/lib.js'
 import MittLoader from '/bb-vue/MittLoader.js'
@@ -14,6 +33,8 @@ export async function main(ns) {
 
   let nuRepl = new Repl(ns)
   await nuRepl.init()
+
+  ns.print
 
   ns.tprint('🔋 nuRepl booted')
   await nuRepl.runUntilShutdown()
@@ -75,6 +96,15 @@ class Repl {
       await this.replTick()
       await this.ns.asleep(50)
     }
+
+    if (this.store.currentRun?.state == ReplStates.running) {
+      for (const script of [this.store.currentRun, ...this.store.runHistory]) {
+        console.log('Killing: ', script)
+        this.ns.kill(script.pid)
+      }
+    }
+
+    await this.ns.asleep(250)
   }
 
   buildRunTemplate(uuid, script) {
@@ -84,6 +114,7 @@ class Repl {
       scriptEncoded: this.toBase64(this.prepScript(uuid, script)),
       state: ReplStates.staged,
       path: `/nuburn/tmp-repl/${uuid}.js`,
+      wantsShutdown: false,
       pid: null,
       result: null,
       error: null,
@@ -113,7 +144,25 @@ class Repl {
     }
 
     if (this.store.currentRun?.uuid && this.store.currentRun.state == ReplStates.running) {
-      this.store.currentRun.logs = this.ns.getScriptLogs(this.store.currentRun.path)
+      if (this.ns.getRunningScript(this.store.currentRun?.pid)) {
+        this.store.currentRun.logs = this.ns.getScriptLogs(this.store.currentRun.path)
+      } else {
+        this.finishReplRun({
+          result: null,
+          error: '[script died unexpectedly]',
+          logs: this.store.currentRun.logs,
+        })
+      }
+    }
+
+    if (this.store?.currentRun?.wantsShutdown) {
+      let finalLogs = this.ns.getScriptLogs(this.store.currentRun.path)
+      this.ns.kill(this.store.currentRun.pid)
+      this.finishReplRun({
+        result: '[execution halted]',
+        error: null,
+        logs: finalLogs,
+      })
     }
 
     await this.ns.asleep(50)
@@ -121,14 +170,14 @@ class Repl {
 
   finishReplRun({ result, error, logs }) {
     let undefinedReturns = result == undefined && error == undefined
-    this.store.currentRun.result = undefinedReturns
-      ? 'nothing returned. did you forget a return keyword?'
-      : result
+    this.store.currentRun.result = undefinedReturns ? '[nothing returned]' : result
 
-    let considerSuccess = !isBlank(result) || result === 0 || undefinedReturns
+    let wantedShutdown = this.store.currentRun.wantsShutdown
+    let considerSuccess = (!wantedShutdown && !isBlank(result)) || result === 0 || undefinedReturns
     this.store.currentRun.error = error
     this.store.currentRun.logs = logs
     this.store.currentRun.state = considerSuccess ? ReplStates.succeeded : ReplStates.failed
+    if (wantedShutdown) this.store.currentRun.state = ReplStates.killed
     this.store.runHistory = [{ ...this.store.currentRun }, ...this.store.runHistory]
 
     // Cleanup old tmp-repl files
@@ -152,13 +201,14 @@ export async function main(ns) {
   // Retrieve replBus
   const __bus = getGlobal('nuRepl').bus
 
-  // Injected script
   let __error
   let __result
 
   try {
     __result = await (async function(ns) {
+      // <injected-script>
       ${script}
+      // </injected-script>
     })(ns)
   } catch (error) {
     __error = String(error)

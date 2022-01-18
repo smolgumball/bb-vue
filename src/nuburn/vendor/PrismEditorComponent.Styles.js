@@ -16,7 +16,6 @@ export default `
   padding: 0;
   overflow: hidden;
   width: 100%;
-  height: 100%;
 }
 
 .prism-editor__line-numbers {

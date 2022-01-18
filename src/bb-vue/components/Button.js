@@ -60,7 +60,7 @@ export default {
       }
 
       & > code {
-        padding: 2px;
+        padding: 4px 3px;
         background-color: var(--bbvWinActionsBgColor);
         border-radius: 4px;
       }

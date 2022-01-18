@@ -34,5 +34,6 @@ export const ReplStates = Object.freeze({
   staged: 'staged',
   running: 'running',
   succeeded: 'succeeded',
+  killed: 'killed',
   failed: 'failed',
 })

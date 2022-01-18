@@ -21,12 +21,18 @@ export default {
           :highlight="prismHighlight"
           language="javascript"
           class="replScript"
+          :class="{ noCode: isBlank(cmpData.workingScript) }"
+          :style="cmpData.replStyle"
           :line-numbers="true"
           :readonly="storeData.queuePaused"
           @keydown.enter.ctrl="replRun"
         />
-        <bbv-button class="replRun" @click="replRun" :disabled="storeData.queuePaused">
-          <template v-if="storeData.queuePaused"><code>Running...</code></template>
+        <bbv-button
+          class="replRun"
+          :class="{ isRunning: storeData.queuePaused }"
+          @click="() => storeData.queuePaused ? replKill() : replRun()"
+        >
+          <template v-if="storeData.queuePaused">Running... <code>Kill?</code></template>
           <template v-else>Run</template>
         </bbv-button>
         <bbv-object-display class="replResult" :data="replDisplay" />
@@ -57,18 +63,35 @@ export default {
     const cmpData = reactive({
       workingScript: null,
       monacoBooted: false,
+      replStyle: {},
     })
     const replDisplay = computed(() => {
       const defaultState = { state: 'waiting for command...' }
       let objToReturn = storeData.currentRun ?? storeData.runHistory[0]
-      objToReturn = lodash.omit({ ...objToReturn }, ['uuid', 'scriptEncoded', 'path'])
+      objToReturn = lodash.omit({ ...objToReturn }, [
+        'uuid',
+        'scriptEncoded',
+        'path',
+        'wantsShutdown',
+      ])
       return isBlank(objToReturn) ? defaultState : objToReturn
+    })
+    cmpData.replStyle = computed(() => {
+      let loc = cmpData.workingScript?.split('\n')?.length ?? 0
+      return {
+        height: `calc((1.1em * ${Math.max(loc, 5)}) + 12px)`,
+      }
     })
 
     // Dispatch a repl run to the long-running dispatcher process
     const replRun = () => {
       if (isBlank(cmpData.workingScript)) return
       replBus.emit(ReplEvents.runScript, { script: cmpData.workingScript })
+    }
+
+    // Mark a run for shutdown
+    const replKill = () => {
+      storeData.currentRun.wantsShutdown = true
     }
 
     const prismHighlight = (code) => {
@@ -100,7 +123,9 @@ export default {
       cmpData,
       replDisplay,
       uptime,
+      isBlank,
       replRun,
+      replKill,
       prismHighlight,
       doShutdown,
       doReboot,
@@ -119,9 +144,15 @@ export default {
         border: none;
         resize: none;
         width: 100%;
-        height: 200px;
-        padding: 12px 12px 12px 0px;
+        min-height: 135px;
+        padding: 6px 12px 6px 0px;
         background-color: var(--bbvHackerDarkBgColor);
+
+        &.noCode {
+          .prism-editor__container {
+            height: 100%;
+          }
+        }
       }
 
       .replRun {
@@ -131,7 +162,7 @@ export default {
         padding: 12px 12px 15px 12px;
         width: 100%;
 
-        &[disabled] {
+        &.isRunning {
           animation: bbvFlashBusy 2s linear 0s infinite alternate;
         }
       }

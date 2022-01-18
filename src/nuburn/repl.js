@@ -34,8 +34,6 @@ export async function main(ns) {
   let nuRepl = new Repl(ns)
   await nuRepl.init()
 
-  ns.print
-
   ns.tprint('🔋 nuRepl booted')
   await nuRepl.runUntilShutdown()
 

@@ -1,5 +1,6 @@
 // prettier-ignore
 import { css, html, lodash, toJson } from '/bb-vue/lib.js'
+import { cleanupError } from '/nuburn/lib/util.js'
 
 export default {
   name: 'bbv-object-display',
@@ -57,7 +58,7 @@ export default {
 
       // Build object array from entries
       let objArray = Object.entries(this.data).map(([label, value]) => {
-        label = label.trim()
+        label = String(label).trim()
 
         const dateTimeMatcher = new RegExp(/.*[tT]ime|[dD]ate.*/, 'gm')
         let type = 'default'
@@ -80,6 +81,11 @@ export default {
             subType = 'large'
           }
         }
+
+        // Value processing
+        if (type == 'string') value = value.trim()
+        if (type == 'string' && label == 'error') value = cleanupError(value)
+        if (type == 'array' && label == 'logs') value = value.join('\n')
 
         return {
           label,
@@ -111,7 +117,7 @@ export default {
       return objArray
     },
   },
-  methods: { toJson },
+  methods: { toJson, cleanupError },
   scss: css`
     .__CMP_NAME__ {
       @include bbv-scrollbar;

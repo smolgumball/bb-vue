@@ -37,7 +37,7 @@ export default {
     </div>
   `,
   inject: ['internals'],
-  emits: ['open', 'close'],
+  emits: ['open', 'close', 'resize'],
   props: {
     title: {
       type: String,
@@ -95,6 +95,14 @@ export default {
       } else if (newVal == WinStates.closed) {
         this.shouldDisplay = false
       }
+    },
+    'draggable.size': {
+      handler(newVal, oldVal) {
+        if (!newVal || !oldVal) return
+        if (newVal.width !== oldVal.width || newVal.height !== oldVal.height) {
+          this.$emit('resize')
+        }
+      },
     },
   },
   computed: {

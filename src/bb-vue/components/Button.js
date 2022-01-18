@@ -43,6 +43,11 @@ export default {
         background-color: var(--bbvButtonHoverBgColor);
       }
 
+      &[disabled]:hover {
+        background-color: var(--bbvButtonBgColor);
+        cursor: not-allowed;
+      }
+
       &.small {
         padding: 6px;
         font-size: 12px;

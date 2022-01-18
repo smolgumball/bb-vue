@@ -109,6 +109,15 @@ export default {
         @include typo-basic;
       }
 
+      @keyframes bbvFlashBusy {
+        from {
+          filter: hue-rotate(0deg);
+        }
+        to {
+          filter: hue-rotate(360deg);
+        }
+      }
+
       &.rootAppIntro-enter-active,
       &.rootAppIntro-leave-active,
       &.consumerRootIntro-enter-active,

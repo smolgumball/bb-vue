@@ -239,7 +239,7 @@ export function getClosestCrm(startingVm) {
 // --------------------------------------------------------------
 
 /**
- * Cleanup an error strong
+ * Cleanup an error string
  * @param {String} error Error string to cleanup
  * @returns Removes odd internal delimiters and other noisy chars from a BitBurner error
  */

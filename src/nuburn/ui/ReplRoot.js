@@ -1,4 +1,4 @@
-import { css, getGlobal, html, isBlank, lodash, sleep, Vue, VueUse, win } from '/bb-vue/lib.js'
+import { css, getGlobal, html, isBlank, lodash, sleep, Vue, VueUse } from '/bb-vue/lib.js'
 import { termRun } from '/nuburn/lib/term.js'
 import { timeDiff } from '/nuburn/lib/date.js'
 import { ReplEvents } from '/nuburn/lib/globals.js'
@@ -24,17 +24,26 @@ export default {
           :class="{ noCode: isBlank(cmpData.workingScript) }"
           :style="cmpData.replStyle"
           :line-numbers="true"
-          :readonly="storeData.queuePaused"
+          :readonly="storeData.replBusy"
           @keydown.enter.ctrl="replRun"
         />
-        <bbv-button
-          class="replRun"
-          :class="{ isRunning: storeData.queuePaused }"
-          @click="() => storeData.queuePaused ? replKill() : replRun()"
-        >
-          <template v-if="storeData.queuePaused">Running... <code>Kill?</code></template>
-          <template v-else>Run</template>
-        </bbv-button>
+        <div class="replControls">
+          <bbv-button
+            class="replRun"
+            :class="{ isRunning: storeData.replBusy }"
+            @click="() => storeData.replBusy ? replKill() : replRun()"
+          >
+            <template v-if="storeData.replBusy">Running... <code>Kill?</code></template>
+            <template v-else>Run</template>
+          </bbv-button>
+          <eye-input
+            inline
+            class="replThreads"
+            label="t="
+            v-model="cmpData.workingThreads"
+            @activate="replRun"
+          />
+        </div>
         <bbv-object-display class="replResult" :data="replDisplay" />
         <template #actions>
           <span><strong>Uptime:</strong> {{ uptime }}</span>
@@ -44,7 +53,7 @@ export default {
 
       <!-- Add actions to tray -->
       <teleport to="#app-tray">
-        <bbv-button title="Reboot" @click="doReboot">💫</bbv-button>
+        <bbv-button title="Reboot" @click="doReboot">💫 REPL</bbv-button>
       </teleport>
     </main>
   `,
@@ -62,18 +71,14 @@ export default {
     const storeData = getGlobal('nuRepl').store
     const cmpData = reactive({
       workingScript: null,
+      workingThreads: 1,
       monacoBooted: false,
       replStyle: {},
     })
     const replDisplay = computed(() => {
       const defaultState = { state: 'waiting for command...' }
       let objToReturn = storeData.currentRun ?? storeData.runHistory[0]
-      objToReturn = lodash.omit({ ...objToReturn }, [
-        'uuid',
-        'scriptEncoded',
-        'path',
-        'wantsShutdown',
-      ])
+      objToReturn = lodash.omit({ ...objToReturn }, ['uuid', 'scriptPrepped', 'wantsShutdown'])
       return isBlank(objToReturn) ? defaultState : objToReturn
     })
     cmpData.replStyle = computed(() => {
@@ -86,7 +91,11 @@ export default {
     // Dispatch a repl run to the long-running dispatcher process
     const replRun = () => {
       if (isBlank(cmpData.workingScript)) return
-      replBus.emit(ReplEvents.runScript, { script: cmpData.workingScript })
+      if (storeData.replBusy) return
+      replBus.emit(ReplEvents.runScript, {
+        script: cmpData.workingScript,
+        threads: cmpData.workingThreads,
+      })
     }
 
     // Mark a run for shutdown
@@ -95,10 +104,10 @@ export default {
     }
 
     const prismHighlight = (code) => {
-      return win.Prism.highlight(
+      return Prism.highlight(
         code,
         {
-          ...win.Prism.languages['js'],
+          ...Prism.languages['js'],
         },
         'javascript'
       )
@@ -155,20 +164,26 @@ export default {
         }
       }
 
+      .replControls {
+        display: flex;
+      }
+
       .replRun {
-        margin-top: -5px;
-        font-size: 18px;
+        font-size: 16px;
         text-transform: uppercase;
-        padding: 12px 12px 15px 12px;
-        width: 100%;
+        padding: 10px 10px 13px 10px;
+        flex-grow: 1;
 
         &.isRunning {
-          animation: bbvFlashBusy 2s linear 0s infinite alternate;
+          animation: bbvFlashBusy 1s ease-in-out 0s infinite alternate;
         }
       }
 
+      .replThreads {
+        width: 80px;
+      }
+
       .replResult {
-        padding-top: 5px;
         min-height: 130px;
         box-shadow: none;
       }

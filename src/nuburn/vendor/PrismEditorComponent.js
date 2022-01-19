@@ -1,4 +1,4 @@
-import { Vue as vueLib } from "/bb-vue/lib.js"
+import { Vue as vueLib, win } from "/bb-vue/lib.js"
 
 export default function() {
   const Vue = vueLib()
@@ -37,10 +37,10 @@ export default function() {
   var KEYCODE_ESCAPE = 27
   var HISTORY_LIMIT = 100
   var HISTORY_TIME_GAP = 3000
-  var isWindows =
-    typeof window !== 'undefined' && navigator && /*#__PURE__*/ /Win/i.test(navigator.platform)
+  var isWin =
+    typeof win !== 'undefined' && navigator && /*#__PURE__*/ /Win/i.test(navigator.platform)
   var isMacLike =
-    typeof window !== 'undefined' &&
+    typeof win !== 'undefined' &&
     navigator &&
     /*#__PURE__*/ /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)
 
@@ -155,7 +155,7 @@ export default function() {
         if (!this.lineNumbers || !this.autoStyleLineNumbers) return
         var $editor = this.$refs.pre
         var $lineNumbers = this.$el.querySelector('.prism-editor__line-numbers')
-        var editorStyles = window.getComputedStyle($editor)
+        var editorStyles = win.getComputedStyle($editor)
         this.$nextTick(function () {
           var btlr = 'border-top-left-radius'
           var bblr = 'border-bottom-left-radius'
@@ -329,6 +329,9 @@ export default function() {
           this.history.offset = Math.min(offset + 1, stack.length - 1)
         }
       },
+      onFocus: function onFocus() {
+        this.capture = true
+      },
       handleKeyDown: function handleKeyDown(e) {
         // console.log(navigator.platform);
         var tabSize = this.tabSize,
@@ -342,8 +345,9 @@ export default function() {
         }
 
         if (e.keyCode === KEYCODE_ESCAPE) {
-          e.target.blur()
-          this.$emit('blur', e)
+          this.capture = false
+          // e.target.blur()
+          // this.$emit('blur', e)
         }
 
         var _e$target2 = e.target,
@@ -527,7 +531,7 @@ export default function() {
         } else if (
           (isMacLike // Trigger redo with ⌘+Shift+Z on Mac
             ? e.metaKey && e.keyCode === KEYCODE_Z && e.shiftKey
-            : isWindows // Trigger redo with Ctrl+Y on Windows
+            : isWin // Trigger redo with Ctrl+Y on Windows
             ? e.ctrlKey && e.keyCode === KEYCODE_Y // Trigger redo with Ctrl+Shift+Z on other platforms
             : e.ctrlKey && e.keyCode === KEYCODE_Z && e.shiftKey) &&
           !e.altKey
@@ -587,6 +591,7 @@ export default function() {
         },
         onFocus: function onFocus($event) {
           _this3.$emit('focus', $event)
+          _this3.onFocus()
         },
         onBlur: function onBlur($event) {
           _this3.$emit('blur', $event)

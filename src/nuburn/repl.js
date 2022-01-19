@@ -18,11 +18,12 @@ while(true) {
 */
 
 import AppFactory from '/bb-vue/AppFactory.js'
-import { doc, isBlank, setGlobal, win } from '/bb-vue/lib.js'
+import { isBlank, setGlobal, win } from '/bb-vue/lib.js'
 import MittLoader from '/bb-vue/MittLoader.js'
 import VueLoader from '/bb-vue/VueLoader.js'
 
 import { ReplEvents, ReplStates } from '/nuburn/lib/globals.js'
+import EyeInput from '/nuburn/ui/EyeInput.js'
 import ReplRoot from '/nuburn/ui/ReplRoot.js'
 import PrismEditorComponent from '/nuburn/vendor/PrismEditorComponent.js'
 
@@ -63,7 +64,7 @@ class Repl {
       runHistory: [],
       currentRun: null,
       stagedRun: null,
-      queuePaused: false,
+      replBusy: false,
     })
 
     // Wire events
@@ -82,10 +83,9 @@ class Repl {
       config: {
         id: crypto.randomUUID(),
         showTips: false,
-        forceReload: true,
       },
       rootComponent: ReplRoot,
-      components: [PrismEditorComponent()],
+      components: [PrismEditorComponent(), EyeInput],
     })
   }
 
@@ -105,11 +105,12 @@ class Repl {
     await this.ns.asleep(250)
   }
 
-  buildRunTemplate(uuid, script) {
+  buildRunTemplate(uuid, script, threads) {
     return {
       uuid,
+      threads: Math.max(threads, 1),
       script: script,
-      scriptEncoded: this.toBase64(this.prepScript(uuid, script)),
+      scriptPrepped: this.prepScript(uuid, script),
       state: ReplStates.staged,
       path: `/nuburn/tmp-repl/${uuid}.js`,
       wantsShutdown: false,
@@ -121,23 +122,26 @@ class Repl {
   }
 
   /** @param {{ script: string, uuid: string }} options */
-  queueReplRun({ script }) {
-    let stagedRun = this.buildRunTemplate(crypto.randomUUID(), script)
-    doc.saveFile(stagedRun.path, stagedRun.scriptEncoded)
+  queueReplRun({ script, threads }) {
+    let stagedRun = this.buildRunTemplate(crypto.randomUUID(), script, threads)
+    this.ns.write(stagedRun.path, stagedRun.scriptPrepped, 'w')
     this.store.currentRun = { ...stagedRun }
   }
 
   async replTick() {
-    if (!this.store.queuePaused && this.store.currentRun?.uuid) {
+    if (!this.store.replBusy && this.store.currentRun?.uuid) {
       // TODO: Add RAM overuse protection
-      let pid = this.ns.run(this.store.currentRun.path, 1)
+      let pid = this.ns.run(this.store.currentRun.path, this.store.currentRun.threads)
       if (pid > 0) {
         this.store.currentRun.pid = pid
         this.store.currentRun.state = ReplStates.running
-        this.store.queuePaused = true
+        this.store.replBusy = true
       } else {
-        this.store.currentRun = null
-        throw new Error('nuRepl script PID was 0; maybe you are out of RAM?')
+        this.finishReplRun({
+          result: null,
+          error: '[could not start: likely not enough RAM]',
+          logs: [],
+        })
       }
     }
 
@@ -185,7 +189,7 @@ class Repl {
     }
 
     this.store.currentRun = null
-    this.store.queuePaused = false
+    this.store.replBusy = false
   }
 
   /** @param {string} uuid */

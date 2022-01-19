@@ -9,7 +9,12 @@ export default {
       <template v-for="item in objectPrinter" :key="item.label">
         <div class="objectRow">
           <div class="label" :title="item.label">{{ item.label }}</div>
-          <div class="value" :title="item.value">{{ item.value }}</div>
+          <div class="value">
+            <template v-if="item.subType == 'logs'">
+              <bbv-log-display :data="item.value" />
+            </template>
+            <template v-else>{{ item.value }}</template>
+          </div>
         </div>
       </template>
     </div>
@@ -73,7 +78,9 @@ export default {
 
         // Subtype classification
         if (type == 'array') {
-          if (value?.length > 4 || value?.some((x) => x?.length > 50)) {
+          if (label.toLowerCase() == 'logs') {
+            subType = 'logs'
+          } else if (value?.length > 4 || value?.some((x) => x?.length > 50)) {
             subType = 'large'
           }
         } else if (type == 'object') {
@@ -85,7 +92,6 @@ export default {
         // Value processing
         if (type == 'string') value = value.trim()
         if (type == 'string' && label == 'error') value = cleanupError(value)
-        if (type == 'array' && label == 'logs') value = value.join('\n')
 
         return {
           label,
@@ -148,11 +154,14 @@ export default {
       }
 
       .label {
-        width: 120px;
+        width: 20%;
+        min-width: 120px;
+        max-width: 220px;
         padding: 3px 12px 3px 8px;
         border-bottom: 1px solid var(--bbvInputBorderFadeColor);
         flex-shrink: 0;
         overflow: hidden;
+        text-overflow: ellipsis;
         white-space: nowrap;
       }
 
@@ -165,23 +174,6 @@ export default {
         color: var(--bbvHackerDarkFgColor);
         background-color: var(--bbvHackerDarkBgColor);
         border-left: 2px solid var(--bbvInputBorderFadeColor);
-      }
-
-      .number {
-      }
-
-      .object.large,
-      .array.large {
-        @include bbv-scrollbar;
-
-        padding: 10px 5px;
-        width: 100%;
-        max-height: 300px;
-        overflow: auto;
-        white-space: pre;
-        color: var(--bbvHackerDarkFgColor);
-        background-color: var(--bbvHackerDarkBgColor);
-        border-radius: 5px;
       }
     }
   `,

@@ -47,10 +47,6 @@
       "installPath": "/nuburn/lib/term.js"
     },
     {
-      "repoPath": "/src/nuburn/lib/util.js",
-      "installPath": "/nuburn/lib/util.js"
-    },
-    {
       "repoPath": "/src/nuburn/repl.js",
       "installPath": "/nuburn/repl.js"
     },

@@ -18,27 +18,15 @@ export default {
 
       <!-- Player window -->
       <bbv-win no-pad :start-open="false" start-width="40%" start-height="50%" title="✨ Player">
-        <bbv-json-display fill :data="store.player" />
+        <bbv-object-display :data="store.player" />
       </bbv-win>
 
       <!-- Servers window -->
       <bbv-win no-pad :start-open="false" start-width="40%" start-height="50%" title="💽 Servers">
-        <bbv-json-display fill :data="store.srv" />
+        <bbv-object-display :data="store.srv" />
       </bbv-win>
 
-      <!-- Raw proc window -->
-      <bbv-win
-        no-pad
-        :start-open="true"
-        start-width="40%"
-        start-height="50%"
-        :start-position="{ x: 780, y: 400 }"
-        title="🔢 Raw Proc"
-      >
-        <bbv-json-display fill :data="store.proc" />
-      </bbv-win>
-
-      <!-- Processes window -->
+      <!-- Runner window -->
       <bbv-win
         no-pad
         no-scroll
@@ -46,15 +34,14 @@ export default {
         start-width="40%"
         start-height="50%"
         :start-position="{ x: 740, y: 55 }"
-        title="🔢 Pretty Proc"
+        title="🏃 Runner"
       >
-        <eye-proc-list />
+        <eye-runner-list />
       </bbv-win>
 
       <!-- Add actions to tray -->
       <teleport to="#app-tray">
-        <bbv-button title="Reboot" @click="doReboot">💫</bbv-button>
-        <bbv-button title="Shutdown" @click="doShutdown">🛑</bbv-button>
+        <bbv-button title="Reboot" @click="doReboot">💫 Eye</bbv-button>
       </teleport>
     </main>
   `,
@@ -71,9 +58,9 @@ export default {
     const uptime = computed(() => timeDiff(startTime, timestamp.value))
 
     // Shutdown
-    const rootShutdown = inject('rootShutdown')
+    const appShutdown = inject('appShutdown')
     const doShutdown = () => {
-      rootShutdown()
+      appShutdown()
       nuShutdown()
     }
     const doReboot = async () => {

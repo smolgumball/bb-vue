@@ -2,7 +2,7 @@ import { css, html, lodash, Vue } from '/bb-vue/lib.js'
 import { nuStore } from '/nuburn/lib/globals.js'
 
 export default {
-  name: 'eye-proc-list',
+  name: 'eye-runner-list',
   template: html`
     <div class="__CMP_NAME__">
       <div class="horizLane queue">
@@ -162,7 +162,7 @@ export default {
             }
             .proc {
               --bbvScrollbarFgColor: var(--bbvErrorColor);
-              --bbvScrollbarBgColor: #0b1420;
+              --bbvScrollbarBgColor: var(--bbvErrorDarkColor);
 
               @include bbv-scrollbar($height: 8px);
 

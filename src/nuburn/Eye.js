@@ -3,7 +3,7 @@ import AppFactory from '/bb-vue/AppFactory.js'
 import EyeRoot from '/nuburn/ui/Eye.js'
 import EyeMacros from '/nuburn/ui/EyeMacros.js'
 import EyeInput from '/nuburn/ui/EyeInput.js'
-import EyeProcList from '/nuburn/ui/EyeProcList.js'
+import EyeRunnerList from '/nuburn/ui/EyeRunnerList.js'
 
 export default class Eye {
   core
@@ -19,10 +19,9 @@ export default class Eye {
       config: {
         id: crypto.randomUUID(),
         showTips: false,
-        forceReload: true,
       },
       rootComponent: EyeRoot,
-      components: [EyeMacros, EyeInput, EyeProcList],
+      components: [EyeMacros, EyeInput, EyeRunnerList],
     })
   }
 }

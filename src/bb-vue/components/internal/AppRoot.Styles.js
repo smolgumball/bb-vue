@@ -73,6 +73,7 @@ export default {
       --bbvActiveColor: #954ea7;
       --bbvSuccessColor: #4fb168;
       --bbvErrorColor: #984e4e;
+      --bbvErrorDarkColor: #0b1420;
     }
 
     [bbv-root] {

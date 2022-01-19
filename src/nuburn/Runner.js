@@ -16,14 +16,14 @@ export default class Runner {
 
   async init() {
     nuListen('nuRunner:add', this.queueAdd.bind(this))
-    nuListen('nuRunner:execResolve', this.execResolve.bind(this))
+    nuListen('nuRunner:doResolve', this.doResolve.bind(this))
   }
 
   async runQueue(tick) {
     if (tick % 1 === 0) {
       for (const queuedExec of this.queue) {
         if (this.core.wantsShutdown) return
-        if (await this.execRun(queuedExec)) {
+        if (await this.doRun(queuedExec)) {
           this.queue.splice(this.queue.indexOf(queuedExec), 1)
         }
       }
@@ -72,7 +72,7 @@ export default class Runner {
     this.queue.push({ ...data, uuid: crypto.randomUUID(), timeQueued: Date.now() })
   }
 
-  async execRun({ path, uuid, host = 'home', threads = 1, options = {}, args = [] } = {}) {
+  async doRun({ path, uuid, host = 'home', threads = 1, options = {}, args = [] } = {}) {
     let ns = this.core.ns
 
     // RAM check
@@ -114,7 +114,7 @@ export default class Runner {
     return true
   }
 
-  execResolve({ uuid, logs, result, error }) {
+  doResolve({ uuid, logs, result, error }) {
     if (uuid && (result || !error)) {
       let proc = this.findByUuid(this.running, uuid)
       this.removeByUuid(this.running, uuid)
@@ -142,7 +142,7 @@ export default class Runner {
     const uuid = ns.args[0]
     const argsJson = JSON.parse(ns.args[1])
     const resolve = async (result) => {
-      nuEmit('nuRunner:execResolve', {
+      nuEmit('nuRunner:doResolve', {
         logs: this.filterLogs(ns.getScriptLogs()),
         uuid,
         result,
@@ -152,7 +152,7 @@ export default class Runner {
       if (lodash.isString(error)) {
         error = cleanupError(error)
       }
-      nuEmit('nuRunner:execResolve', {
+      nuEmit('nuRunner:doResolve', {
         logs: this.filterLogs(ns.getScriptLogs()),
         uuid,
         error: error ?? ':: rejected without error ::',

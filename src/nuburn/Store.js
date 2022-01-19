@@ -9,7 +9,7 @@ export default class Store {
   }
 
   async init(schema) {
-    const { reactive } = await VueLoader.Get()
+    const { reactive } = await VueLoader.Fetch()
     this.data = reactive(schema)
     return this.data
   }

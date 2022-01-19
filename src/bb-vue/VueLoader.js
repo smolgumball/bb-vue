@@ -6,7 +6,7 @@ export default class VueLoader {
    * Retrieve a cached or freshly imported reference to the Vue module.
    * @returns {Promise<Vue>} Vue constructor
    */
-  static async Get() {
+  static async Fetch() {
     let module = Vue({ silent: true })
     if (module) return module
 

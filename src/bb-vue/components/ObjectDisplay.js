@@ -70,7 +70,7 @@ export default {
         let subType = 'default'
 
         // General classification
-        if (dateTimeMatcher.exec(label) && lodash.isNumber(value)) type = 'date'
+        if (dateTimeMatcher['exec'](label) && lodash.isNumber(value)) type = 'date'
         else if (lodash.isString(value)) type = 'string'
         else if (lodash.isNumber(value)) type = 'number'
         else if (lodash.isArray(value)) type = 'array'

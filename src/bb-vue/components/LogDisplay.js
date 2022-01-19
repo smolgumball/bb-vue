@@ -31,14 +31,14 @@ export default {
       this.data.forEach((logRow) => {
         logRow = String(logRow)
         let logTs = Array.from(logRow.matchAll(/\[(.*)\]/g))
-        if (!isBlank(logTs) && lodash.get(logTs, '[0][1]')) {
+        if (!isBlank(logTs) && lodash['get'](logTs, '[0][1]')) {
           let tsMatch = logTs[0][0]
           logTs = logTs[0][1]
           logRow = logRow.replaceAll(tsMatch, '')
         } else {
           logTs = 'noTs'
         }
-        let existingLogs = mergedLogs.get(logTs) || []
+        let existingLogs = mergedLogs['get'](logTs) || []
         mergedLogs.set(logTs, [...existingLogs, logRow.trim()])
       })
 

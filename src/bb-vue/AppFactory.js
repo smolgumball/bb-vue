@@ -169,9 +169,9 @@ export default class AppFactory {
 
   async #runLoaders() {
     const [Vue, Mitt, Sass] = await Promise.all([
-      VueLoader.Get(),
-      MittLoader.Get(),
-      SassLoader.Get(),
+      VueLoader.Fetch(),
+      MittLoader.Fetch(),
+      SassLoader.Fetch(),
     ])
     return { Vue, Mitt, Sass }
   }

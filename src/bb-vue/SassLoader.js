@@ -4,14 +4,14 @@ import { doc, toStr, win } from '/bb-vue/lib.js'
 export default class SassLoader {
   static #moduleGlobalKey = 'Sass'
 
-  static async Get() {
+  static async Fetch() {
     let module = this.#getModule()
     if (!this.#isValidModule(module)) {
       await this.#loadSassModule()
       module = this.#getModule()
     }
     if (!this.#isValidModule(module)) {
-      throw new Error(`SassLoader could not load module in Get()`)
+      throw new Error(`SassLoader could not load module in Fetch()`)
     }
 
     return this.#wrapModule(module)

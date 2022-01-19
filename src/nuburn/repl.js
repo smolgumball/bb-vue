@@ -57,7 +57,7 @@ class Repl {
   }
 
   async init() {
-    const { reactive } = await VueLoader.Get()
+    const { reactive } = await VueLoader.Fetch()
 
     // Store
     this.store = reactive({
@@ -68,7 +68,7 @@ class Repl {
     })
 
     // Wire events
-    this.bus = (await MittLoader.Get()).createBus()
+    this.bus = (await MittLoader.Fetch()).createBus()
     this.bus.on(ReplEvents.runScript, this.queueReplRun.bind(this))
     this.bus.on(ReplEvents.reportScriptRun, this.finishReplRun.bind(this))
     this.bus.on(ReplEvents.doShutdown, () => (this.wantsShutdown = true))

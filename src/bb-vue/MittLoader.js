@@ -6,7 +6,7 @@ export default class MittLoader {
    * Retrieve a cached or freshly imported reference to the Mitt module.
    * @returns {Promise<{ createBus: Function }>} Mitt constructor
    */
-  static async Get() {
+  static async Fetch() {
     let module = getGlobal(Keys.mittModuleKey)
     if (module) return module
 

@@ -34,7 +34,7 @@ export default class Core {
   }
 
   async init() {
-    this.bus = (await MittLoader.Get()).createBus()
+    this.bus = (await MittLoader.Fetch()).createBus()
     this.ns.tprint(`🚌 nuBus booted`)
 
     this.store = await this.storeInit()

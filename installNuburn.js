@@ -1,9 +1,9 @@
 /*
-             _
- _ __  _   _| |__  _   _ _ __ _ __
-| '_ \| | | | '_ \| | | | '__| '_ \
+             ____
+ _ __  _   _| __ ) _   _ _ __ _ __
+| '_ \| | | |  _ \| | | | '__| '_ \
 | | | | |_| | |_) | |_| | |  | | | |
-|_| |_|\__,_|_.__/ \__,_|_|  |_| |_|
+|_| |_|\__,_|____/ \__,_|_|  |_| |_|
 
 */ /**
  * CONFIGURATION
@@ -16,6 +16,11 @@
  * relative path such as './myDirectory' - always use absolute paths like '/myDirectory'
  */
 let prefixDirectory = ''
+/**
+ * If you installed `bb-vue` to a separate directory, provide that directory here. Ensure the
+ * path here matches the path present in the `bb-vue` install script exactly.
+ */
+let bbVuePrefixDirectory = ''
 
 /**
  * --------------------------------------
@@ -36,7 +41,7 @@ export async function main(ns) {
   if (ns.args[0]) repoBranch = ns.args[0]
   if (ns.args[1]) prefixDirectory = ns.args[1]
 
-  if (prefixDirectory) prefixDirectory = `/${trimPath(prefixDirectory)}/`
+  if (prefixDirectory) prefixDirectory = slashifyPath(prefixDirectory)
 
   let repoUrl = joinPaths(repoRoot, repoBranch)
   let manifestPath = joinPaths(repoUrl, manifestFile)
@@ -48,9 +53,14 @@ export async function main(ns) {
     repoPath = joinPaths(repoUrl, repoPath)
     try {
       installPath = joinPaths(prefixDirectory, installPath)
-      await getFileFromGH(ns, repoPath, installPath)
-      await ns.sleep(1)
-      await rewriteImports(ns, installPath, manifestData.importRoot, prefixDirectory)
+      await githubReq(ns, repoPath, installPath)
+      await rewriteImports(
+        ns,
+        installPath,
+        manifestData.importRoot,
+        prefixDirectory,
+        bbVuePrefixDirectory
+      )
       ns.tprint(`Installed: ${installPath} [${Number(i) + 1}/${manifestLength}]`)
     } catch (e) {
       ns.tprint(`ERROR: Exception while downloading ${repoPath}: `, e.message)
@@ -60,39 +70,48 @@ export async function main(ns) {
 
   ns.rm(manifestTmpPath, requiredHost)
   let mainJsPath = joinPaths(prefixDirectory, manifestData.entryFile)
+  let replPath = joinPaths(prefixDirectory, joinPaths(manifestData.importRoot, 'repl.js'))
 
   // prettier-ignore
-  ns.tprint(`Install complete! 🎉
+  ns.tprint(`
 
-🚧 Make sure bb-vue is ALSO installed before running nuburn!
+🎉 nuBurn installation complete! 🎉
 
-Run the following in your home terminal to launch nuburn:
+🚧 Make sure bb-vue is ALSO installed before running nuBurn! 🚧
 
+Run the following in your home terminal to launch nuBurn:
 run ${mainJsPath}
+
+If you want to use the REPL, run this command:
+run ${replPath}
 
 `)
 }
 
-async function rewriteImports(ns, filePath, importRoot, prefixDirectory) {
+async function rewriteImports(ns, filePath, importRoot, prefixDirectory, bbvPrefixDirectory) {
+  const bbvImportRoot = '/bb-vue/'
+  const bbvPath = joinPaths(bbvPrefixDirectory, bbvImportRoot)
   let file = ns.read(filePath)
   file = file.replaceAll(`from '${importRoot}`, `from '${joinPaths(prefixDirectory, importRoot)}`)
   file = file.replaceAll(`from "${importRoot}`, `from "${joinPaths(prefixDirectory, importRoot)}`)
   file = file.replaceAll(`from \`${importRoot}`, `from \`${joinPaths(prefixDirectory, importRoot)}`)
+  if (bbvPrefixDirectory !== '') {
+    file = file.replaceAll(`from '${bbvImportRoot}`, `from '${bbvPath}`)
+    file = file.replaceAll(`from "${bbvImportRoot}`, `from "${bbvPath}`)
+    file = file.replaceAll(`from \`${bbvImportRoot}`, `from \`${bbvPath}`)
+  }
   await ns.write(filePath, file, 'w')
+  await ns.sleep(1)
 }
 
 async function fetchConfig(ns, manifestPath) {
   try {
-    await getFileFromGH(ns, manifestPath, manifestTmpPath)
+    await githubReq(ns, manifestPath, manifestTmpPath)
     return JSON.parse(ns.read(manifestTmpPath))
   } catch (e) {
     ns.tprint(`ERROR: Downloading and reading config file failed ${manifestPath}`)
     throw e
   }
-}
-
-async function getFileFromGH(ns, repoPath, installPath) {
-  await githubReq(ns, repoPath, installPath)
 }
 
 async function githubReq(ns, repoPath, installPath) {
@@ -103,7 +122,6 @@ async function githubReq(ns, repoPath, installPath) {
   }
 
   ns.print('Request to: ' + repoPath)
-  await ns.sleep(100)
   await ns.wget(repoPath, installPath, requiredHost)
 }
 
@@ -111,11 +129,18 @@ async function githubReq(ns, repoPath, installPath) {
 // ---
 
 function joinPaths(pathA, pathB) {
+  if (!pathA) return pathB
+  if (!pathB) return pathA
   return `${trimTrailingSlash(pathA)}/${trimLeadingSlash(pathB)}`
 }
 
 function trimPath(path) {
   return `${trimTrailingSlash(trimLeadingSlash(path))}`
+}
+
+function slashifyPath(path) {
+  if (!path) return path
+  return `/${trimPath(path)}/`
 }
 
 function trimLeadingSlash(path) {

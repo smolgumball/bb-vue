@@ -36,7 +36,7 @@ export async function main(ns) {
   if (ns.args[0]) repoBranch = ns.args[0]
   if (ns.args[1]) prefixDirectory = ns.args[1]
 
-  if (prefixDirectory) prefixDirectory = `/${trimPath(prefixDirectory)}/`
+  if (prefixDirectory) prefixDirectory = slashifyPath(prefixDirectory)
 
   let repoUrl = joinPaths(repoRoot, repoBranch)
   let manifestPath = joinPaths(repoUrl, manifestFile)
@@ -48,8 +48,7 @@ export async function main(ns) {
     repoPath = joinPaths(repoUrl, repoPath)
     try {
       installPath = joinPaths(prefixDirectory, installPath)
-      await getFileFromGH(ns, repoPath, installPath)
-      await ns.sleep(1)
+      await githubReq(ns, repoPath, installPath)
       await rewriteImports(ns, installPath, manifestData.importRoot, prefixDirectory)
       ns.tprint(`Installed: ${installPath} [${Number(i) + 1}/${manifestLength}]`)
     } catch (e) {
@@ -77,20 +76,17 @@ async function rewriteImports(ns, filePath, importRoot, prefixDirectory) {
   file = file.replaceAll(`from "${importRoot}`, `from "${joinPaths(prefixDirectory, importRoot)}`)
   file = file.replaceAll(`from \`${importRoot}`, `from \`${joinPaths(prefixDirectory, importRoot)}`)
   await ns.write(filePath, file, 'w')
+  await ns.sleep(1)
 }
 
 async function fetchConfig(ns, manifestPath) {
   try {
-    await getFileFromGH(ns, manifestPath, manifestTmpPath)
+    await githubReq(ns, manifestPath, manifestTmpPath)
     return JSON.parse(ns.read(manifestTmpPath))
   } catch (e) {
     ns.tprint(`ERROR: Downloading and reading config file failed ${manifestPath}`)
     throw e
   }
-}
-
-async function getFileFromGH(ns, repoPath, installPath) {
-  await githubReq(ns, repoPath, installPath)
 }
 
 async function githubReq(ns, repoPath, installPath) {
@@ -101,7 +97,6 @@ async function githubReq(ns, repoPath, installPath) {
   }
 
   ns.print('Request to: ' + repoPath)
-  await ns.sleep(100)
   await ns.wget(repoPath, installPath, requiredHost)
 }
 
@@ -109,11 +104,18 @@ async function githubReq(ns, repoPath, installPath) {
 // ---
 
 function joinPaths(pathA, pathB) {
+  if (!pathA) return pathB
+  if (!pathB) return pathA
   return `${trimTrailingSlash(pathA)}/${trimLeadingSlash(pathB)}`
 }
 
 function trimPath(path) {
   return `${trimTrailingSlash(trimLeadingSlash(path))}`
+}
+
+function slashifyPath(path) {
+  if (!path) return path
+  return `/${trimPath(path)}/`
 }
 
 function trimLeadingSlash(path) {

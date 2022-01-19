@@ -59,13 +59,18 @@ export async function main(ns) {
 
   ns.rm(manifestTmpPath, requiredHost)
   let mainJsPath = joinPaths(prefixDirectory, manifestData.entryFile)
+  let otherExamplePath = joinPaths(prefixDirectory, `/bb-vue/examples/1-the-app-tray.js`)
 
   // prettier-ignore
-  ns.tprint(`Install complete! 🎉
+  ns.tprint(`
+
+Install complete! 🎉
 
 Run the following in your home terminal for an example that uses bb-vue:
-
 run ${mainJsPath}
+
+And here's another example:
+run ${otherExamplePath}
 
 `)
 }

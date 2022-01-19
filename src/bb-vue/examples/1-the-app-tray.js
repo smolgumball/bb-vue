@@ -11,11 +11,11 @@ export async function main(ns) {
 
     let appOne = new AppFactory(ns)
     const appOneHandleFn = await appOne.mount({
-      config: { id: 'app-one' },
+      config: { id: 'app-one', showTips: false },
       rootComponent: PrimaryAppRoot,
     })
 
-    ns.tprint('app-one booted!')
+    ns.tprint('\n\napp-one booted!\n\n')
 
     // Wait a bit...
     await ns.sleep(1000)
@@ -26,11 +26,11 @@ export async function main(ns) {
 
     let appTwo = new AppFactory(ns)
     const appTwoHandleFn = await appTwo.mount({
-      config: { id: 'app-two' },
+      config: { id: 'app-two', showTips: false },
       rootComponent: DifferentAppRoot,
     })
 
-    ns.tprint('app-two booted!')
+    ns.tprint('\n\napp-two booted!\n\n')
 
     // Wait a bit...
     await ns.sleep(1000)

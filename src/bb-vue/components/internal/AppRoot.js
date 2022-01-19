@@ -13,6 +13,7 @@ import Button from '/bb-vue/components/Button.js'
 import JsonDisplay from '/bb-vue/components/JsonDisplay.js'
 import Tabs from '/bb-vue/components/Tabs.js'
 import ObjectDisplay from '/bb-vue/components/ObjectDisplay.js'
+import LogDisplay from '/bb-vue/components/LogDisplay.js'
 
 export const ComponentLibrary = [
   ConsumerRoot,
@@ -24,9 +25,11 @@ export const ComponentLibrary = [
   Button,
   JsonDisplay,
   ObjectDisplay,
+  LogDisplay,
   Tabs,
 ]
 
+const rootShutdownTimeout = 2000
 export default {
   __libraryRoot: true,
   name: 'bbv-app-root',
@@ -54,6 +57,8 @@ export default {
     const bus = Mitt().createBus()
     return {
       depsLoaded: false,
+      hasSeenCrms: false,
+      rootShutdownTimeoutFn: null,
       internals: {
         bus: bus,
         send: bus.emit,
@@ -85,6 +90,38 @@ export default {
     },
     allCrms() {
       return this.internals.store.consumerRootMounts
+    },
+  },
+  watch: {
+    /**
+     * Watch for CRMs. When seen some, notify AppRoot that some have
+     * been added. Wait for them to go away. Once they are gone, do a self
+     * cleanup after `rootShutdownTimeout` ms. Shutdown timeout can be
+     * cancelled by new CRM additions.
+     */
+    'internals.store.consumerRootMounts': {
+      handler(newVal) {
+        // Ensure AppRoot knows CRMs have been seen added at some point
+        if (this.hasSeenCrms !== true && newVal?.length >= 1) {
+          this.hasSeenCrms = true
+        }
+
+        // If a CRM is removed, if it was the last, and if AppRoot has seen CRMs before
+        if (this.hasSeenCrms === true && newVal?.length === 0) {
+          if (this.rootShutdownTimeoutFn === null) {
+            // Create a shutdown timeout func to end the entire RootApp
+            this.rootShutdownTimeoutFn = setTimeout(() => {
+              this.rootShutdown()
+            }, rootShutdownTimeout)
+          }
+        }
+
+        // Clear an ongoing shutdown timeout if a new CRM is added
+        if (newVal?.length >= 1 && this.rootShutdownTimeoutFn !== null) {
+          clearTimeout(this.rootShutdownTimeoutFn)
+          this.rootShutdownTimeoutFn = null
+        }
+      },
     },
   },
   methods: {

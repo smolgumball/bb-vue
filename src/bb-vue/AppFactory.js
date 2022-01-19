@@ -18,9 +18,9 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {
 
   // console.time('CreateOrGetRootVueApp')
 
-  if (forceReload == true) {
+  if (forceReload == true || !(RootApp.raw() && RootApp.instance())) {
     await RootApp.cleanup()
-  } else if (RootApp.raw()) {
+  } else if (RootApp.raw() && RootApp.instance()) {
     return RootApp.raw()
   }
 

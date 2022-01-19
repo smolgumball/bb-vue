@@ -47,6 +47,10 @@
       "installPath": "/nuburn/lib/term.js"
     },
     {
+      "repoPath": "/src/nuburn/lib/util.js",
+      "installPath": "/nuburn/lib/util.js"
+    },
+    {
       "repoPath": "/src/nuburn/repl.js",
       "installPath": "/nuburn/repl.js"
     },
@@ -75,12 +79,28 @@
       "installPath": "/nuburn/ui/EyeMacros.js"
     },
     {
-      "repoPath": "/src/nuburn/ui/EyeProcList.js",
-      "installPath": "/nuburn/ui/EyeProcList.js"
+      "repoPath": "/src/nuburn/ui/EyeRunnerList.js",
+      "installPath": "/nuburn/ui/EyeRunnerList.js"
     },
     {
       "repoPath": "/src/nuburn/ui/ReplRoot.js",
       "installPath": "/nuburn/ui/ReplRoot.js"
+    },
+    {
+      "repoPath": "/src/nuburn/vendor/Prism.js",
+      "installPath": "/nuburn/vendor/Prism.js"
+    },
+    {
+      "repoPath": "/src/nuburn/vendor/Prism.Styles.js",
+      "installPath": "/nuburn/vendor/Prism.Styles.js"
+    },
+    {
+      "repoPath": "/src/nuburn/vendor/PrismEditorComponent.js",
+      "installPath": "/nuburn/vendor/PrismEditorComponent.js"
+    },
+    {
+      "repoPath": "/src/nuburn/vendor/PrismEditorComponent.Styles.js",
+      "installPath": "/nuburn/vendor/PrismEditorComponent.Styles.js"
     }
   ]
 }

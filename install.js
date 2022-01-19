@@ -20,8 +20,7 @@ let prefixDirectory = ''
 /**
  * --------------------------------------
  * DO NOT EDIT BELOW THIS LINE
-
-*/
+ */
 
 let requiredHost = 'home'
 let repoRoot = 'https://raw.githubusercontent.com/smolgumball/bb-vue'

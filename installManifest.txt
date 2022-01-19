@@ -63,6 +63,10 @@
       "installPath": "/bb-vue/components/JsonDisplay.js"
     },
     {
+      "repoPath": "/src/bb-vue/components/LogDisplay.js",
+      "installPath": "/bb-vue/components/LogDisplay.js"
+    },
+    {
       "repoPath": "/src/bb-vue/components/ObjectDisplay.js",
       "installPath": "/bb-vue/components/ObjectDisplay.js"
     },

@@ -97,6 +97,7 @@ export default {
     .__CMP_NAME__ {
       padding: 1em;
       background-color: var(--bbvHackerDarkBgColor);
+      height: 100%;
 
       & > .other-buttons {
         padding-top: 5px;

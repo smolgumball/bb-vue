@@ -1,6 +1,5 @@
-import { lodash, toJson } from '/bb-vue/lib.js'
+import { cleanupError, lodash, toJson } from '/bb-vue/lib.js'
 import { nuEmit, nuListen } from '/nuburn/lib/globals.js'
-import { cleanupError } from '/nuburn/lib/util.js'
 
 export default class Runner {
   core

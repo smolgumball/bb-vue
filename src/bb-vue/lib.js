@@ -239,6 +239,19 @@ export function getClosestCrm(startingVm) {
 // --------------------------------------------------------------
 
 /**
+ * Cleanup an error strong
+ * @param {String} error Error string to cleanup
+ * @returns Removes odd internal delimiters and other noisy chars from a BitBurner error
+ */
+export function cleanupError(error) {
+  return String(error)
+    .replace('|DELIMITER|', '')
+    .replaceAll('|DELIMITER|', ' » ')
+    .replaceAll('<br>', '')
+    .replaceAll('Stack:', '')
+}
+
+/**
  * Wait for ms then continue
  * @param {Number} ms Millis to wait
  * @returns {Promise<void>}

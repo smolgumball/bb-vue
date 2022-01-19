@@ -1,6 +1,5 @@
 // prettier-ignore
-import { css, html, lodash, toJson } from '/bb-vue/lib.js'
-import { cleanupError } from '/nuburn/lib/util.js'
+import { cleanupError, css, html, lodash, toJson } from '/bb-vue/lib.js'
 
 export default {
   name: 'bbv-object-display',

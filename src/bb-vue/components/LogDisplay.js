@@ -29,6 +29,7 @@ export default {
       // Build object array from entries
       let mergedLogs = new Map()
       this.data.forEach((logRow) => {
+        logRow = String(logRow)
         let logTs = Array.from(logRow.matchAll(/\[(.*)\]/g))
         if (!isBlank(logTs) && lodash.get(logTs, '[0][1]')) {
           let tsMatch = logTs[0][0]
@@ -38,7 +39,7 @@ export default {
           logTs = 'noTs'
         }
         let existingLogs = mergedLogs.get(logTs) || []
-        mergedLogs.set(logTs, [...existingLogs, logRow])
+        mergedLogs.set(logTs, [...existingLogs, logRow.trim()])
       })
 
       return mergedLogs
@@ -65,6 +66,7 @@ export default {
 
       .simpleRows {
         flex-grow: 1;
+        padding: 0 8px;
       }
 
       .simpleRow {

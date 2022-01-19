@@ -122,7 +122,7 @@ async function githubReq(ns, repoPath, installPath) {
   }
 
   ns.print('Request to: ' + repoPath)
-  await ns.wget(repoPath, installPath, requiredHost)
+  await ns.wget(repoPath + '?cacheBust=' + Date.now(), installPath, requiredHost)
 }
 
 // Path helpers

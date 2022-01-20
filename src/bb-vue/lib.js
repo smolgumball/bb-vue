@@ -56,24 +56,23 @@ export const RootApp = {
     return setGlobal(Keys.rootAppKey, val)
   },
   async cleanup() {
-    await sleep(50)
+    await sleep(15)
     try {
       this.raw()?.unmount()
     } catch (error) {
-      delete win[Keys.rootAppKey]
+      console.debug("bb-vue: Issue cleaning up AppRoot, but don't worry about it")
     }
-    await sleep(50)
-    this.removeDom()
-    await sleep(50)
+    await this.removeDom()
     deleteGlobal(Keys.rootAppKey)
+    await sleep(15)
   },
   async removeDom() {
-    await sleep(50)
+    await sleep(15)
     doc.querySelector(`[${this.rootAttr}]`)?.remove()
   },
   async addDom(appId) {
-    await sleep(50)
     doc.body.insertAdjacentHTML('afterbegin', html`<div id="${appId}" bbv-root></div>`)
+    await sleep(15)
   },
 }
 
@@ -353,7 +352,7 @@ export function fromJson(value) {
   try {
     return JSON.parse(value)
   } catch (error) {
-    console.error(`Could not parse JSON string: ${value}`)
+    console.error(`bb-vue: Could not parse JSON string: ${value}`)
     return null
   }
 }

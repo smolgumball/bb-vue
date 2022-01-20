@@ -60,7 +60,7 @@ export default {
     consumerRootMounted(vnode) {
       this.private.consumerRootMount = vnode?.component?.ctx
       if (!this.private.consumerRootMount) {
-        console.warn(`App root is null for ${this.consumerRootDef.__uuid}`)
+        console.debug(`bb-vue: App root is null for ${this.consumerRootDef.__uuid}`)
       }
       this.$emit('consumer-root-mounted', this.private.consumerRootMount)
     },

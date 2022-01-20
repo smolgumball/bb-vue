@@ -111,6 +111,7 @@ export default {
           if (this.rootShutdownTimeoutFn === null) {
             // Create a shutdown timeout func to end the entire RootApp
             this.rootShutdownTimeoutFn = setTimeout(() => {
+              console.debug('bb-vue: AppRoot cannot find any CRMs and is shutting down')
               this.rootShutdown()
             }, rootShutdownTimeout)
           }

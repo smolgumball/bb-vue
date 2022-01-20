@@ -48,6 +48,10 @@ export default class ComponentManager {
 
     this.#processingReports.forEach((processingReport) => {
       if (!processingReport.cmpDef.__libraryRoot) {
+        // Remove old cmpDef before adding new one
+        if (vueApp.component(processingReport.cmpDef.name) && vueApp?._context?.components) {
+          delete vueApp._context.components[processingReport.cmpDef.name]
+        }
         vueApp.component(processingReport.cmpDef.name, processingReport.cmpDef)
       }
     })

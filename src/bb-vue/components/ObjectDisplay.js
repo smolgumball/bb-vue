@@ -5,7 +5,7 @@ export default {
   name: 'bbv-object-display',
   template: html`
     <div class="__CMP_NAME__">
-      <template v-for="item in objectPrinter" :key="item.label">
+      <template v-for="item in objectPrinter">
         <div class="objectRow">
           <div class="label" :title="item.label">{{ item.label }}</div>
           <div class="value">
@@ -61,7 +61,7 @@ export default {
       if (!lodash.isObjectLike(this.data)) return
 
       // Build object array from entries
-      let objArray = Object.entries(this.data).map(([label, value]) => {
+      let objArray = Object.entries({ ...this.data }).map(([label, value]) => {
         label = String(label).trim()
 
         const dateTimeMatcher = new RegExp(/.*[tT]ime|[dD]ate.*/, 'gm')
@@ -101,25 +101,64 @@ export default {
       })
 
       // Sort object entries based on known keys + common datatypes
-      // prettier-ignore
       let labelOrders = [
-        'state', 'result', 'error', 'pid', 'script', 'path',
-        'host', 'uuid', 'options', 'timeStart', 'timeEnd', 'logs',
+        'timeStart',
+        'onlineRunningTime',
+        'timeEnd',
+        'diedOn',
+        'server',
+        'filename',
+        'args',
+        'pid',
+        'threads',
+        'status',
+        'result',
+        'error',
+        'onlineMoneyMade',
+        'onlineExpGained',
+        'script',
+        'path',
+        'host',
+        'uuid',
+        'options',
+        '*',
+        'logs',
       ]
-      let typeOrders = ['date', 'string', 'number', 'array', 'object']
-      let labelOrdering = Object.fromEntries(labelOrders.map((x, i) => [x, i]))
+      const mapOrder = (array, myorder, key, catchAll) => {
+        var order = myorder.reduce((r, k, i) => ((r[k] = i + 1), r), {})
+        const theSort = array.sort(
+          (a, b) => (order[a[key]] || order[catchAll]) - (order[b[key]] || order[catchAll])
+        )
+        return theSort
+      }
+      return mapOrder(objArray, labelOrders, 'label', '*')
+
+      /* let sortedObjArray = []
+      objArray.forEach((row) => {
+        if (labelOrders.includes(row.label)) {
+          sortedObjArray.unshift(row)
+          return
+        }
+
+        if (typeOrders.includes(row.type)) {
+          sortedObjArray.unshift(row)
+          return
+        }
+
+        sortedObjArray.push(row)
+      }) */
+
+      /* let labelOrdering = Object.fromEntries(labelOrders.map((x, i) => [x, i]))
       let typeOrdering = Object.fromEntries(typeOrders.map((x, i) => [x, i]))
       objArray.sort((a, b) => {
-        if (labelOrders.some((x) => x == a.label || x == b.label)) {
+        if (labelOrdering[a.label] !== undefined || labelOrdering[b.label] !== undefined) {
           return labelOrdering[a.label] - labelOrdering[b.label]
-        } else if (typeOrders.some((x) => x == a.type || x == b.type)) {
+        } else if (typeOrdering[a.type] !== undefined || typeOrdering[b.type] !== undefined) {
           return typeOrdering[a.type] - typeOrdering[b.type]
         } else {
           return a.label.localeCompare(b.label)
         }
-      })
-
-      return objArray
+      }) */
     },
   },
   methods: { toJson, cleanupError },

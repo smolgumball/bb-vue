@@ -139,7 +139,7 @@ export default {
 
       pointer-events: auto;
       position: absolute;
-      z-index: 1400;
+      z-index: 1600;
 
       bottom: 0;
       left: 0;

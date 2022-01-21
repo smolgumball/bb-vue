@@ -1,4 +1,5 @@
 // prettier-ignore
+import { WinStates } from '/bb-vue/components/internal/_resources.js'
 import { lodash } from '/bb-vue/lib.js'
 
 export default {
@@ -22,13 +23,13 @@ export default {
         return x.uuid != winMount.uuid
       })
     },
-    getRecommendedPosition(winMountStore) {
+    getRecommendedPosition(draggableStore) {
       const rootOffset = { x: 310, y: 55 }
-      const standardOffset = { x: 20, y: 45 }
+      const standardOffset = { x: 25, y: 45 }
       let curOffset = standardOffset
       let targetWinMount = lodash.findLast(
         this.internals.store.winMounts,
-        (x) => x.draggable?.wasOffsetByWinManager
+        (x) => x.draggable?.wasOffsetByWinManager && x.winState == WinStates.open
       )
       if (!targetWinMount) {
         this.internals.store.winMounts.forEach((winMount) => {
@@ -39,16 +40,16 @@ export default {
           if (width > largestWidth && height > largestHeight) {
             curOffset = rootOffset
             targetWinMount = winMount
-            winMountStore.wasOffsetByWinManager = true
+            draggableStore.wasOffsetByWinManager = true
           }
         })
         if (!targetWinMount) return rootOffset
       } else {
-        winMountStore.wasOffsetByWinManager = true
+        draggableStore.wasOffsetByWinManager = true
       }
       return {
-        x: parseInt(targetWinMount.style.left) + curOffset.x,
-        y: parseInt(targetWinMount.style.top) + curOffset.y,
+        x: parseInt(targetWinMount.style.left ?? 0) + curOffset.x,
+        y: parseInt(targetWinMount.style.top ?? 0) + curOffset.y,
       }
     },
     bringToFront(winMount) {

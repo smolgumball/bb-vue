@@ -82,12 +82,25 @@ export default {
       stackingIndex: 1,
       winState: WinStates.closed,
       shouldDisplay: false,
+      hasOpened: false,
       WinStates,
     }
   },
   watch: {
     async winState(newVal, oldVal) {
       if (newVal == WinStates.open && oldVal == WinStates.closed) {
+        // Position window on first open
+        if (this.hasOpened === false) {
+          this.hasOpened = true
+          useDraggableWin(this.draggable, {
+            winManager: this.internals.winManager,
+            dragHandleRef: this.$refs.dragHandle,
+            dragIgnoreRef: this.$refs.winClose.$el,
+            draggableRef: this.$refs.thisWin,
+            startPosition: this.$props.startPosition,
+          })
+        }
+
         // Lag win opens just a bit to ensure CSS transitions are applied
         await this.$nextTick()
         this.shouldDisplay = true
@@ -96,14 +109,14 @@ export default {
         this.shouldDisplay = false
       }
     },
-    'draggable.size': {
-      handler(newVal, oldVal) {
-        if (!newVal || !oldVal) return
-        if (newVal.width !== oldVal.width || newVal.height !== oldVal.height) {
-          this.$emit('resize')
-        }
-      },
-    },
+    // 'draggable.size': {
+    //   handler(newVal, oldVal) {
+    //     if (!newVal || !oldVal) return
+    //     if (newVal.width !== oldVal.width || newVal.height !== oldVal.height) {
+    //       this.$emit('resize')
+    //     }
+    //   },
+    // },
   },
   computed: {
     style() {
@@ -122,17 +135,7 @@ export default {
     this.owner = getClosestCrm(this)
   },
   async mounted() {
-    const winManager = this.internals.winManager
-    winManager.addWin(this)
-
-    useDraggableWin(this.draggable, {
-      winManager: winManager,
-      dragHandleRef: this.$refs.dragHandle,
-      dragIgnoreRef: this.$refs.winClose.$el,
-      draggableRef: this.$refs.thisWin,
-      startPosition: this.$props.startPosition,
-    })
-
+    this.internals.winManager.addWin(this)
     if (this.$props.startOpen) {
       this.winState = WinStates.open
     }

@@ -28,9 +28,10 @@ export default {
 
       // Build object array from entries
       let mergedLogs = new Map()
-      this.data.forEach((logRow) => {
+      let reversed = [...this.data].reverse()
+      reversed.forEach((logRow) => {
         logRow = String(logRow)
-        let logTs = Array.from(logRow.matchAll(/\[(.*)\]/g))
+        let logTs = Array.from(logRow.matchAll(/\[(.*?)\]/g))
         if (!isBlank(logTs) && lodash['get'](logTs, '[0][1]')) {
           let tsMatch = logTs[0][0]
           logTs = logTs[0][1]

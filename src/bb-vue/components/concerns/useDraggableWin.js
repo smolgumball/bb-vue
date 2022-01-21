@@ -2,8 +2,8 @@
 import { doc, lodash, Vue, VueUse, win } from '/bb-vue/lib.js'
 
 export default async function useDraggableWin(store, options = {}) {
-  const { reactive, nextTick } = Vue()
-  const { useDraggable, useElementBounding, useIntervalFn, until } = VueUse()
+  const { reactive, watch } = Vue()
+  const { useDraggable, useElementBounding, until } = VueUse()
 
   // Handle options + validations
   let opts = reactive({
@@ -30,12 +30,26 @@ export default async function useDraggableWin(store, options = {}) {
   }
 
   // Fill provided store with initial state
-  store.clampedFlag = false
   store.isDragging = false
-  store.position = {}
-  store.size = {}
+  store.style = {}
   store.fixedRoot = useElementBounding(doc.querySelector('[bbv-root]'))
   store.draggableTarget = useElementBounding(opts.draggableRef)
+
+  // Helper to manually position draggable
+  const manuallyPositionDraggable = async ({ x, y }) => {
+    const ele = opts.draggableRef
+    ele.style.left = `${x}px`
+    ele.style.top = `${y}px`
+    store.draggableTarget.update()
+    updateStore({ store, opts })
+  }
+  const manuallySizeDraggable = async ({ width, height }) => {
+    const ele = opts.draggableRef
+    ele.style.width = `${width}px`
+    ele.style.height = `${height}px`
+    store.draggableTarget.update()
+    updateStore({ store, opts })
+  }
 
   // Wait until draggableTarget is mounted, might be a better way?
   await until(store.draggableTarget).toMatch((x) => x.width > 0)
@@ -44,81 +58,54 @@ export default async function useDraggableWin(store, options = {}) {
   store.minWidth = parseInt(win.getComputedStyle(opts.draggableRef).minWidth)
   store.minHeight = parseInt(win.getComputedStyle(opts.draggableRef).minHeight)
 
-  // Wire draggable handle to allow window dragging via dragHandleRef
-  store.isDragging = useDraggable(opts.dragHandleRef, {
-    initialValue: constrainWindow(opts.startPosition ?? store.position, { store, opts }).position,
-    onMove: (p) => updateStore(p, { store, opts }),
-    onStart: (p, e) => !e.path.some((x) => x == opts.dragIgnoreRef),
-  }).isDragging
-
-  // Position immediately to avoid nulls
-  await nextTick()
-  updateStore({ x: 0, y: 0 }, { store, opts })
-
-  // Set initial position, if none is provided, based on winManager recommendation
-  if (!opts.startPosition) {
-    store.position = opts.winManager.getRecommendedPosition(store)
-    updateStore(store.position, { store, opts })
+  // Set initial position - if none is provided - based on winManager recommendation
+  let initialPos = { x: 0, y: 0 }
+  if (opts.startPosition === null) {
+    initialPos = opts.winManager.getRecommendedPosition(store)
   } else {
-    updateStore(opts.startPosition, { store, opts })
+    initialPos = { x: opts.startPosition?.x ?? 0, y: opts.startPosition?.y ?? 0 }
   }
 
-  // Set initial position to center of screen
-  // store.position = {
-  //   x: store.fixedRoot.width / 2 - store.draggableTarget.width / 2,
-  //   y: store.fixedRoot.height / 2 - store.draggableTarget.height / 2,
-  // }
+  // Do initial positioning of window
+  manuallyPositionDraggable(initialPos)
 
-  // Add a running check to ensure window stays within boundary
-  // Auto-shuts-down once DOM node is no longer present
-  const { pause: pauseConstrain } = useIntervalFn(() => {
-    if (!opts.draggableRef?.isConnected) {
-      pauseConstrain()
-      return
-    }
+  // Watch for position changes
+  store.isDragging = useDraggable(opts.dragHandleRef, {
+    initialValue: initialPos,
+    onMove: async (p) => manuallyPositionDraggable(p),
+    onStart: (_, e) => !e.path.some((x) => x == opts.dragIgnoreRef),
+  }).isDragging
 
-    let constrained = constrainWindow(store.position, { store, opts })
-    store.position = constrained.position
-    store.size = constrained.size
-    updateStore(store.position, { store, opts })
-  }, 250)
+  // Watch for size changes
+  watch(store.draggableTarget, () => manuallySizeDraggable(store.draggableTarget), { deep: true })
 }
 
-function updateStore(curPos, ctx) {
+async function updateStore(ctx) {
+  const { reactive } = Vue()
+
+  let padding = ctx.opts.constrainPadding
+  let root = ctx.store.fixedRoot
+  let draggable = ctx.store.draggableTarget
+
+  let newSize = reactive({ width: draggable.width, height: draggable.height })
+  let newPos = reactive({ x: draggable.x, y: draggable.y })
+
   // Clamp window size and position if desired
   if (ctx.opts.constrain) {
-    const { size, position } = constrainWindow(curPos, ctx)
-    ctx.store.position = position
-    ctx.store.size = size
+    const { useClamp } = VueUse()
+
+    newSize.width = useClamp(newSize.width, ctx.store.minWidth, root.width - padding * 2)
+    newSize.height = useClamp(newSize.height, ctx.store.minHeight, root.height - padding * 2)
+
+    newPos.x = useClamp(newPos.x, padding, root.width - newSize.width - padding)
+    newPos.y = useClamp(newPos.y, padding, root.bottom - newSize.height - padding)
   }
 
   // Update style object to be bound to draggableTarget in consumer template
   ctx.store.style = {
-    left: `${ctx.store.position.x}px`,
-    top: `${ctx.store.position.y}px`,
-    width: `${ctx.store.size.width}px`,
-    height: `${ctx.store.size.height}px`,
-  }
-}
-
-function constrainWindow(curPos, ctx) {
-  const { useClamp } = VueUse()
-
-  let pos = { x: 0, y: 0 }
-  let size = { width: 0, height: 0 }
-  let padding = ctx.opts.constrainPadding
-
-  let root = ctx.store.fixedRoot
-  let draggable = ctx.store.draggableTarget
-
-  size.width = useClamp(draggable.width, ctx.store.minWidth, root.width - padding * 2)
-  size.height = useClamp(draggable.height, ctx.store.minHeight, root.height - padding * 2)
-
-  pos.x = useClamp(curPos.x, padding, root.width - size.width.value - padding)
-  pos.y = useClamp(curPos.y, padding, root.bottom - size.height.value - padding)
-
-  return {
-    position: pos,
-    size,
+    left: `${newPos.x}px`,
+    top: `${newPos.y}px`,
+    width: `${newSize.width}px`,
+    height: `${newSize.height}px`,
   }
 }

@@ -1,4 +1,4 @@
-import { css, doc, html, lodash, Vue } from '/bb-vue/lib.js'
+import { css, html, lodash, Vue } from '/bb-vue/lib.js'
 import { nuStore } from '/nuburn/lib/globals.js'
 
 export default {

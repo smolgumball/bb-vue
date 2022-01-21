@@ -14,7 +14,7 @@ export default {
   template: html`
     <main class="__CMP_NAME__">
       <!-- Main window -->
-      <bbv-win title="🔋 REPL" no-pad start-width="640px" start-height="640px" @resize="">
+      <bbv-win title="🔋 REPL" no-pad start-width="640px" start-height="640px">
         <bbv-prism-editor
           v-model="cmpData.workingScript"
           placeholder="Enter code... ns and await are available. Remember to return any values you'd like to inspect. Logs will be synced as the task runs, and again at the end."
@@ -53,7 +53,8 @@ export default {
 
       <!-- Add actions to tray -->
       <teleport to="#app-tray">
-        <bbv-button title="Reboot" @click="doReboot">💫 REPL</bbv-button>
+        <bbv-button title="Shutdown REPL" @click="doShutdown" small>🛑 REPL</bbv-button>
+        <bbv-button title="Reboot REPL" @click="doReboot">💫 REPL</bbv-button>
       </teleport>
     </main>
   `,

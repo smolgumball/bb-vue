@@ -11,6 +11,11 @@ const storeSchema = () => {
     player: {},
     srv: {},
     proc: {},
+    scripts: {
+      killed: [],
+      activeByPid: {},
+      _transient: {},
+    },
   }
 }
 
@@ -25,7 +30,7 @@ export default class Core {
   eye
 
   tick = 0
-  sleepRate = 200
+  sleepRate = 100
   wantsShutdown = false
 
   constructor(ns) {
@@ -54,17 +59,13 @@ export default class Core {
 
   async runUntilShutdown() {
     while (this.wantsShutdown === false) {
-      this.doTick()
+      this.tick++
       await this.collector.collect(this.tick)
       await this.runner.checkHealth(this.tick)
       await this.runner.runQueue(this.tick)
       await this.runner.syncStore(this.tick)
       await this.ns.sleep(this.sleepRate)
     }
-  }
-
-  doTick() {
-    this.tick++
   }
 
   async storeInit() {

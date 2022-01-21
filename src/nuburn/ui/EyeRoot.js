@@ -6,14 +6,19 @@ import { timeDiff } from '/nuburn/lib/date.js'
 export default {
   name: 'eye-root',
   template: html`
-    <main class="__CMP_NAME__">
+    <main class="__CMP_NAME__" eye-root>
       <!-- Main window -->
-      <bbv-win title="🧿" no-pad start-width="390px" start-height="320px">
+      <bbv-win no-pad :start-open="true" start-width="390px" start-height="320px" title="🧿">
         <eye-macros />
         <template #actions>
           <span><strong>Uptime:</strong> {{ uptime }}</span>
           <bbv-button @click="doShutdown" small>🛑 Shutdown</bbv-button>
         </template>
+      </bbv-win>
+
+      <!-- Scripts window -->
+      <bbv-win no-pad :start-open="true" start-width="40%" start-height="50%" title="📃 Scripts">
+        <eye-scripts-list />
       </bbv-win>
 
       <!-- Player window -->
@@ -30,10 +35,9 @@ export default {
       <bbv-win
         no-pad
         no-scroll
-        :start-open="true"
+        :start-open="false"
         start-width="40%"
         start-height="50%"
-        :start-position="{ x: 740, y: 55 }"
         title="🏃 Runner"
       >
         <eye-runner-list />
@@ -41,7 +45,8 @@ export default {
 
       <!-- Add actions to tray -->
       <teleport to="#app-tray">
-        <bbv-button title="Reboot" @click="doReboot">💫 Eye</bbv-button>
+        <bbv-button title="Shutdown Eye" @click="doShutdown" small>🛑 Eye</bbv-button>
+        <bbv-button title="Reboot Eye" @click="doReboot">💫 Eye</bbv-button>
       </teleport>
     </main>
   `,

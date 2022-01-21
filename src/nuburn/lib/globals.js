@@ -37,3 +37,8 @@ export const ReplStates = Object.freeze({
   killed: 'killed',
   failed: 'failed',
 })
+
+export const ScriptStates = Object.freeze({
+  running: 'running',
+  killed: 'killed',
+})

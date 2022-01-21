@@ -92,17 +92,15 @@ class Repl {
   async runUntilShutdown() {
     while (this.wantsShutdown == false) {
       await this.replTick()
-      await this.ns.asleep(50)
+      await this.ns.asleep(250)
     }
 
-    if (this.store.currentRun?.state == ReplStates.running) {
-      for (const script of [this.store.currentRun, ...this.store.runHistory]) {
-        console.log('Killing: ', script)
-        this.ns.kill(script.pid)
-      }
+    console.debug('nuRepl: Ensuring current and past REPL scripts are killed')
+    for (const script of [this.store.currentRun, ...this.store.runHistory]) {
+      if (script?.pid) this.ns.kill(script.pid)
     }
 
-    await this.ns.asleep(250)
+    await this.ns.asleep(500)
   }
 
   buildRunTemplate(uuid, script, threads) {
@@ -175,7 +173,7 @@ class Repl {
     this.store.currentRun.result = undefinedReturns ? '[nothing returned]' : result
 
     let wantedShutdown = this.store.currentRun.wantsShutdown
-    let considerSuccess = (!wantedShutdown && !isBlank(result)) || result === 0 || undefinedReturns
+    let considerSuccess = (!wantedShutdown && !isBlank(result)) || result === 0 || !undefinedReturns
     this.store.currentRun.error = error
     this.store.currentRun.logs = logs
     this.store.currentRun.state = considerSuccess ? ReplStates.succeeded : ReplStates.failed

@@ -1,9 +1,10 @@
 import AppFactory from '/bb-vue/AppFactory.js'
 
-import EyeRoot from '/nuburn/ui/Eye.js'
+import EyeRoot from '/nuburn/ui/EyeRoot.js'
 import EyeMacros from '/nuburn/ui/EyeMacros.js'
 import EyeInput from '/nuburn/ui/EyeInput.js'
 import EyeRunnerList from '/nuburn/ui/EyeRunnerList.js'
+import EyeScriptsList from '/nuburn/ui/EyeScriptsList.js'
 
 export default class Eye {
   core
@@ -21,7 +22,7 @@ export default class Eye {
         showTips: false,
       },
       rootComponent: EyeRoot,
-      components: [EyeMacros, EyeInput, EyeRunnerList],
+      components: [EyeMacros, EyeInput, EyeRunnerList, EyeScriptsList],
     })
   }
 }

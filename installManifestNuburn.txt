@@ -63,10 +63,6 @@
       "installPath": "/nuburn/Store.js"
     },
     {
-      "repoPath": "/src/nuburn/ui/Eye.js",
-      "installPath": "/nuburn/ui/Eye.js"
-    },
-    {
       "repoPath": "/src/nuburn/ui/EyeInput.js",
       "installPath": "/nuburn/ui/EyeInput.js"
     },
@@ -75,8 +71,16 @@
       "installPath": "/nuburn/ui/EyeMacros.js"
     },
     {
+      "repoPath": "/src/nuburn/ui/EyeRoot.js",
+      "installPath": "/nuburn/ui/EyeRoot.js"
+    },
+    {
       "repoPath": "/src/nuburn/ui/EyeRunnerList.js",
       "installPath": "/nuburn/ui/EyeRunnerList.js"
+    },
+    {
+      "repoPath": "/src/nuburn/ui/EyeScriptsList.js",
+      "installPath": "/nuburn/ui/EyeScriptsList.js"
     },
     {
       "repoPath": "/src/nuburn/ui/ReplRoot.js",

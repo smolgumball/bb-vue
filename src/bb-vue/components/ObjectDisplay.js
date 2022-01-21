@@ -132,33 +132,6 @@ export default {
         return theSort
       }
       return mapOrder(objArray, labelOrders, 'label', '*')
-
-      /* let sortedObjArray = []
-      objArray.forEach((row) => {
-        if (labelOrders.includes(row.label)) {
-          sortedObjArray.unshift(row)
-          return
-        }
-
-        if (typeOrders.includes(row.type)) {
-          sortedObjArray.unshift(row)
-          return
-        }
-
-        sortedObjArray.push(row)
-      }) */
-
-      /* let labelOrdering = Object.fromEntries(labelOrders.map((x, i) => [x, i]))
-      let typeOrdering = Object.fromEntries(typeOrders.map((x, i) => [x, i]))
-      objArray.sort((a, b) => {
-        if (labelOrdering[a.label] !== undefined || labelOrdering[b.label] !== undefined) {
-          return labelOrdering[a.label] - labelOrdering[b.label]
-        } else if (typeOrdering[a.type] !== undefined || typeOrdering[b.type] !== undefined) {
-          return typeOrdering[a.type] - typeOrdering[b.type]
-        } else {
-          return a.label.localeCompare(b.label)
-        }
-      }) */
     },
   },
   methods: { toJson, cleanupError },

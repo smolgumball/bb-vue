@@ -55,6 +55,10 @@ export default {
         align-items: flex-start;
         width: 100%;
         padding: 3px 0;
+
+        &.hasTs .simpleRow {
+          padding: 0 8px;
+        }
       }
 
       .logTs {
@@ -67,7 +71,6 @@ export default {
 
       .simpleRows {
         flex-grow: 1;
-        padding: 0 8px;
       }
 
       .simpleRow {

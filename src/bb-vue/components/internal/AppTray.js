@@ -139,7 +139,7 @@ export default {
 
       pointer-events: auto;
       position: absolute;
-      z-index: 1600;
+      z-index: 1400;
 
       bottom: 0;
       left: 0;
@@ -158,6 +158,7 @@ export default {
 
       &:hover {
         width: 100%;
+        z-index: 1600;
 
         &.isCollapsed {
           width: 100%;

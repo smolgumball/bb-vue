@@ -1,4 +1,3 @@
-// prettier-ignore
 import { WinStates } from '/bb-vue/components/internal/_resources.js'
 import { lodash } from '/bb-vue/lib.js'
 
@@ -9,6 +8,7 @@ export default {
   data() {
     return {
       baseStackingIndex: 1510,
+      recentlyActiveWinMounts: [],
     }
   },
   created() {
@@ -19,34 +19,28 @@ export default {
       this.internals.store.winMounts.push(winMount)
     },
     removeWin(winMount) {
+      this.scrubRecentWinMountActivity(winMount)
       this.internals.store.winMounts = this.internals.store.winMounts.filter((x) => {
         return x.uuid != winMount.uuid
       })
     },
-    getRecommendedPosition(draggableStore) {
-      const rootOffset = { x: 310, y: 55 }
-      const standardOffset = { x: 25, y: 45 }
-      let curOffset = standardOffset
-      let targetWinMount = lodash.findLast(
-        this.internals.store.winMounts,
-        (x) => x.draggable?.wasOffsetByWinManager && x.winState == WinStates.open
-      )
-      if (!targetWinMount) {
-        this.internals.store.winMounts.forEach((winMount) => {
-          let width = parseInt(winMount?.style?.width ?? 0)
-          let height = parseInt(winMount?.style?.height ?? 0)
-          let largestWidth = parseInt(targetWinMount?.style?.width ?? 0)
-          let largestHeight = parseInt(targetWinMount?.style?.height ?? 0)
-          if (width > largestWidth && height > largestHeight) {
-            curOffset = rootOffset
-            targetWinMount = winMount
-            draggableStore.wasOffsetByWinManager = true
-          }
-        })
-        if (!targetWinMount) return rootOffset
-      } else {
-        draggableStore.wasOffsetByWinManager = true
-      }
+    logRecentWinMountActivity(winMount) {
+      if (this.recentlyActiveWinMounts[0] == winMount) return
+      this.recentlyActiveWinMounts = [winMount, ...this.recentlyActiveWinMounts.slice(0, 4)]
+    },
+    scrubRecentWinMountActivity(winMount) {
+      this.recentlyActiveWinMounts = this.recentlyActiveWinMounts.filter((x) => x !== winMount)
+    },
+    getRecommendedPosition(winMount) {
+      const rootOffset = { x: 295, y: 30 }
+      const standardOffset = { x: 30, y: 60 }
+
+      // const prevOpenedWinMounts = this.internals.store.winMounts.filter((x) => x.hasOpened === true)
+      let curOffset = rootOffset
+      let targetWinMount = this.recentlyActiveWinMounts[1]
+      if (targetWinMount && targetWinMount.winState === WinStates.open) curOffset = standardOffset
+      if (!targetWinMount) targetWinMount = winMount
+
       return {
         x: parseInt(targetWinMount.style.left ?? 0) + curOffset.x,
         y: parseInt(targetWinMount.style.top ?? 0) + curOffset.y,
@@ -54,6 +48,7 @@ export default {
     },
     bringToFront(winMount) {
       let otherWins = this.internals.store.winMounts.filter((x) => winMount.uuid != x.uuid)
+      this.logRecentWinMountActivity(winMount)
       winMount.stackingIndex = this.baseStackingIndex + otherWins.length
       let sortedOtherWins = [...otherWins].sort((a, b) => a.stackingIndex - b.stackingIndex)
       sortedOtherWins.forEach((x, i) => (x.stackingIndex = this.baseStackingIndex + i))

@@ -7,6 +7,7 @@ export default async function useDraggableWin(store, options = {}) {
 
   // Handle options + validations
   let opts = reactive({
+    win: null,
     winManager: null,
     dragHandleRef: null,
     draggableRef: null,
@@ -18,6 +19,9 @@ export default async function useDraggableWin(store, options = {}) {
   })
   if (!lodash.isObjectLike(store)) {
     throw new Error('Must provide store as first arg')
+  }
+  if (!lodash.isObjectLike(opts.win)) {
+    throw new Error('Must provide win in options')
   }
   if (!lodash.isObjectLike(opts.winManager)) {
     throw new Error('Must provide winManager in options')
@@ -61,7 +65,7 @@ export default async function useDraggableWin(store, options = {}) {
   // Set initial position - if none is provided - based on winManager recommendation
   let initialPos = { x: 0, y: 0 }
   if (opts.startPosition === null) {
-    initialPos = opts.winManager.getRecommendedPosition(store)
+    initialPos = opts.winManager.getRecommendedPosition(opts.win)
   } else {
     initialPos = { x: opts.startPosition?.x ?? 0, y: opts.startPosition?.y ?? 0 }
   }
@@ -95,7 +99,11 @@ async function updateStore(ctx) {
     const { useClamp } = VueUse()
 
     newSize.width = useClamp(newSize.width, ctx.store.minWidth, root.width - padding * 2)
-    newSize.height = useClamp(newSize.height, ctx.store.minHeight, root.height - padding * 2)
+    newSize.height = useClamp(
+      newSize.height,
+      ctx.store.isCollapsed ? 0 : ctx.store.minHeight,
+      root.height - padding * 2
+    )
 
     newPos.x = useClamp(newPos.x, padding, root.width - newSize.width - padding)
     newPos.y = useClamp(newPos.y, padding, root.bottom - newSize.height - padding)

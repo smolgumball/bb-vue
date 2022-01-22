@@ -11,16 +11,20 @@ export default {
     <div
       ref="thisWin"
       class="__CMP_NAME__"
-      :class="{ shouldDisplay, isDragging }"
+      :class="{ shouldDisplay, isDragging, isCollapsed: draggable.isCollapsed }"
       :style="style"
       @pointerdown="bringToFront"
       @keydown.stop
     >
       <div class="win_titlebar" ref="dragHandle">
         <div class="win_title">{{ title }}<slot name="title" /></div>
-        <template v-if="canClose">
-          <div class="win_controls">
-            <bbv-button class="win_close" ref="winClose" @click="close">❎</bbv-button>
+        <template v-if="canClose || canCollapse">
+          <div class="win_controls" ref="winControls">
+            <bbv-button class="win_collapse" @click="toggleCollapse">
+              <span v-if="draggable.isCollapsed">🔽</span>
+              <span v-else>🔼</span>
+            </bbv-button>
+            <bbv-button class="win_close" @click="close">❎</bbv-button>
           </div>
         </template>
       </div>
@@ -37,7 +41,7 @@ export default {
     </div>
   `,
   inject: ['internals'],
-  emits: ['open', 'close', 'resize'],
+  emits: ['open', 'close', 'collapse'],
   props: {
     title: {
       type: String,
@@ -60,6 +64,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    canCollapse: {
+      type: Boolean,
+      default: true,
+    },
     noPad: {
       default: false,
     },
@@ -78,7 +86,10 @@ export default {
     return {
       uuid: crypto.randomUUID(),
       owner: null,
-      draggable: {},
+      draggable: {
+        savedHeight: 0,
+        isCollapsed: false,
+      },
       stackingIndex: 1,
       winState: WinStates.closed,
       shouldDisplay: false,
@@ -93,9 +104,10 @@ export default {
         if (this.hasOpened === false) {
           this.hasOpened = true
           useDraggableWin(this.draggable, {
+            win: this,
             winManager: this.internals.winManager,
             dragHandleRef: this.$refs.dragHandle,
-            dragIgnoreRef: this.$refs.winClose.$el,
+            dragIgnoreRef: this.$refs.winControls,
             draggableRef: this.$refs.thisWin,
             startPosition: this.$props.startPosition,
           })
@@ -109,22 +121,27 @@ export default {
         this.shouldDisplay = false
       }
     },
-    // 'draggable.size': {
-    //   handler(newVal, oldVal) {
-    //     if (!newVal || !oldVal) return
-    //     if (newVal.width !== oldVal.width || newVal.height !== oldVal.height) {
-    //       this.$emit('resize')
-    //     }
-    //   },
-    // },
   },
   computed: {
     style() {
+      const collapsedOverrides = {
+        ...this.draggable.style,
+        height: 'auto',
+        minWidth: undefined,
+        minHeight: undefined,
+      }
+
+      let draggableStyles = this.draggable.isCollapsed ? collapsedOverrides : this.draggable.style
+      if (this.draggable.savedHeight !== 0 && !this.draggable.isCollapsed) {
+        draggableStyles.height = this.draggable.savedHeight
+        this.draggable.savedHeight = 0
+      }
+
       return {
         width: this.$props.startWidth,
         height: this.$props.startHeight,
-        ...this.draggable.style,
         zIndex: this.stackingIndex,
+        ...draggableStyles,
       }
     },
     isDragging() {
@@ -148,16 +165,23 @@ export default {
       if (this.winState == WinStates.open) return
       this.winState = WinStates.open
       await sleep(200)
-      this.$emit('open', this)
+      this.$emit('open', { winMount: this, winState: this.winState })
     },
     async close() {
       if (this.winState == WinStates.closed) return
       this.winState = WinStates.closed
       await sleep(200)
-      this.$emit('close', this)
+      this.$emit('close', { winMount: this, winState: this.winState })
+    },
+    toggleCollapse() {
+      if (this.draggable.isCollapsed === false) {
+        this.draggable.savedHeight = this.draggable.style.height
+      }
+      this.draggable.isCollapsed = !this.draggable.isCollapsed
+      this.$emit('collapse', { winMount: this, isCollapsed: this.draggable.isCollapsed })
     },
     bringToFront(event) {
-      if (event && event.path.some((x) => x == this.$refs.winClose.$el)) return
+      if (event && event.path.some((x) => x == this.$refs.winControls)) return
       this.internals.winManager.bringToFront(this)
     },
   },
@@ -193,6 +217,19 @@ export default {
         opacity: 0.9;
       }
 
+      &.isCollapsed {
+        min-height: 0;
+        resize: none;
+
+        .win_content {
+          display: none;
+        }
+
+        .win_actions {
+          background-color: var(--bbvBoxShadowColor1);
+        }
+      }
+
       .win_titlebar {
         display: flex;
         flex-grow: 0;
@@ -201,7 +238,6 @@ export default {
         font-size: 12px;
         color: var(--bbvWinTitlebarFgColor);
         background-color: var(--bbvWinTitlebarBgColor);
-        border-bottom: 2px solid var(--bbvBorderColor);
         user-select: none;
         cursor: grab;
       }
@@ -209,7 +245,7 @@ export default {
       .win_title {
         display: flex;
         flex-grow: 1;
-        padding: 7px 15px 5px 7px;
+        padding: 3px 15px 3px 7px;
       }
 
       .win_controls {
@@ -224,16 +260,13 @@ export default {
           padding: 2px;
           padding-bottom: 4px;
           border-radius: 5px;
+          border-radius: 0;
+          background-color: var(--bbvWinActionsBgColor);
 
           &:last-child {
             margin-right: 6px;
           }
         }
-      }
-
-      .win_close {
-        border-radius: 0;
-        background-color: var(--bbvWinActionsBgColor);
       }
 
       .win_content {
@@ -264,10 +297,13 @@ export default {
         justify-content: space-between;
         align-items: center;
         padding: 8px 15px;
-        border-top: 2px solid var(--bbvBorderColor);
         background-color: var(--bbvWinActionsBgColor);
         color: var(--bbvWinTitlebarFgColor);
         font-size: 12px;
+
+        &:empty {
+          display: none;
+        }
       }
     }
   `,

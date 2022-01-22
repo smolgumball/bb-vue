@@ -82,7 +82,7 @@ export default {
       const dateTimeMatcher = new RegExp(/.*[tT]ime|[dD]ate.*/, 'gm')
       const ramLikes = ['ram', 'ramUsed', 'ramUsage', 'ramTotal', 'ramFree', 'ramAvail']
       const secondLikes = ['onlineRunningTime', 'offlineRunningTime', 'timeLifespan']
-      const dateLikes = ['timeOfBirth', 'timeOfDeath']
+      const dateLikes = ['timeOfBirth', 'timeOfDeath', 'timeStart', 'timeEnd']
       const moneyLikes = [
         'onlineMoneyMade',
         'offlineMoneyMade',

@@ -1,5 +1,5 @@
 import { css, html, lodash, Vue } from '/bb-vue/lib.js'
-import { nuStore } from '/nuburn/lib/globals.js'
+import { nuEmit, nuStore } from '/nuburn/lib/globals.js'
 
 export default {
   name: 'eye-scripts-list',
@@ -33,11 +33,17 @@ export default {
         <teleport to="[eye-root]">
           <bbv-win
             no-pad
-            style="min-width: 850px"
             :ref="(win) => { if (win) inspectedWins[script.pid] = win }"
-            :title="'🎯 PID #' + (script.pid)"
+            :title="'🎯 ' + script.server + ' #' + script.pid"
             @close="uninspectScript(script.pid)"
+            class="inspectWin"
           >
+            <bbv-button
+              v-if="script.status !== 'killed'"
+              @click="killScript(script.pid)"
+              class="killBtn"
+              >Kill #{{script.pid}}</bbv-button
+            >
             <bbv-object-display :data="script" />
           </bbv-win>
         </teleport>
@@ -89,6 +95,9 @@ export default {
       cmpData.inspectedPids = lodash.without(cmpData.inspectedPids, pid)
       delete inspectedWins.value[pid]
     }
+    const killScript = (pid) => {
+      nuEmit('nuRunner:add', { operation: 'kill', options: { pid } })
+    }
 
     return {
       store,
@@ -97,6 +106,7 @@ export default {
       inspectedWins,
       inspectedScriptData,
       inspectScript,
+      killScript,
       uninspectScript,
       scriptFilename,
     }
@@ -186,6 +196,16 @@ export default {
 
       .scriptList-leave-active {
         position: absolute;
+      }
+    }
+
+    [eye-root] .inspectWin {
+      .killBtn {
+        font-size: 16px;
+        text-transform: uppercase;
+        padding: 10px 10px 13px 10px;
+        width: 100%;
+        animation: bbvFlashBusy 10s ease-in-out 0s infinite alternate;
       }
     }
   `,

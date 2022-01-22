@@ -1,5 +1,4 @@
 import { WinStates } from '/bb-vue/components/internal/_resources.js'
-import { lodash } from '/bb-vue/lib.js'
 
 export default {
   name: 'bbv-win-manager',

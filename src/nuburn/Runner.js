@@ -71,8 +71,9 @@ export default class Runner {
     this.queue.push({ ...data, uuid: crypto.randomUUID(), timeQueued: Date.now() })
   }
 
-  async doRun({ path, uuid, host = 'home', threads = 1, options = {}, args = [] } = {}) {
+  async doRun({ operation, uuid, host = 'home', threads = 1, options = {}, args = [] } = {}) {
     let ns = this.core.ns
+    let path = `/nuburn/exec/${operation}.js`
 
     // RAM check
     let srv = ns.getServer(host)

@@ -81,7 +81,7 @@ export default class Collector {
   }
 
   scripts() {
-    const maxScriptsKilledSize = 100
+    const maxScriptsKilledSize = 50
     const ns = this.core.ns
     const data = this.core.store.data
     let scriptsKilled = data.scripts.killed

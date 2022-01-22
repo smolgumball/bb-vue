@@ -7,16 +7,21 @@ export default {
   template: html`
     <main class="__CMP_NAME__" eye-root>
       <!-- Main window -->
-      <bbv-win no-pad :start-open="true" start-width="390px" start-height="320px" title="🧿">
+      <bbv-win
+        no-pad
+        :start-open="false"
+        start-width="390px"
+        start-height="320px"
+        title="🧿 Macros"
+      >
         <eye-macros />
         <template #actions>
           <span><strong>Uptime:</strong> {{ uptime }}</span>
-          <bbv-button @click="doShutdown" small>🛑 Shutdown</bbv-button>
         </template>
       </bbv-win>
 
       <!-- Scripts window -->
-      <bbv-win no-pad :start-open="true" start-width="40%" start-height="50%" title="📃 Scripts">
+      <bbv-win no-pad :start-open="true" start-width="40%" title="📃 Scripts">
         <eye-scripts-list />
       </bbv-win>
 

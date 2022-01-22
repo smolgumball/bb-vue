@@ -42,7 +42,7 @@ export default {
     // Macros
     const runHack = () => {
       nuEmit('nuRunner:add', {
-        path: '/nuburn/exec/h.js',
+        operation: 'h',
         options: {
           target: macroInputs.hack,
         },
@@ -50,7 +50,7 @@ export default {
     }
     const runGrow = () => {
       nuEmit('nuRunner:add', {
-        path: '/nuburn/exec/g.js',
+        operation: 'g',
         options: {
           target: macroInputs.grow,
         },
@@ -58,7 +58,7 @@ export default {
     }
     const runWeaken = () => {
       nuEmit('nuRunner:add', {
-        path: '/nuburn/exec/w.js',
+        operation: 'w',
         options: {
           target: macroInputs.weaken,
         },
@@ -66,7 +66,7 @@ export default {
     }
     const runTest = () => {
       nuEmit('nuRunner:add', {
-        path: '/nuburn/exec/_test.js',
+        operation: '_test',
         options: {
           bounceBack: 'hello there!',
         },
@@ -75,7 +75,7 @@ export default {
     const runTestBatch = async () => {
       for (let index = 0; index < 250; index++) {
         nuEmit('nuRunner:add', {
-          path: '/nuburn/exec/_test.js',
+          operation: '_test',
           options: {
             bounceBack: 'test #' + index,
           },

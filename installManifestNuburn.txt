@@ -19,6 +19,10 @@
       "installPath": "/nuburn/exec/h.js"
     },
     {
+      "repoPath": "/src/nuburn/exec/kill.js",
+      "installPath": "/nuburn/exec/kill.js"
+    },
+    {
       "repoPath": "/src/nuburn/exec/w.js",
       "installPath": "/nuburn/exec/w.js"
     },

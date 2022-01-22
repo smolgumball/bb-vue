@@ -1,6 +1,9 @@
 import { cleanupError, lodash, toJson } from '/bb-vue/lib.js'
 import { nuEmit, nuListen } from '/nuburn/lib/globals.js'
 
+const maxSuccessfulEvents = 50
+const maxFailedEvents = 50
+
 export default class Runner {
   core
   running = []
@@ -51,9 +54,10 @@ export default class Runner {
         if (!ns.getRunningScript(proc.pid)) {
           ns.tprint(`nuCore.runner removing phantom:\n${toJson(proc)}`)
           this.removeByUuid(this.running, proc.uuid)
-          this.phantom.push({ ...proc, timeEnd: Date.now() })
+          this.phantom.unshift({ ...proc, timeEnd: Date.now() })
         } else {
           this.running[i].logs = this.gatherRunningLogs(proc)
+          this.trimFinishedEvents()
         }
       })
     }
@@ -86,7 +90,8 @@ export default class Runner {
 
     // Check validity
     if (pid > 0) {
-      this.running.push({
+      this.running.unshift({
+        operation,
         path,
         host,
         threads,
@@ -97,7 +102,8 @@ export default class Runner {
         timeStart: Date.now(),
       })
     } else {
-      this.failed.push({
+      this.failed.unshift({
+        operation,
         path,
         host,
         threads,
@@ -118,12 +124,12 @@ export default class Runner {
     if (uuid && (result || !error)) {
       let proc = this.findByUuid(this.running, uuid)
       this.removeByUuid(this.running, uuid)
-      this.successful.push({ ...proc, logs, result, timeEnd: Date.now() })
+      this.successful.unshift({ ...proc, logs, result, timeEnd: Date.now() })
     } else {
       let proc = this.findByUuid(this.running, uuid) ?? this.findByUuid(this.phantom, uuid)
       this.removeByUuid(this.running, uuid)
       this.removeByUuid(this.phantom, uuid)
-      this.failed.push({ ...proc, logs, error, timeEnd: Date.now() })
+      this.failed.unshift({ ...proc, logs, error, timeEnd: Date.now() })
     }
   }
 
@@ -133,6 +139,11 @@ export default class Runner {
 
   findByUuid(arr, uuid) {
     return arr.find((x) => x.uuid == uuid)
+  }
+
+  trimFinishedEvents() {
+    this.successful = this.successful.slice(0, maxSuccessfulEvents)
+    this.failed = this.failed.slice(0, maxFailedEvents)
   }
 
   /** @param { import("~/ns").NS } ns */

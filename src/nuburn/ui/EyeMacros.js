@@ -26,6 +26,8 @@ export default {
       <div class="other-buttons">
         <bbv-button @click="runTest">Runner Test</bbv-button>
         <bbv-button @click="runTestBatch">Test <code>Batch</code></bbv-button>
+        <bbv-button @click="noodleBomb">n00dle Bomb</bbv-button>
+        <bbv-button @click="shareTheLove">sHaRe ThE 💚</bbv-button>
       </div>
     </div>
   `,
@@ -66,7 +68,7 @@ export default {
     }
     const runTest = () => {
       nuEmit('nuRunner:add', {
-        operation: '_test',
+        operation: 'test',
         options: {
           bounceBack: 'hello there!',
         },
@@ -75,12 +77,64 @@ export default {
     const runTestBatch = async () => {
       for (let index = 0; index < 250; index++) {
         nuEmit('nuRunner:add', {
-          operation: '_test',
+          operation: 'test',
           options: {
-            bounceBack: 'test #' + index,
+            bounceBack: '👋',
           },
         })
         await sleep(Math.random() * 10)
+      }
+    }
+    const noodleBomb = async () => {
+      for (let index = 0; index < 10000; index++) {
+        nuEmit('nuRunner:add', {
+          operation: 'w',
+          threads: 25000,
+          options: {
+            target: 'n00dles',
+          },
+        })
+        nuEmit('nuRunner:add', {
+          operation: 'g',
+          threads: 25000,
+          options: {
+            target: 'n00dles',
+          },
+        })
+        nuEmit('nuRunner:add', {
+          operation: 'h',
+          threads: 50000,
+          options: {
+            target: 'n00dles',
+          },
+        })
+        await sleep(Math.random() * 50)
+      }
+    }
+    const shareTheLove = async () => {
+      for (let index = 0; index < 10000; index++) {
+        await sleep(Math.random() * 15)
+        nuEmit('nuRunner:add', {
+          operation: 'share',
+          threads: 20000,
+          options: {},
+        })
+        /* await sleep(Math.random() * 15)
+        nuEmit('nuRunner:add', {
+          operation: 'g',
+          threads: 50000,
+          options: {
+            target: 'n00dles',
+          },
+        })
+        await sleep(Math.random() * 15)
+        nuEmit('nuRunner:add', {
+          operation: 'w',
+          threads: 50000,
+          options: {
+            target: 'n00dles',
+          },
+        }) */
       }
     }
 
@@ -91,6 +145,8 @@ export default {
       runWeaken,
       runTest,
       runTestBatch,
+      noodleBomb,
+      shareTheLove,
     }
   },
   scss: css`
@@ -100,11 +156,11 @@ export default {
       height: 100%;
 
       & > .other-buttons {
-        padding-top: 5px;
         text-align: right;
+        margin-right: -5px;
 
-        & > *:not(:last-child) {
-          margin-right: 5px;
+        & > * {
+          margin: 5px;
         }
       }
     }

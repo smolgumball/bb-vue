@@ -9,7 +9,7 @@ export default {
         <div class="laneTitle">Queue</div>
         <transition-group name="procList">
           <template v-for="proc in lanes.queue" :key="proc.uuid">
-            <div class="proc" @click="inspectProc(proc)">{{ procFilename(proc) }}</div>
+            <div class="proc" @click="inspectProc(proc)">{{ proc.operation }}</div>
           </template>
         </transition-group>
       </div>
@@ -19,7 +19,8 @@ export default {
           <transition-group name="procList">
             <template v-for="proc in lanes.running" :key="proc.uuid">
               <div class="proc" @click="inspectProc(proc)">
-                #{{ proc.pid }} - {{ proc.host }} - {{ procFilename(proc) }}
+                {{ proc.host }} #{{ proc.pid }}<br />
+                {{ proc.operation }}
               </div>
             </template>
           </transition-group>
@@ -28,7 +29,11 @@ export default {
           <div class="laneTitle">Successful</div>
           <transition-group name="procList">
             <template v-for="proc in lanes.successful" :key="proc.uuid">
-              <div class="proc" @click="inspectProc(proc)">#{{ proc.pid }} - {{ proc.result }}</div>
+              <div class="proc" @click="inspectProc(proc)">
+                {{ proc.host }} #{{ proc.pid }}<br />
+                {{ proc.operation }}<br />
+                {{ proc.result }}
+              </div>
             </template>
           </transition-group>
         </div>
@@ -36,7 +41,11 @@ export default {
           <div class="laneTitle">Failed & Phantom</div>
           <transition-group name="procList">
             <template v-for="proc in lanes.failedPhantom" :key="proc.uuid">
-              <div class="proc" @click="inspectProc(proc)">#{{ proc.pid }} - {{ proc.error }}</div>
+              <div class="proc" @click="inspectProc(proc)">
+                {{ proc.host }} #{{ proc.pid }}<br />
+                {{ proc.operation }}<br />
+                {{ proc.error }}
+              </div>
             </template>
           </transition-group>
         </div>
@@ -69,12 +78,9 @@ export default {
     const lanes = computed(() => {
       return {
         queue: store?.proc?.queue ?? [],
-        running: [...(store?.proc?.running ?? [])].reverse(),
-        successful: [...(store?.proc?.successful ?? [])].reverse(),
-        failedPhantom: [
-          ...[...(store?.proc?.failed ?? [])].reverse(),
-          ...[...(store?.proc?.phantom ?? [])].reverse(),
-        ],
+        running: [...(store?.proc?.running ?? [])],
+        successful: [...(store?.proc?.successful ?? [])],
+        failedPhantom: [...[...(store?.proc?.failed ?? [])], ...[...(store?.proc?.phantom ?? [])]],
       }
     })
     const inspectedProcData = computed(() => {
@@ -82,9 +88,6 @@ export default {
     })
 
     // Methods
-    const procFilename = (proc) => {
-      return lodash.last(proc.path.split('/'))
-    }
     const inspectProc = (proc) => {
       if (cmpData.inspectedProcUuids.find((x) => x == proc.uuid)) return
       cmpData.inspectedProcUuids.push(proc.uuid)
@@ -100,7 +103,6 @@ export default {
       lanes,
       inspectProc,
       uninspectProc,
-      procFilename,
     }
   },
   scss: css`

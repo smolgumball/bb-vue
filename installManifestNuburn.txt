@@ -23,12 +23,16 @@
       "installPath": "/nuburn/exec/kill.js"
     },
     {
-      "repoPath": "/src/nuburn/exec/w.js",
-      "installPath": "/nuburn/exec/w.js"
+      "repoPath": "/src/nuburn/exec/share.js",
+      "installPath": "/nuburn/exec/share.js"
     },
     {
-      "repoPath": "/src/nuburn/exec/_test.js",
-      "installPath": "/nuburn/exec/_test.js"
+      "repoPath": "/src/nuburn/exec/test.js",
+      "installPath": "/nuburn/exec/test.js"
+    },
+    {
+      "repoPath": "/src/nuburn/exec/w.js",
+      "installPath": "/nuburn/exec/w.js"
     },
     {
       "repoPath": "/src/nuburn/Eye.js",

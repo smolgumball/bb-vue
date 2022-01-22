@@ -31,10 +31,6 @@
       "installPath": "/nuburn/Eye.js"
     },
     {
-      "repoPath": "/src/nuburn/lib/date.js",
-      "installPath": "/nuburn/lib/date.js"
-    },
-    {
       "repoPath": "/src/nuburn/lib/globals.js",
       "installPath": "/nuburn/lib/globals.js"
     },

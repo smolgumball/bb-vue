@@ -1,7 +1,6 @@
-import { css, html, sleep, Vue, VueUse } from '/bb-vue/lib.js'
+import { css, html, sleep, Vue, VueUse, timeDiff } from '/bb-vue/lib.js'
 import { nuStore, nuShutdown } from '/nuburn/lib/globals.js'
 import { termRun } from '/nuburn/lib/term.js'
-import { timeDiff } from '/nuburn/lib/date.js'
 
 export default {
   name: 'eye-root',

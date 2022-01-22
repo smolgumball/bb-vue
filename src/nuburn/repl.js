@@ -111,6 +111,9 @@ class Repl {
       scriptPrepped: this.prepScript(uuid, script),
       state: ReplStates.staged,
       path: `/nuburn/tmp-repl/${uuid}.js`,
+      timeOfBirth: Date.now(),
+      ram: 0,
+      ramTotal: 0,
       wantsShutdown: false,
       pid: null,
       result: null,
@@ -144,8 +147,12 @@ class Repl {
     }
 
     if (this.store.currentRun?.uuid && this.store.currentRun.state == ReplStates.running) {
-      if (this.ns.getRunningScript(this.store.currentRun?.pid)) {
+      const rs = this.ns.getRunningScript(this.store.currentRun?.pid)
+      if (rs) {
+        this.store.currentRun.ram = rs.ramUsage
+        this.store.currentRun.ramTotal = rs.ramUsage * rs.threads
         this.store.currentRun.logs = this.ns.getScriptLogs(this.store.currentRun.path)
+        this.store.currentRun.timeLifespan = (Date.now() - this.store.currentRun.timeOfBirth) / 1000 // as seconds
       } else {
         this.finishReplRun({
           result: null,
@@ -178,6 +185,10 @@ class Repl {
     this.store.currentRun.logs = logs
     this.store.currentRun.state = considerSuccess ? ReplStates.succeeded : ReplStates.failed
     if (wantedShutdown) this.store.currentRun.state = ReplStates.killed
+
+    this.store.currentRun.timeOfDeath = Date.now()
+    this.store.currentRun.timeLifespan =
+      (this.store.currentRun.timeOfDeath - this.store.currentRun.timeOfBirth) / 1000 // as seconds
     this.store.runHistory = [{ ...this.store.currentRun }, ...this.store.runHistory]
 
     // Cleanup old tmp-repl files

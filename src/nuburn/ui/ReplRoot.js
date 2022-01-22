@@ -1,6 +1,5 @@
-import { css, getGlobal, html, isBlank, lodash, sleep, Vue, VueUse } from '/bb-vue/lib.js'
+import { css, getGlobal, html, isBlank, lodash, sleep, Vue, VueUse, timeDiff } from '/bb-vue/lib.js'
 import { termRun } from '/nuburn/lib/term.js'
-import { timeDiff } from '/nuburn/lib/date.js'
 import { ReplEvents } from '/nuburn/lib/globals.js'
 
 // Global side effect

@@ -95,8 +95,22 @@ export default class Collector {
     let scriptsActiveByPid = {}
     data.srv.serversFlat.forEach((hostname) => {
       ns.ps(hostname).map((proc) => {
-        let runningScript = { ...ns.getRunningScript(proc.pid), status: ScriptStates.running }
+        let rs = ns.getRunningScript(proc.pid)
+        let runningScript = {
+          ...rs,
+          ramTotal: rs.ramUsage * rs.threads,
+          status: ScriptStates.running,
+        }
+
+        // Ignore certain scripts
         if (ignoreCondition(runningScript)) return
+
+        // Persist timeOfBirth until killed
+        if (_scriptsTransient[proc.pid] && !_scriptsTransient[proc.pid].timeOfBirth) {
+          runningScript.timeOfBirth = Date.now()
+        } else if (_scriptsTransient[proc.pid] && _scriptsTransient[proc.pid].timeOfBirth) {
+          runningScript.timeOfBirth = _scriptsTransient[proc.pid].timeOfBirth
+        }
 
         // Add to log of current scripts
         scriptsActiveByPid[proc.pid] = runningScript
@@ -115,7 +129,9 @@ export default class Collector {
       .forEach((pid) => {
         if (!ns.isRunning(pid)) {
           _scriptsTransient[pid].status = ScriptStates.killed
-          scriptsKilled.unshift({ ..._scriptsTransient[pid], diedOn: Date.now() })
+          let timeOfDeath = Date.now()
+          let timeLifespan = (timeOfDeath - _scriptsTransient[pid].timeOfBirth) / 1000 // as seconds
+          scriptsKilled.unshift({ ..._scriptsTransient[pid], timeOfDeath, timeLifespan })
           delete _scriptsTransient[pid]
         }
       })

@@ -18,7 +18,7 @@ export default {
           </transition-group>
         </div>
         <div class="lane killed">
-          <div class="laneTitle">Recent</div>
+          <div class="laneTitle">Recently Killed</div>
           <transition-group name="scriptList">
             <template v-for="script in lanes.killed" :key="script.pid">
               <div class="script" @click="inspectScript(script.pid)">
@@ -138,26 +138,19 @@ export default {
 
           &.active {
             .laneTitle {
-              color: var(--bbvActiveColor);
+              color: var(--bbvSuccessColor);
             }
             .script {
-              border-left: 2px solid var(--bbvActiveColor);
+              border-left: 2px solid var(--bbvSuccessColor);
             }
           }
 
           &.killed {
             .laneTitle {
-              color: var(--bbvErrorColor);
+              color: var(--bbvActiveColor);
             }
             .script {
-              --bbvScrollbarFgColor: var(--bbvErrorColor);
-              --bbvScrollbarBgColor: var(--bbvErrorDarkColor);
-
-              @include bbv-scrollbar($height: 8px);
-
-              overflow: auto;
-              border-left: 2px solid var(--bbvErrorColor);
-              margin-bottom: 10px;
+              border-left: 2px solid var(--bbvActiveColor);
             }
           }
         }

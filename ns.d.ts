@@ -1,4 +1,7 @@
-import React from 'react';
+/**
+ * @public
+ */
+type FilenameOrPID = number | string;
 
 /**
  * @public
@@ -90,6 +93,7 @@ interface Player {
   jobs: any;
   factions: string[];
   tor: boolean;
+  hasCorporation: boolean;
 }
 
 /**
@@ -109,32 +113,6 @@ interface RunningScript {
   ramUsage: number;
   server: string;
   threads: number;
-}
-
-/**
- * Interface of a netscript port
- * @public
- */
-export interface IPort {
-  /** write data to the port and removes and returns first element if full */
-  write: (value: any) => any;
-  /** add data to port if not full.
-   * @returns true if added and false if full and not added */
-  tryWrite: (value: any) => boolean;
-  /** reads and removes first element from port
-   * if no data in port returns "NULL PORT DATA"
-   */
-  read: () => any;
-  /** reads first element without removing it from port
-   * if no data in port returns "NULL PORT DATA"
-   */
-  peek: () => any;
-  /** check if port is full */
-  full: () => boolean;
-  /** check if port is empty */
-  empty: () => boolean;
-  /** removes all data from port */
-  clear: () => void;
 }
 
 /**
@@ -283,6 +261,24 @@ export interface AugmentPair {
 }
 
 /**
+ * @public
+ */
+export enum PositionTypes {
+  Long = "L",
+  Short = "S",
+}
+
+/**
+ * @public
+ */
+export enum OrderTypes {
+  LimitBuy = "Limit Buy Order",
+  LimitSell = "Limit Sell Order",
+  StopBuy = "Stop Buy Order",
+  StopSell = "Stop Sell Order",
+}
+
+/**
  * Value in map of {@link StockOrder}
  * @public
  */
@@ -292,17 +288,18 @@ export interface StockOrderObject {
   /** Price per share */
   price: number;
   /** Order type */
-  type: string;
+  type: OrderTypes;
   /** Order position */
-  position: string;
+  position: PositionTypes;
 }
 
 /**
  * Return value of {@link TIX.getOrders | getOrders}
+ *
+ * Keys are stock symbols, properties are arrays of {@link StockOrderObject}
  * @public
  */
 export interface StockOrder {
-  /** Stock Symbol */
   [key: string]: StockOrderObject[];
 }
 
@@ -351,6 +348,74 @@ export interface HacknetMultipliers {
   coreCost: number;
   /** Player's hacknet level cost multiplier */
   levelCost: number;
+}
+
+/**
+ * Hacknet node related constants
+ * @public
+ */
+export interface HacknetNodeConstants {
+  /** Amount of money gained per level */
+  MoneyGainPerLevel: number;
+  /** Base cost for a new node */
+  BaseCost: number;
+  /** Base cost per level */
+  LevelBaseCost: number;
+  /** Base cost to incrase RAM */
+  RamBaseCost: number;
+  /** Base cost to increase cores */
+  CoreBaseCost: number;
+  /** Multiplier to purchase new node */
+  PurchaseNextMult: number;
+  /** Multiplier to increase node level */
+  UpgradeLevelMult: number;
+  /** Multiplier to increase RAM */
+  UpgradeRamMult: number;
+  /** Multiplier to increase cores */
+  UpgradeCoreMult: number;
+  /** Max node level */
+  MaxLevel: number;
+  /** Max amount of RAM in GB */
+  MaxRam: number;
+  /** Max number of cores */
+  MaxCores: number;
+}
+
+/**
+ * Hacknet server related constants
+ * @public
+ */
+export interface HacknetServerConstants {
+  /** Number of hashes calculated per level */
+  HashesPerLevel: number;
+  /** Base cost for a new server */
+  BaseCost: number;
+  /** Base cost to increase RAM */
+  RamBaseCost: number;
+  /** Base cost to increase cores */
+  CoreBaseCost: number;
+  /** Base cost to upgrade cache */
+  CacheBaseCost: number;
+  /** Multiplier to purchase a new server */
+  PurchaseMult: number;
+  /** Multiplier to increase server level */
+  UpgradeLevelMult: number;
+  /** Multiplier to increase RAM */
+  UpgradeRamMult: number;
+  /** Multiplier to increase cores */
+  UpgradeCoreMult: number;
+  /** Multiplier to upgrade cache */
+  UpgradeCacheMult: number;
+  /** Max number of servers */
+  MaxServers: number;
+  /** Max level for a server */
+  MaxLevel: number;
+  /** Max amount of RAM in GB */
+  MaxRam: number;
+  /** Max number of cores */
+  MaxCores: number;
+  /** Max cache size */
+  MaxCache: number;
 }
 
 /**
@@ -490,6 +555,8 @@ export interface BitNodeMultipliers {
   FourSigmaMarketDataApiCost: number;
   /** Influences how much it costs to unlock the stock market's 4S Market Data (NOT API) */
   FourSigmaMarketDataCost: number;
+  /** Influences the respect gain and money gain of your gang. */
+  GangSoftcap: number;
   /** Influences the experienced gained when hacking a server. */
   HackExpGain: number;
   /** Influences how quickly the player's hacking level (not experience) scales */
@@ -510,10 +577,14 @@ export interface BitNodeMultipliers {
   PurchasedServerLimit: number;
   /** Influences the maximum allowed RAM for a purchased server */
   PurchasedServerMaxRam: number;
+  /** Influences cost of any purchased server at or above 128GB */
+  PurchasedServerSoftCap: number;
   /** Influences the minimum favor the player must have with a faction before they can donate to gain rep. */
   RepToDonateToFaction: number;
-  /** Influences how much money can be stolen from a server when a script performs a hack against it. */
+  /** Influences how much the money on a server can be reduced when a script performs a hack against it. */
   ScriptHackMoney: number;
+  /** Influences how much of the money stolen by a scripted hack will be added to the player's money. */
+  ScriptHackMoneyGain: number;
   /** Influences the growth percentage per cycle against a server. */
   ServerGrowthRate: number;
   /** Influences the maxmimum money that a server can grow to. */
@@ -526,6 +597,12 @@ export interface BitNodeMultipliers {
   ServerWeakenRate: number;
   /** Influences how quickly the player's strength level (not exp) scales */
   StrengthLevelMultiplier: number;
+  /** Influences the power of the gift */
+  StaneksGiftPowerMultiplier: number;
+  /** Influences the size of the gift */
+  StaneksGiftExtraSize: number;
+  /** Influences the hacking skill required to backdoor the world daemon. */
+  WorldDaemonDifficulty: number;
 }
 
 /**
@@ -537,9 +614,9 @@ export interface NodeStats {
   name: string;
   /** Node's level */
   level: number;
-  /** Node's RAM */
+  /** Node's RAM (GB) */
   ram: number;
-  /** Node's used RAM */
+  /** Node's used RAM (GB) */
   ramUsed: number;
   /** Node's number of cores */
   cores: number;
@@ -959,6 +1036,78 @@ export interface SleeveTask {
 }
 
 /**
+ * Object representing a port. A port is a serialized queue.
+ * @public
+ */
+export interface NetscriptPort {
+  /**
+   * Write data to a port.
+   * @remarks
+   * RAM cost: 0 GB
+   *
+   * @returns The data popped off the queue if it was full.
+   */
+  write(value: string | number): null | string | number;
+
+  /**
+   * Attempt to write data to the port.
+   * @remarks
+   * RAM cost: 0 GB
+   *
+   * @returns True if the data was added to the port, false if the port was full
+   */
+  tryWrite(value: string | number): boolean;
+
+  /**
+   * Shift an element out of the port.
+   * @remarks
+   * RAM cost: 0 GB
+   *
+   * This function will remove the first element from the port and return it.
+   * If the port is empty, then the string “NULL PORT DATA” will be returned.
+   * @returns the data read.
+   */
+  read(): string | number;
+
+  /**
+   * Retrieve the first element from the port without removing it.
+   * @remarks
+   * RAM cost: 0 GB
+   *
+   * This function is used to peek at the data from a port. It returns the
+   * first element in the specified port without removing that element. If
+   * the port is empty, the string “NULL PORT DATA” will be returned.
+   * @returns the data read
+   */
+  peek(): string | number;
+
+  /**
+   * Check if the port is full.
+   * @remarks
+   * RAM cost: 0 GB
+   *
+   * @returns true if the port is full, otherwise false
+   */
+  full(): boolean;
+
+  /**
+   * Check if the port is empty.
+   * @remarks
+   * RAM cost: 0 GB
+   *
+   * @returns true if the port is empty, otherwise false
+   */
+  empty(): boolean;
+
+  /**
+   * Empties all data from the port.
+   * @remarks
+   * RAM cost: 0 GB
+   */
+  clear(): void;
+}
+
+/**
  * Stock market API
  * @public
  */
@@ -1215,6 +1364,8 @@ export interface TIX {
    * @remarks
    * RAM cost: 2.5 GB
    * This is an object containing information for all the Limit and Stop Orders you have in the stock market.
+   * For each symbol you have a position in, the returned object will have a key with that symbol's name.
+   * The object's properties are each an array of {@link StockOrderObject}
    * The object has the following structure:
    *
    * ```ts
@@ -1322,7 +1473,7 @@ export interface TIX {
 /**
  * Singularity API
  * @remarks
- * This API requires Source-File 4 level 1 to use. The RAM cost of all these functions is multiplied by 16/4/1 based on Source-File 4 levels.
+ * This API requires Source-File 4 to use. The RAM cost of all these functions is multiplied by 16/4/1 based on Source-File 4 levels.
  * @public
  */
 export interface Singularity {
@@ -1343,9 +1494,10 @@ export interface Singularity {
    *
    * @param universityName - Name of university. You must be in the correct city for whatever university you specify.
    * @param courseName - Name of course.
+   * @param focus - Acquire player focus on this class. Optional. Defaults to true.
    * @returns True if actions is successfully started, false otherwise.
    */
-  universityCourse(universityName: string, courseName: string): boolean;
+  universityCourse(universityName: string, courseName: string, focus?: boolean): boolean;
 
   /**
    * Workout at the gym.
@@ -1364,9 +1516,10 @@ export interface Singularity {
    *
    * @param gymName - Name of gym. You must be in the correct city for whatever gym you specify.
    * @param stat - The stat you want to train.
+   * @param focus - Acquire player focus on this gym workout. Optional. Defaults to true.
    * @returns True if actions is successfully started, false otherwise.
    */
-  gymWorkout(gymName: string, stat: string): boolean;
+  gymWorkout(gymName: string, stat: string, focus?: boolean): boolean;
 
   /**
    * Travel to another city.
@@ -1777,9 +1930,10 @@ export interface Singularity {
    * ns.createProgram(“relaysmtp.exe”);
    * ```
    * @param program - Name of program to create.
+   * @param focus - Acquire player focus on this program creation. Optional. Defaults to true.
    * @returns True if you successfully start working on the specified program, and false otherwise.
    */
-  createProgram(program: string): boolean;
+  createProgram(program: string, focus?: boolean): boolean;
 
   /**
    * Commit a crime.
@@ -3583,7 +3737,7 @@ interface HacknetNodesFormulas {
    * All constants used by the game.
    * @returns An object with all hacknet node constants used by the game.
    */
-  constants(): number;
+  constants(): HacknetNodeConstants;
 }
 
 /**
@@ -3650,7 +3804,7 @@ interface HacknetServersFormulas {
    * All constants used by the game.
    * @returns An object with all hacknet server constants used by the game.
    */
-  constants(): any;
+  constants(): HacknetServerConstants;
 }
 
 /**
@@ -3779,7 +3933,7 @@ interface Stanek {
   /**
    * List possible fragments.
    * @remarks
-   * RAM cost: cost: 0 GB
+   * RAM cost: 0 GB
    *
    * @returns List of possible fragments.
    */
@@ -3788,7 +3942,7 @@ interface Stanek {
   /**
    * List of fragments in Stanek's Gift.
    * @remarks
-   * RAM cost: cost: 5 GB
+   * RAM cost: 5 GB
    *
    * @returns List of active fragments placed on Stanek's Gift.
    */
@@ -3797,14 +3951,14 @@ interface Stanek {
   /**
    * Clear the board of all fragments.
    * @remarks
-   * RAM cost: cost: 0 GB
+   * RAM cost: 0 GB
    */
   clear(): void;
 
   /**
    * Check if fragment can be placed at specified location.
    * @remarks
-   * RAM cost: cost: 0.5 GB
+   * RAM cost: 0.5 GB
    *
    * @param rootX - rootX Root X against which to align the top left of the fragment.
    * @param rootY - rootY Root Y against which to align the top left of the fragment.
@@ -3816,7 +3970,7 @@ interface Stanek {
   /**
    * Place fragment on Stanek's Gift.
    * @remarks
-   * RAM cost: cost: 5 GB
+   * RAM cost: 5 GB
    *
    * @param rootX - X against which to align the top left of the fragment.
    * @param rootY - Y against which to align the top left of the fragment.
@@ -3828,7 +3982,7 @@ interface Stanek {
   /**
    * Get placed fragment at location.
    * @remarks
-   * RAM cost: cost: 5 GB
+   * RAM cost: 5 GB
    *
    * @param rootX - X against which to align the top left of the fragment.
    * @param rootY - Y against which to align the top left of the fragment.
@@ -3839,7 +3993,7 @@ interface Stanek {
   /**
    * Remove fragment at location.
    * @remarks
-   * RAM cost: cost: 0.15 GB
+   * RAM cost: 0.15 GB
    *
    * @param rootX - X against which to align the top left of the fragment.
    * @param rootY - Y against which to align the top left of the fragment.
@@ -3856,7 +4010,7 @@ interface UserInterface {
   /**
    * Get the current theme
    * @remarks
-   * RAM cost: cost: 0 GB
+   * RAM cost: 0 GB
    *
    * @returns An object containing the theme's colors
    */
@@ -3865,7 +4019,7 @@ interface UserInterface {
   /**
    * Sets the current theme
    * @remarks
-   * RAM cost: cost: 0 GB
+   * RAM cost: 0 GB
    * @example
    * Usage example (NS2)
    * ```ts
@@ -3879,15 +4033,14 @@ interface UserInterface {
   /**
    * Resets the player's theme to the default values
    * @remarks
-   * RAM cost: cost: 0 GB
+   * RAM cost: 0 GB
    */
   resetTheme(): void;
-
 
   /**
    * Get the current styles
    * @remarks
-   * RAM cost: cost: 0 GB
+   * RAM cost: 0 GB
    *
    * @returns An object containing the player's styles
    */
@@ -3896,7 +4049,7 @@ interface UserInterface {
   /**
    * Sets the current styles
    * @remarks
-   * RAM cost: cost: 0 GB
+   * RAM cost: 0 GB
    * @example
    * Usage example (NS2)
    * ```ts
@@ -3910,9 +4063,16 @@ interface UserInterface {
   /**
    * Resets the player's styles to the default values
    * @remarks
-   * RAM cost: cost: 0 GB
+   * RAM cost: 0 GB
    */
   resetStyles(): void;
+
+  /**
+   * Gets the current game information (version, commit, ...)
+   * @remarks
+   * RAM cost: 0 GB
+   */
+  getGameInfo(): GameInfo;
 }
 
 /**
@@ -4443,11 +4603,11 @@ export interface NS extends Singularity {
    * //Get logs from foo.script on the foodnstuff server that was run with the arguments [1, "test"]
    * ns.tail("foo.script", "foodnstuff", 1, "test");
    * ```
-   * @param fn - Optional. Filename of the script being tailed. If omitted, the current script is tailed.
+   * @param fn - Optional. Filename or PID of the script being tailed. If omitted, the current script is tailed.
    * @param host - Optional. Hostname of the script being tailed. Defaults to the server this script is running on. If args are specified, this is not optional.
    * @param args - Arguments for the script being tailed.
    */
-  tail(fn?: string, host?: string, ...args: any[]): void;
+  tail(fn?: FilenameOrPID, host?: string, ...args: any[]): void;
 
   /**
    * Get the list of servers connected to a server.
@@ -4822,6 +4982,7 @@ export interface NS extends Singularity {
    * @param destination - Host of the destination server, which is the server to which the file will be copied.
    * @returns True if the script/literature file is successfully copied over and false otherwise. If the files argument is an array then this function will return true if at least one of the files in the array is successfully copied.
    */
+  scp(files: string | string[], destination: string): Promise<boolean>;
   scp(files: string | string[], source: string, destination: string): Promise<boolean>;
 
   /**
@@ -5022,9 +5183,9 @@ export interface NS extends Singularity {
    * @remarks
    * RAM cost: 0.1 GB
    *
-   * Returns the server’s instrinsic “growth parameter”. This growth
-   * parameter is a number between 0 and 100 that represents how
-   * quickly the server’s money grows. This parameter affects the
+   * Returns the server’s intrinsic “growth parameter”. This growth
+   * parameter is a number typically between 0 and 100 that represents
+   * how quickly the server’s money grows. This parameter affects the
    * percentage by which the server’s money is increased when using the
    * grow function. A higher growth parameter will result in a
    * higher percentage increase from grow.
@@ -5097,7 +5258,7 @@ export interface NS extends Singularity {
    * const [totalRam, ramUsed] = ns.getServerRam("helios");
    * ```
    * @param host - Host of target server.
-   * @returns Array with total and used memory on the specified server.
+   * @returns Array with total and used memory on the specified server, in GB.
    */
   getServerRam(host: string): [number, number];
 
@@ -5107,7 +5268,7 @@ export interface NS extends Singularity {
    * RAM cost: 0.05 GB
    *
    * @param host - Hostname of the target server.
-   * @returns max ram
+   * @returns max ram (GB)
    */
   getServerMaxRam(host: string): number;
   /**
@@ -5116,7 +5277,7 @@ export interface NS extends Singularity {
    * RAM cost: 0.05 GB
    *
    * @param host - Hostname of the target server.
-   * @returns used ram
+   * @returns used ram (GB)
    */
   getServerUsedRam(host: string): number;
 
@@ -5190,6 +5351,7 @@ export interface NS extends Singularity {
    * RAM cost: 0.1 GB
    *
    * Returns a boolean indicating whether the specified script is running on the target server.
+   * If you use a PID instead of a filename, the hostname and args parameters are unnecessary.
    * Remember that a script is uniquely identified by both its name and its arguments.
    *
    * @example
@@ -5216,12 +5378,12 @@ export interface NS extends Singularity {
    * //The function call will return true if there is a script named foo.script running with the arguments 1, 5, and “test” (in that order) on the joesguns server, and false otherwise:
    * ns.isRunning("foo.script", "joesguns", 1, 5, "test");
    * ```
-   * @param script - Filename of script to check. This is case-sensitive.
+   * @param script - Filename or PID of script to check. This is case-sensitive.
    * @param host - Host of target server.
    * @param args - Arguments to specify/identify which scripts to search for.
    * @returns True if specified script is running on the target server, and false otherwise.
    */
-  isRunning(script: string, host: string, ...args: string[]): boolean;
+  isRunning(script: FilenameOrPID, host: string, ...args: string[]): boolean;
 
   /**
    * Get general info about a running script.
@@ -5229,10 +5391,14 @@ export interface NS extends Singularity {
    * RAM cost: 0.3 GB
    *
    * Running with no args returns curent script.
+   * If you use a PID as the first parameter, the hostname and args parameters are unnecessary.
    *
+   * @param filename - Optional. Filename or PID of the script.
+   * @param hostname - Optional. Name of host server the script is running on.
+   * @param args  - Arguments to identify the script
    * @returns info about a running script
    */
-  getRunningScript(filename?: string | number, hostname?: string, ...args: (string | number)[]): RunningScript;
+  getRunningScript(filename?: FilenameOrPID, hostname?: string, ...args: (string | number)[]): RunningScript;
 
   /**
    * Get cost of purchasing a server.
@@ -5255,7 +5421,7 @@ export interface NS extends Singularity {
    *     ns.tprint(i + " -- " + ns.getPurchasedServerCost(Math.pow(2, i)));
    * }
    * ```
-   * @param ram - Amount of RAM of a potential purchased server. Must be a power of 2 (2, 4, 8, 16, etc.). Maximum value of 1048576 (2^20).
+   * @param ram - Amount of RAM of a potential purchased server, in GB. Must be a power of 2 (2, 4, 8, 16, etc.). Maximum value of 1048576 (2^20).
    * @returns The cost to purchase a server with the specified amount of ram.
    */
   getPurchasedServerCost(ram: number): number;
@@ -5303,7 +5469,7 @@ export interface NS extends Singularity {
    * }
    * ```
    * @param hostname - Host of the purchased server.
-   * @param ram - Amount of RAM of the purchased server. Must be a power of 2 (2, 4, 8, 16, etc.). Maximum value of 1048576 (2^20).
+   * @param ram - Amount of RAM of the purchased server, in GB. Must be a power of 2 (2, 4, 8, 16, etc.). Maximum value of 1048576 (2^20).
    * @returns The hostname of the newly purchased server.
    */
   purchaseServer(hostname: string, ram: number): string;
@@ -5344,7 +5510,7 @@ export interface NS extends Singularity {
    * Returns the maximum RAM that a purchased server can have.
    *
    * @remarks RAM cost: 0.05 GB
-   * @returns Returns the maximum RAM that a purchased server can have.
+   * @returns Returns the maximum RAM (in GB) that a purchased server can have.
    */
   getPurchasedServerMaxRam(): number;
 
@@ -5353,7 +5519,7 @@ export interface NS extends Singularity {
    * @remarks
    * RAM cost: 0 GB
    *
-   * This function can be used to either write data to a text file (.txt).
+   * This function can be used to write data to a text file (.txt).
    *
    * This function will write data to that text file. If the specified text file does not exist,
    * then it will be created. The third argument mode, defines how the data will be written to
@@ -5362,7 +5528,7 @@ export interface NS extends Singularity {
    * then the data will be written in “append” mode which means that the data will be added at the
    * end of the text file.
    *
-   * @param handle - Port or text file that will be written to.
+   * @param handle - Filename of the text file that will be written to.
    * @param data - Data to write.
    * @param mode - Defines the write mode. Only valid when writing to text files.
    */
@@ -5388,13 +5554,13 @@ export interface NS extends Singularity {
    * @remarks
    * RAM cost: 0 GB
    *
-   * This function is used to read data from a port or from a text file (.txt).
+   * This function is used to read data from a text file (.txt).
    *
    * This function will return the data in the specified text
    * file. If the text file does not exist, an empty string will be returned.
    *
-   * @param handle - Port or text file to read from.
-   * @returns Data in the specified text file or port.
+   * @param handle - Filename to read from.
+   * @returns Data in the specified text file.
    */
   read(handle: string): any;
 
@@ -5466,9 +5632,8 @@ export interface NS extends Singularity {
    *
    * @see https://bitburner.readthedocs.io/en/latest/netscript/netscriptmisc.html#netscript-ports
    * @param port - Port number. Must be an integer between 1 and 20.
-   * @returns Data in the specified port.
    */
-  getPortHandle(port: number): IPort;
+  getPortHandle(port: number): NetscriptPort;
 
   /**
    * Delete a file.
@@ -5551,7 +5716,7 @@ export interface NS extends Singularity {
    *
    * @param script - Filename of script. This is case-sensitive.
    * @param host - Host of target server the script is located on. This is optional, If it is not specified then the function will se the current server as the target server.
-   * @returns Amount of RAM required to run the specified script on the target server, and 0 if the script does not exist.
+   * @returns Amount of RAM (in GB) required to run the specified script on the target server, and 0 if the script does not exist.
    */
   getScriptRam(script: string, host?: string): number;
 
@@ -5847,6 +6012,26 @@ export interface NS extends Singularity {
   atExit(f: () => void): void;
 
   /**
+   * Move a file on the target server.
+   * @remarks
+   * RAM cost: 0 GB
+   *
+   * NS2 exclusive
+   *
+   * Move the source file to the specified destination on the target server.
+   *
+   * This command only works for scripts and text files (.txt). It cannot, however,  be used
+   * to convert from script to text file, or vice versa.
+   *
+   * This function can also be used to rename files.
+   *
+   * @param host - Host of target server.
+   * @param source - Filename of the source file.
+   * @param destination - Filename of the destination file.
+   */
+  mv(host: string, source: string, destination: string): void;
+
+  /**
    * Parse command line flags.
    * @remarks
    * RAM cost: 0 GB
@@ -5889,6 +6074,23 @@ export interface NS extends Singularity {
    * ```
    */
   flags(schema: [string, string | number | boolean | string[]][]): any;
+
+  /**
+   * Share your computer with your factions.
+   * @remarks
+   * RAM cost: 2.4 GB
+   *
+   * Increases your rep gain of hacking contracts while share is called.
+   * Scales with thread count.
+   */
+  share(): Promise<void>;
+
+  /**
+   * Calculate your share power. Based on all the active share calls.
+   * @remarks
+   * RAM cost: 0.2 GB
+   */
+  getSharePower(): number;
 }
 
 /**
@@ -5908,7 +6110,7 @@ export interface OfficeAPI {
    */
   assignJob(divisionName: string, cityName: string, employeeName: string, job: string): Promise<void>;
   /**
-   * Assign an employee to a job.
+   * Hire an employee.
    * @param divisionName - Name of the division
    * @param cityName - Name of the city
    * @returns The newly hired employee, if any
@@ -5922,7 +6124,7 @@ export interface OfficeAPI {
    */
   upgradeOfficeSize(divisionName: string, cityName: string, size: number): void;
   /**
-   * Assign an employee to a job.
+   * Throw a party for your employees
    * @param divisionName - Name of the division
    * @param cityName - Name of the city
    * @param costPerEmployee - Amount to spend per employee.
@@ -5942,7 +6144,7 @@ export interface OfficeAPI {
    */
   hireAdVert(divisionName: string): void;
   /**
-   * Hire AdVert.
+   * Purchase a research
    * @param divisionName - Name of the division
    * @param researchName - Name of the research
    */
@@ -5962,6 +6164,49 @@ export interface OfficeAPI {
    * @returns Employee data
    */
   getEmployee(divisionName: string, cityName: string, employeeName: string): Employee;
+  /**
+   * Get the cost to Hire AdVert
+   * @param divisionName - Name of the division
+   * @returns Cost
+   */
+  getHireAdVertCost(divisionName: string): number;
+  /**
+   * Get the number of times you have Hired AdVert
+   * @param divisionName - Name of the division
+   * @returns Number of times you have Hired AdVert
+   */
+  getHireAdVertCount(adivisionName: string): number;
+  /**
+   * Get the cost to unlock research
+   * @param divisionName - Name of the division
+   * @param cityName - Name of the city
+   * @returns cost
+   */
+  getResearchCost(divisionName: string, researchName: string): number;
+  /**
+   * Gets if you have unlocked a research
+   * @param divisionName - Name of the division
+   * @param cityName - Name of the city
+   * @returns true is unlocked, false if not
+   */
+  hasResearched(divisionName: string, researchName: string): boolean;
+  /**
+   * Set the auto job assignment for a job
+   * @param divisionName - Name of the division
+   * @param cityName - Name of the city
+   * @param job - Name of the job
+   * @param amount - Number of employees to assign to that job
+   * @returns A promise that is fulfilled when the assignment is complete.
+   */
+  setAutoJobAssignment(divisionName: string, cityName: string, job: string, amount: number): Promise<boolean>;
+  /**
+   * Cost to Upgrade office size.
+   * @param divisionName - Name of the division
+   * @param cityName - Name of the city
+   * @param size - Amount of positions to open
+   * @returns Cost of upgrading the office
+   */
+  getOfficeSizeUpgradeCost(divisionName: string, cityName: string, asize: number): number;
 }
 
 /**
@@ -6130,6 +6375,21 @@ export interface WarehouseAPI {
     designInvest: number,
     marketingInvest: number,
   ): void;
+  /**
+   * Gets the cost to purchase a warehouse
+   * @returns cost
+   */
+  getPurchaseWarehouseCost(): number;
+  /**
+   * Gets the cost to upgrade a warehouse to the next level
+   * @returns cost to upgrade
+   */
+  getUpgradeWarehouseCost(adivisionName: any, acityName: any): number;
+  /**
+   * Check if you have a warehouse in city
+   * @returns true if warehouse is present, false if not
+   */
+  hasWarehouse(adivisionName: any, acityName: any): boolean;
 }
 
 /**
@@ -6137,6 +6397,74 @@ export interface WarehouseAPI {
  * @public
  */
 export interface Corporation extends WarehouseAPI, OfficeAPI {
+  /**
+   * Create a Corporation
+   * @param divisionName - Name of the division
+   * @param selfFund - If you should self fund, defaults to true, false will only work on Bitnode 3
+   * @returns true if created and false if not
+   */
+  createCorporation(corporationName: string, selfFund: boolean): boolean;
+  /**
+   * Check if you have a one time unlockable upgrade
+   * @param upgradeName - Name of the upgrade
+   * @returns true if unlocked and false if not
+   */
+  hasUnlockUpgrade(upgradeName: string): boolean;
+  /**
+   * Gets the cost to unlock a one time unlockable upgrade
+   * @param upgradeName - Name of the upgrade
+   * @returns cost of the upgrade
+   */
+  getUnlockUpgradeCost(upgradeName: string): number;
+  /**
+   * Get the level of a levelable upgrade
+   * @param upgradeName - Name of the upgrade
+   * @returns the level of the upgrade
+   */
+  getUpgradeLevel(upgradeName: string): number;
+  /**
+   * Gets the cost to unlock the next level of a levelable upgrade
+   * @param upgradeName - Name of the upgrade
+   * @returns cost of the upgrade
+   */
+  getUpgradeLevelCost(upgradeName: string): number;
+  /**
+   * Gets the cost to expand into a new industry
+   * @param industryName - Name of the industry
+   * @returns cost
+   */
+  getExpandIndustryCost(industryName: string): number;
+  /**
+   * Gets the cost to expand into a new city
+   * @returns cost
+   */
+  getExpandCityCost(): number;
+  /**
+   * Get an offer for investment based on you companies current valuation
+   * @returns An offer of investment
+   */
+  getInvestmentOffer(): InvestmentOffer;
+  /**
+   * Accept investment based on you companies current valuation
+   * @remarks
+   * Is based on current valuation and will not honer a specific Offer
+   * @returns An offer of investment
+   */
+  acceptInvestmentOffer(): boolean;
+  /**
+   * Go public
+   * @param numShares - number of shares you would like to issue for your IPO
+   * @returns true if you successfully go public, false if not
+   */
+  goPublic(numShares: number): boolean;
+  /**
+   * Bribe a faction
+   * @param factionName - Faction name
+   * @param amountCash - Amount of money to bribe
+   * @param amountShares - Amount of shares to bribe
+   * @returns True if successful, false if not
+   */
+  bribe(factionName: string, amountCash: number, amountShares: number): boolean;
   /**
    * Get corporation data
    * @returns Corporation data
@@ -6161,7 +6489,7 @@ export interface Corporation extends WarehouseAPI, OfficeAPI {
    */
   expandCity(divisionName: string, cityName: string): void;
   /**
-   * Unlock an upgrade.
+   * Unlock an upgrade
    * @param upgradeName - Name of the upgrade
    */
   unlockUpgrade(upgradeName: string): void;
@@ -6204,6 +6532,8 @@ interface CorporationInfo {
   sharePrice: number;
   /** State of the corporation. Possible states are START, PURCHASE, PRODUCTION, SALE, EXPORT. */
   state: string;
+  /** Array of all divisions */
+  divisions: Division[];
 }
 
 /**
@@ -6247,6 +6577,12 @@ interface Product {
   pCost: number;
   /** Sell cost, can be "MP+5" */
   sCost: string | number;
+  /** Data refers to the production, sale, and quantity of the products
+   * These values are specific to a city
+   * For each city, the data is [qty, prod, sell] */
+  cityData: { [key: string]: number[] };
+  /** Creation progress - A number between 0-100 representing percentage */
+  developmentProgress: number;
 }
 
 /**
@@ -6260,6 +6596,10 @@ interface Material {
   qty: number;
   /** Quality of the material */
   qlt: number;
+  /** Amount of material produced  */
+  prod: number;
+  /** Amount of material sold  */
+  sell: number;
 }
 
 /**
@@ -6275,6 +6615,8 @@ interface Warehouse {
   size: number;
   /** Used space in the warehouse */
   sizeUsed: number;
+  /** Smart Supply status in the warehouse */
+  smartSupplyEnabled: boolean;
 }
 
 /**
@@ -6345,6 +6687,21 @@ interface Division {
   upgrades: number[];
   /** Cities in which this division has expanded */
   cities: string[];
+  /** Products developed by this division */
+  products: string[];
+}
+
+/**
+ * Corporation investment offer
+ * @public
+ */
+interface InvestmentOffer {
+  /** Amount of funds you will get from this investment */
+  funds: number;
+  /** Amount of share you will give in exchange for this investment */
+  shares: number;
+  /** Current round of funding (max 4) */
+  round: number;
 }
 
 /**
@@ -6393,6 +6750,16 @@ interface UserInterfaceTheme {
  * @internal
  */
 interface IStyleSettings {
-  fontFamily: React.CSSProperties["fontFamily"];
-  lineHeight: React.CSSProperties["lineHeight"];
+  fontFamily: string;
+  lineHeight: number;
+}
+
+/**
+ * Game Information
+ * @internal
+ */
+interface GameInfo {
+  version: string;
+  commit: string;
+  platform: string;
 }

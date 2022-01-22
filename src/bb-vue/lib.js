@@ -515,3 +515,40 @@ const toJsonSafe = function (object, objectMaxDepth, arrayMaxLength, indent) {
   var paths = []
   return toString('root', object, '', 0)
 }
+
+/**
+ * Elapsed time between two dates, or a number of seconds
+ * @param {number} timeStart Defaults to 0
+ * @param {number} timeEnd Defaults to 0
+ * @returns {string} Elapsed time in human-friendly format
+ */
+export function timeDiff(timeStart = 0, timeEnd = 0) {
+  let diff
+  if (timeStart && timeEnd) {
+    diff = timeEnd - timeStart
+  } else {
+    diff = timeStart * 1000
+  }
+  var hours = Math.floor(diff / (1000 * 60 * 60))
+  diff -= hours * (1000 * 60 * 60)
+  var mins = Math.floor(diff / (1000 * 60))
+  diff -= mins * (1000 * 60)
+  var secs = Math.floor(diff / 1000)
+  diff -= secs * 1000
+  var ms = Math.floor(diff)
+  diff -= ms
+  let toRet = []
+  if (hours > 0) {
+    toRet.push(`${hours}h`)
+  }
+  if (mins > 0) {
+    toRet.push(`${mins}m`)
+  }
+  if (secs > 0) {
+    toRet.push(`${secs}s`)
+  }
+  if (ms > 0 && !secs) {
+    toRet.push(`${ms}ms`)
+  }
+  return toRet.join(' ')
+}

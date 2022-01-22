@@ -1,5 +1,24 @@
 // prettier-ignore
-import { cleanupError, css, html, lodash, toJson } from '/bb-vue/lib.js'
+import { cleanupError, css, html, lodash, timeDiff, toJson } from '/bb-vue/lib.js'
+
+export const formatRam = (gb) => {
+  const sizes = ['GB', 'TB', 'PB']
+  const marker = 1000
+  const precision = 2
+  gb = parseInt(gb) || 0
+  if (gb == 0) return 'n/a'
+  const i = parseInt(Math.floor(Math.log(gb) / Math.log(marker)))
+  if (i == 0) return gb + sizes[i]
+  return (gb / Math.pow(marker, i)).toFixed(precision) + sizes[i]
+}
+
+export const mapOrder = (array, myorder, key, catchAll) => {
+  var order = myorder.reduce((r, k, i) => ((r[k] = i + 1), r), {})
+  const theSort = array.sort(
+    (a, b) => (order[a[key]] || order[catchAll]) - (order[b[key]] || order[catchAll])
+  )
+  return theSort
+}
 
 export default {
   name: 'bbv-object-display',
@@ -60,16 +79,22 @@ export default {
     objectPrinter() {
       if (!lodash.isObjectLike(this.data)) return
 
+      const dateTimeMatcher = new RegExp(/.*[tT]ime|[dD]ate.*/, 'gm')
+      const ramLikes = ['ram', 'ramUsed', 'ramUsage', 'ramTotal', 'ramFree', 'ramAvail']
+      const secondLikes = ['onlineRunningTime', 'offlineRunningTime', 'timeLifespan']
+      const dateLikes = ['timeOfBirth', 'timeOfDeath']
+
       // Build object array from entries
       let objArray = Object.entries({ ...this.data }).map(([label, value]) => {
         label = String(label).trim()
+        let valueOfflimits = false
 
-        const dateTimeMatcher = new RegExp(/.*[tT]ime|[dD]ate.*/, 'gm')
         let type = 'default'
         let subType = 'default'
 
         // General classification
-        if (dateTimeMatcher['exec'](label) && lodash.isNumber(value)) type = 'date'
+        if ((dateTimeMatcher['exec'](label) || dateLikes.includes(label)) && lodash.isNumber(value))
+          type = 'date'
         else if (lodash.isString(value)) type = 'string'
         else if (lodash.isNumber(value)) type = 'number'
         else if (lodash.isArray(value)) type = 'array'
@@ -88,9 +113,33 @@ export default {
           }
         }
 
-        // Value processing
+        // Basic processing
         if (type == 'string') value = value.trim()
         if (type == 'string' && label == 'error') value = cleanupError(value)
+
+        // Time processing
+        if (['string', 'number', 'date'].includes(type) && ramLikes.includes(label)) {
+          value = formatRam(value)
+          valueOfflimits = true
+        }
+
+        if (
+          ['string', 'number', 'date'].includes(type) &&
+          secondLikes.includes(label) &&
+          !valueOfflimits
+        ) {
+          value = timeDiff(value)
+          valueOfflimits = true
+        }
+
+        // Date display
+        if (type == 'date' && !valueOfflimits) {
+          try {
+            value = new Date(value).toLocaleTimeString()
+          } catch (error) {
+            /* shh */
+          }
+        }
 
         return {
           label,
@@ -102,15 +151,14 @@ export default {
 
       // Sort object entries based on known keys + common datatypes
       let labelOrders = [
-        'timeStart',
-        'onlineRunningTime',
-        'timeEnd',
-        'diedOn',
         'server',
         'filename',
         'args',
         'pid',
         'threads',
+        ...ramLikes,
+        ...secondLikes,
+        ...dateLikes,
         'status',
         'result',
         'error',
@@ -124,13 +172,7 @@ export default {
         '*',
         'logs',
       ]
-      const mapOrder = (array, myorder, key, catchAll) => {
-        var order = myorder.reduce((r, k, i) => ((r[k] = i + 1), r), {})
-        const theSort = array.sort(
-          (a, b) => (order[a[key]] || order[catchAll]) - (order[b[key]] || order[catchAll])
-        )
-        return theSort
-      }
+
       return mapOrder(objArray, labelOrders, 'label', '*')
     },
   },

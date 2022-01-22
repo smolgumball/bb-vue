@@ -1,5 +1,5 @@
 // prettier-ignore
-import { cleanupError, css, html, lodash, timeDiff, toJson } from '/bb-vue/lib.js'
+import { cleanupError, css, formatMoney, formatNumberShort, html, lodash, timeDiff, toJson } from '/bb-vue/lib.js'
 
 export const formatRam = (gb) => {
   const sizes = ['GB', 'TB', 'PB']
@@ -83,6 +83,16 @@ export default {
       const ramLikes = ['ram', 'ramUsed', 'ramUsage', 'ramTotal', 'ramFree', 'ramAvail']
       const secondLikes = ['onlineRunningTime', 'offlineRunningTime', 'timeLifespan']
       const dateLikes = ['timeOfBirth', 'timeOfDeath']
+      const moneyLikes = [
+        'onlineMoneyMade',
+        'offlineMoneyMade',
+        'profit',
+        'money',
+        'cost',
+        'spend',
+        'price',
+      ]
+      const numberIgnores = ['pid', 'threads']
 
       // Build object array from entries
       let objArray = Object.entries({ ...this.data }).map(([label, value]) => {
@@ -115,14 +125,16 @@ export default {
 
         // Basic processing
         if (type == 'string') value = value.trim()
-        if (type == 'string' && label == 'error') value = cleanupError(value)
+        if (type == 'string' && label == 'error') {
+          value = cleanupError(value)
+          valueOfflimits = true
+        }
 
         // Time processing
         if (['string', 'number', 'date'].includes(type) && ramLikes.includes(label)) {
           value = formatRam(value)
           valueOfflimits = true
         }
-
         if (
           ['string', 'number', 'date'].includes(type) &&
           secondLikes.includes(label) &&
@@ -132,13 +144,34 @@ export default {
           valueOfflimits = true
         }
 
-        // Date display
+        // Date processing
         if (type == 'date' && !valueOfflimits) {
           try {
             value = new Date(value).toLocaleTimeString()
+            valueOfflimits = true
           } catch (error) {
             /* shh */
           }
+        }
+
+        // Number processing
+        if (
+          type == 'number' &&
+          parseFloat(value) > 1000 &&
+          moneyLikes.includes(label) &&
+          !valueOfflimits
+        ) {
+          value = formatMoney(value)
+          valueOfflimits = true
+        }
+        if (
+          type == 'number' &&
+          parseFloat(value) > 1000 &&
+          !numberIgnores.includes(label) &&
+          !valueOfflimits
+        ) {
+          value = formatNumberShort(value)
+          valueOfflimits = true
         }
 
         return {

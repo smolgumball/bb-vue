@@ -3,4 +3,5 @@ node_modules/
 tmp/
 archived/
 src/bb-vue/misc-examples/ticker-ui.js
+src/scripts
 publishing-key.txt

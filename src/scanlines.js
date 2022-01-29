@@ -28,10 +28,10 @@ function addScanlines(enableDisable = true, discoMode) {
 
       @keyframes __scanlineDisco {
         from {
-          filter: hue-rotate(0deg);
+          filter: hue-rotate(90deg);
         }
         to {
-          filter: hue-rotate(360deg);
+          filter: hue-rotate(180deg);
         }
       }
     `

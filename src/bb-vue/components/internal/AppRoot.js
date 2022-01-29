@@ -101,31 +101,39 @@ export default {
      */
     'internals.store.consumerRootMounts': {
       handler(newVal) {
+        const newMountCount = newVal?.length
+
         // Ensure AppRoot knows CRMs have been seen added at some point
-        if (this.hasSeenCrms !== true && newVal?.length >= 1) {
+        if (this.hasSeenCrms !== true && newMountCount >= 1) {
           this.hasSeenCrms = true
         }
 
         // If a CRM is removed, if it was the last, and if AppRoot has seen CRMs before
-        if (this.hasSeenCrms === true && newVal?.length === 0) {
-          if (this.rootShutdownTimeoutFn === null) {
-            // Create a shutdown timeout func to end the entire RootApp
-            this.rootShutdownTimeoutFn = setTimeout(() => {
-              console.debug('bb-vue: AppRoot cannot find any CRMs and is shutting down')
-              this.rootShutdown()
-            }, rootShutdownTimeout)
-          }
+        if (this.hasSeenCrms === true && newMountCount === 0) {
+          if (this.rootShutdownTimeoutFn !== null) return
+          this.startShutdownTimeout()
         }
 
         // Clear an ongoing shutdown timeout if a new CRM is added
-        if (newVal?.length >= 1 && this.rootShutdownTimeoutFn !== null) {
-          clearTimeout(this.rootShutdownTimeoutFn)
-          this.rootShutdownTimeoutFn = null
+        if (newMountCount >= 1) {
+          this.stopShutdownTimeout()
         }
       },
     },
   },
   methods: {
+    startShutdownTimeout() {
+      // Create a shutdown timeout func to end the entire RootApp
+      this.rootShutdownTimeoutFn = setTimeout(() => {
+        console.debug('bb-vue: AppRoot cannot find any CRMs and is shutting down')
+        this.rootShutdown()
+      }, rootShutdownTimeout)
+    },
+    stopShutdownTimeout() {
+      if (this.rootShutdownTimeoutFn === null) return
+      clearTimeout(this.rootShutdownTimeoutFn)
+      this.rootShutdownTimeoutFn = null
+    },
     async loadDeps() {
       // console.time('AppRoot:loadDeps')
       if (!win[Keys.vueUseModuleKey]) {
@@ -172,6 +180,7 @@ export default {
       )
     },
     async rootShutdown() {
+      this.stopShutdownTimeout()
       for (const x of this.allCrms) {
         await this.unmountConsumerRootByUuid(x.$options.__uuid)
       }

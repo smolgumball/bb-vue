@@ -55,6 +55,13 @@ export const RootApp = {
   set(val) {
     return setGlobal(Keys.rootAppKey, val)
   },
+  async rootShutdown() {
+    try {
+      await this.component()?.rootShutdown()
+    } catch (error) {
+      console.debug("bb-vue: Issue with rootShutdown on AppRoot, but don't worry about it")
+    }
+  },
   async cleanup() {
     await sleep(15)
     try {

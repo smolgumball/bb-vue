@@ -1,5 +1,5 @@
 // prettier-ignore
-import { isBlank, lodash, toStr, toJson, RootApp, sleep } from '/bb-vue/lib.js'
+import { isBlank, lodash, toStr, toJson, RootApp } from '/bb-vue/lib.js'
 
 import ComponentManager from '/bb-vue/ComponentManager.js'
 import MittLoader from '/bb-vue/MittLoader.js'
@@ -20,7 +20,11 @@ const CreateOrGetRootVueApp = async (Vue, Sass, forceReload = false) => {
 
   if (forceReload == true || (RootApp.raw() && !RootApp.instance())) {
     console.debug(`bb-vue: AppFactory found remnants of previous app, doing cleanup`)
-    await RootApp.cleanup()
+    try {
+      await RootApp.rootShutdown()
+    } catch (error) {
+      await RootApp.cleanup()
+    }
   } else if (RootApp.raw() && RootApp.instance()) {
     console.debug(`bb-vue: AppFactory found existing app, returning instance`)
     return RootApp.raw()

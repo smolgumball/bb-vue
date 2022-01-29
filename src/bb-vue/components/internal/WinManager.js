@@ -6,7 +6,7 @@ export default {
   template: `<!-- __CMP_NAME__ -->`,
   data() {
     return {
-      baseStackingIndex: 1510,
+      baseStackingIndex: 1610,
       recentlyActiveWinMounts: [],
     }
   },
@@ -34,7 +34,6 @@ export default {
       const rootOffset = { x: 295, y: 30 }
       const standardOffset = { x: 30, y: 60 }
 
-      // const prevOpenedWinMounts = this.internals.store.winMounts.filter((x) => x.hasOpened === true)
       let curOffset = rootOffset
       let targetWinMount = this.recentlyActiveWinMounts[1]
       if (targetWinMount && targetWinMount.winState === WinStates.open) curOffset = standardOffset

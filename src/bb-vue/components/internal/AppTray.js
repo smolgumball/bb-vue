@@ -58,7 +58,7 @@ export default {
       return winsByRoots
     },
     shouldDisplay() {
-      return this.isHidden === false && this.trayItems.length
+      return /* this.isHidden === false && */ this.trayItems.length
     },
   },
   mounted() {

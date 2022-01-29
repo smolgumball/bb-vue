@@ -6,19 +6,6 @@ import Eye from '/nuburn/Eye.js'
 import Runner from '/nuburn/Runner.js'
 import Store from '/nuburn/Store.js'
 
-const storeSchema = () => {
-  return {
-    player: {},
-    srv: {},
-    proc: {},
-    scripts: {
-      killed: [],
-      activeByPid: {},
-      _transient: {},
-    },
-  }
-}
-
 export default class Core {
   ns
 
@@ -70,7 +57,7 @@ export default class Core {
 
   async storeInit() {
     const store = new Store(this)
-    store.init(storeSchema())
+    store.init()
     return store
   }
 

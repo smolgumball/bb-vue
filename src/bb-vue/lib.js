@@ -145,7 +145,7 @@ export function deleteGlobal(key) {
  */
 export function Vue({ silent = false } = {}) {
   let vue = win[Keys.vueModuleKey]
-  if (Reflect.has(vue, 'devtools') === false) vue = null
+  if (vue && Reflect.has(vue, 'devtools') === false) vue = null
   if (!vue && !silent)
     throw new Error('Vue is not loaded on window global; check VueLoader:Get for issues')
   return vue

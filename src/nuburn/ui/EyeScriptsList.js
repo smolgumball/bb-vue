@@ -1,4 +1,4 @@
-import { css, html, lodash, Vue } from '/bb-vue/lib.js'
+import { css, formatRam, html, lodash, Vue } from '/bb-vue/lib.js'
 import { nuEmit, nuStore } from '/nuburn/lib/globals.js'
 
 export default {
@@ -9,10 +9,24 @@ export default {
         <div class="lane active">
           <div class="laneTitle">Active</div>
           <transition-group name="scriptList">
+            <template v-if="ignoredScripts">
+              <div class="script ignored" key="ignored">
+                <ul>
+                  <li>ignoring <code>{{ ignoredScripts.numIgnored }}</code> scripts</li>
+                  <li>with <code>{{ ignoredScripts.numThreads }}</code> threads</li>
+                  <li>using <code>{{ ignoredScripts.totalRam }}</code> RAM</li>
+                </ul>
+              </div>
+            </template>
             <template v-for="script in lanes.active" :key="script.pid">
-              <div class="script" @click="inspectScript(script.pid)">
-                {{ script.server }} #{{ script.pid }}<br />
-                {{ scriptFilename(script) }}
+              <div class="script twoCol" @click="inspectScript(script.pid)">
+                <div class="details">
+                  {{ script.server }} #{{ script.pid }}<br />
+                  {{ scriptFilename(script) }}
+                </div>
+                <div class="actions">
+                  <bbv-button icon @click.stop="killScript(script.pid)">❌</bbv-button>
+                </div>
               </div>
             </template>
           </transition-group>
@@ -51,7 +65,7 @@ export default {
     </div>
   `,
   setup() {
-    const { computed, reactive, ref } = Vue()
+    const { computed, reactive, ref, unref } = Vue()
 
     // Stores
     const store = nuStore()
@@ -66,6 +80,19 @@ export default {
       return {
         active: store.scripts.activeByPid,
         killed: store.scripts.killed,
+        ignored: store.scripts.ignored,
+      }
+    })
+    const ignoredScripts = computed(() => {
+      if (!lanes?.value) return
+
+      let localLanes = unref(lanes)
+      if ((localLanes?.ignored?.length ?? 0) < 1) return
+
+      return {
+        numIgnored: localLanes.ignored.length,
+        numThreads: localLanes.ignored.reduce((acc, val) => (acc += val.threads), 0),
+        totalRam: formatRam(localLanes.ignored.reduce((acc, val) => (acc += val.ramTotal), 0)),
       }
     })
     const inspectedWins = ref([])
@@ -103,6 +130,7 @@ export default {
       store,
       cmpData,
       lanes,
+      ignoredScripts,
       inspectedWins,
       inspectedScriptData,
       inspectScript,
@@ -130,7 +158,7 @@ export default {
         filter: brightness(1.4);
       }
 
-      & > .laneWrap {
+      .laneWrap {
         display: flex;
         justify-content: space-between;
         width: 100%;
@@ -152,6 +180,10 @@ export default {
             }
             .script {
               border-left: 2px solid var(--bbvSuccessColor);
+
+              &.ignored {
+                border-left: 2px solid var(--bbvErrorColor);
+              }
             }
           }
 
@@ -173,10 +205,38 @@ export default {
         color: var(--bbvHackerDarkFgColor);
         border-radius: 4px;
         transition: all 0.2s ease;
-        cursor: pointer;
 
-        &:hover {
+        &.twoCol {
+          display: flex;
+          align-items: center;
+
+          .details {
+            flex-grow: 1;
+          }
+
+          .actions {
+            padding: 0;
+          }
+        }
+
+        &:not(.ignored):hover {
+          cursor: pointer;
           background-color: var(--bbvInputBgColor);
+        }
+
+        &.ignored {
+          ul {
+            margin: 0;
+            padding-left: 10px;
+          }
+
+          code {
+            display: inline-block;
+            margin-bottom: 4px;
+            border-radius: 5px;
+            background-color: var(--bbvInputBgColor);
+            padding: 1.5px;
+          }
         }
       }
 

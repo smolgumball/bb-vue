@@ -1,24 +1,5 @@
 // prettier-ignore
-import { cleanupError, css, formatMoney, formatNumberShort, html, lodash, timeDiff, toJson } from '/bb-vue/lib.js'
-
-export const formatRam = (gb) => {
-  const sizes = ['GB', 'TB', 'PB']
-  const marker = 1000
-  const precision = 2
-  gb = parseInt(gb) || 0
-  if (gb == 0) return 'n/a'
-  const i = parseInt(Math.floor(Math.log(gb) / Math.log(marker)))
-  if (i == 0) return gb + sizes[i]
-  return (gb / Math.pow(marker, i)).toFixed(precision) + sizes[i]
-}
-
-export const mapOrder = (array, myorder, key, catchAll) => {
-  var order = myorder.reduce((r, k, i) => ((r[k] = i + 1), r), {})
-  const theSort = array.sort(
-    (a, b) => (order[a[key]] || order[catchAll]) - (order[b[key]] || order[catchAll])
-  )
-  return theSort
-}
+import { cleanupError, css, formatMoney, formatNumberShort, formatRam, html, lodash, mapOrder, timeDiff, toJson } from '/bb-vue/lib.js'
 
 export default {
   name: 'bbv-object-display',

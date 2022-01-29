@@ -89,10 +89,11 @@ export default class Collector {
 
     // TODO: Allow this to be configured via UI in EyeScriptsList
     const ignoreCondition = (rs) =>
-      ['hack-target.js', 'grow-target.js', 'weak-target.js'].some((x) => rs.filename.includes(x))
+      ['remote/hack.js', 'remote/grow.js', 'remote/weaken.js'].some((x) => rs.filename.includes(x))
 
     // Search all hostnames for runningScripts
     let scriptsActiveByPid = {}
+    let scriptsIgnored = []
     data.srv.serversFlat.forEach((hostname) => {
       ns.ps(hostname).map((proc) => {
         let rs = ns.getRunningScript(proc.pid)
@@ -103,7 +104,10 @@ export default class Collector {
         }
 
         // Ignore certain scripts
-        if (ignoreCondition(runningScript)) return
+        if (ignoreCondition(runningScript)) {
+          scriptsIgnored.unshift(runningScript)
+          return
+        }
 
         // Persist timeOfBirth until killed
         if (_scriptsTransient[proc.pid] && !_scriptsTransient[proc.pid].timeOfBirth) {
@@ -144,6 +148,7 @@ export default class Collector {
       killed: scriptsKilled,
       activeByPid: scriptsActiveByPid,
       _transient: _scriptsTransient,
+      ignored: scriptsIgnored,
     }
   }
 }

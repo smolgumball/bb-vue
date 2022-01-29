@@ -49,6 +49,7 @@ export default {
             no-pad
             :ref="(win) => { if (win) inspectedWins[script.pid] = win }"
             :title="'🎯 ' + script.server + ' #' + script.pid"
+            style="min-width: 440px; min-height: 490px"
             @close="uninspectScript(script.pid)"
             class="inspectWin"
           >

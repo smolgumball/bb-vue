@@ -31,8 +31,8 @@ export default {
       this.recentlyActiveWinMounts = this.recentlyActiveWinMounts.filter((x) => x !== winMount)
     },
     getRecommendedPosition(winMount) {
-      const rootOffset = { x: 295, y: 30 }
-      const standardOffset = { x: 30, y: 60 }
+      const rootOffset = { x: 265, y: 15 }
+      const standardOffset = { x: 60, y: 100 }
 
       let curOffset = rootOffset
       let targetWinMount = this.recentlyActiveWinMounts[1]

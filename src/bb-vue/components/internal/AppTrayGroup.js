@@ -22,14 +22,13 @@ export default {
   scss: css`
     .__CMP_NAME__ {
       display: flex;
-      padding: 5px;
+      padding: 1.5px;
       background-color: var(--bbvWinTitlebarBgColor);
       transition: opacity 0.4s ease, transform 0.4s ease;
       position: relative;
 
       &.trayTeleport {
         background-color: transparent;
-        padding: 5px 0;
 
         .bbv-button {
           padding-bottom: 3px;
@@ -74,12 +73,13 @@ export default {
 
       .bbv-button {
         color: var(--bbvAppTrayFgColor);
-        padding: 6px 7px;
+        padding: 2px 4px;
         overflow: hidden;
         white-space: nowrap;
         border-bottom: 2px solid transparent;
         transition: border-color 0.2s ease;
         line-height: 1;
+        font-size: 12px;
 
         &.isOpen {
           border-bottom-color: var(--bbvAppTrayFgColor);

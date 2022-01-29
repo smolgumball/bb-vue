@@ -205,16 +205,15 @@ export default {
       box-shadow: inset 0px 0px 70px 0px var(--bbvBoxShadowColor1),
         0px 0px 20px 0px var(--bbvBoxShadowColor2);
 
-      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+      transition: opacity 0.1s ease-out;
 
       &:not(.shouldDisplay) {
         opacity: 0;
         pointer-events: none;
-        transform: translateY(25px);
       }
 
       &.isDragging {
-        opacity: 0.9;
+        opacity: 0.8;
       }
 
       &.isCollapsed {

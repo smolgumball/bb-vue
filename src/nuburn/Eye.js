@@ -19,6 +19,7 @@ export default class Eye {
     this.appHandle = await app.mount({
       config: {
         id: crypto.randomUUID(),
+        forceReload: true,
         showTips: false,
       },
       rootComponent: EyeRoot,

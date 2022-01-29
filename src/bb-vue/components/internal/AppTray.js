@@ -68,12 +68,16 @@ export default {
     watchGameDock() {
       const { useIntervalFn } = VueUse()
       useIntervalFn(() => {
-        let gameDockSelector = doc.querySelector('.MuiDrawer-root.MuiDrawer-docked')
+        let gameDockSelector = doc.querySelector(
+          '#root > div > div > .MuiDrawer-root.MuiDrawer-docked'
+        )
         let width = gameDockSelector?.clientWidth
+
         if (!width) {
           this.isHidden = true
           return
         }
+
         this.isHidden = false
         if (width < 240) {
           this.isCollapsed = true
@@ -148,17 +152,16 @@ export default {
       align-items: stretch;
       padding: 10px;
       width: 249px;
-      height: 62px;
       clip-path: inset(-60px 0 0 0);
 
-      box-shadow: inset 0px 0px 20px 0px var(--bbvBoxShadowColor1);
+      box-shadow: inset 0px 0px 10px 0px var(--bbvBoxShadowColor1);
       border-top: 1px solid var(--bbvBorderColor);
       background-color: var(--bbvAppTrayBgColor);
       transition: width 0.2s cubic-bezier(0.86, 0, 0.07, 1), opacity 0.4s ease, transform 0.4s ease;
 
       &:hover {
         width: 100%;
-        z-index: 1600;
+        z-index: 1700;
 
         &.isCollapsed {
           width: 100%;

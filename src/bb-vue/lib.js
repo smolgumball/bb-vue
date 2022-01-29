@@ -138,6 +138,7 @@ export function deleteGlobal(key) {
  */
 export function Vue({ silent = false } = {}) {
   let vue = win[Keys.vueModuleKey]
+  if (Reflect.has(vue, 'devtools') === false) vue = null
   if (!vue && !silent)
     throw new Error('Vue is not loaded on window global; check VueLoader:Get for issues')
   return vue
@@ -589,4 +590,23 @@ export function timeDiff(timeStart = 0, timeEnd = 0) {
     toRet.push(`${ms}ms`)
   }
   return toRet.join(' ')
+}
+
+export function formatRam(gb) {
+  const sizes = ['GB', 'TB', 'PB']
+  const marker = 1000
+  const precision = 2
+  gb = parseInt(gb) || 0
+  if (gb == 0) return 'n/a'
+  const i = parseInt(Math.floor(Math.log(gb) / Math.log(marker)))
+  if (i == 0) return gb + sizes[i]
+  return (gb / Math.pow(marker, i)).toFixed(precision) + sizes[i]
+}
+
+export function mapOrder(array, myorder, key, catchAll) {
+  var order = myorder.reduce((r, k, i) => ((r[k] = i + 1), r), {})
+  const theSort = array.sort(
+    (a, b) => (order[a[key]] || order[catchAll]) - (order[b[key]] || order[catchAll])
+  )
+  return theSort
 }

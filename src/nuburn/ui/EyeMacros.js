@@ -112,11 +112,11 @@ export default {
       }
     }
     const shareTheLove = async () => {
-      for (let index = 0; index < 10000; index++) {
+      for (let index = 0; index < 45; index++) {
         await sleep(Math.random() * 15)
         nuEmit('nuRunner:add', {
           operation: 'share',
-          threads: 20000,
+          threads: 125,
           options: {},
         })
         /* await sleep(Math.random() * 15)

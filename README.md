@@ -19,7 +19,7 @@ From custom UI extensions to reactive data storage, hacking in BitBurner has nev
 * `nano bbv-inst.js`
   * Copy in script from [install.js](https://raw.githubusercontent.com/smolgumball/bb-vue/dev/install.js) and save
 * Back to terminal
-  * `run /bbv-inst.js dev` 👈 _make sure to include the `dev` argument!_
+  * `run /bbv-inst.js`
   * `run /bb-vue/examples/0-getting-started.js`
 * Run bb-vue
   * `run /bb-vue/examples/1-the-app-tray.js`

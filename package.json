@@ -2,9 +2,10 @@
   "name": "bb-vue",
   "version": "0.5.0",
   "author": "smolgumball",
+  "type": "module",
   "scripts": {
-    "defs": "node updateTypes.js",
-    "manifests": "node manifests.js"
+    "defs": "node tools/updateTypes.js",
+    "manifests": "node tools/manifests.js"
   },
   "repository": {
     "type": "git",

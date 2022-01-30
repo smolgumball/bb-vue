@@ -46,15 +46,12 @@ export default {
         <bbv-object-display class="replResult" :data="replDisplay" />
         <template #actions>
           <span><strong>Uptime:</strong> {{ uptime }}</span>
-          <bbv-button @click="doShutdown" small>🛑 Shutdown</bbv-button>
+          <div class="actions">
+            <bbv-button @click="doShutdown" small>🛑 Shutdown</bbv-button>
+            <bbv-button @click="doReboot" small>💫 Reboot</bbv-button>
+          </div>
         </template>
       </bbv-win>
-
-      <!-- Add actions to tray -->
-      <teleport to="#app-tray">
-        <bbv-button title="Shutdown REPL" @click="doShutdown" small>🛑 REPL</bbv-button>
-        <bbv-button title="Reboot REPL" @click="doReboot">💫 REPL</bbv-button>
-      </teleport>
     </main>
   `,
   setup() {
@@ -142,8 +139,8 @@ export default {
   },
   scss: css`
     .__CMP_NAME__ {
-      .monacoWrap {
-        height: 300px;
+      .actions > *:not(:first-child) {
+        margin-left: 8px;
       }
 
       .replScript {

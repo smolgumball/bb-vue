@@ -14,6 +14,7 @@ export default {
       :class="{ shouldDisplay, isDragging, isCollapsed: draggable.isCollapsed }"
       :style="style"
       @pointerdown="bringToFront"
+      @dblclick="() => canCollapse && toggleCollapse()"
       @keydown.stop
     >
       <div class="win_titlebar" ref="dragHandle">

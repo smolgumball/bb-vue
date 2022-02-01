@@ -32,6 +32,17 @@ export const ReplacementTokens = Object.freeze({
   componentName: '__CMP_NAME__',
 })
 
+/**
+ * Number helpers
+ */
+export const num = {
+  sec: 1000,
+  min: 1000 * 60,
+  hour: 1000 * 60 * 60,
+  mil: 1e6,
+  bil: 1e9,
+}
+
 //
 //
 // GLOBALS MANAGEMENT /////////////
@@ -75,7 +86,7 @@ export const RootApp = {
   },
   async removeDom() {
     await sleep(15)
-    doc.querySelector(`[${this.rootAttr}]`)?.remove()
+    doc.querySelector(`[${this.rootAttr}]`)?.['remove']()
   },
   async addDom(appId) {
     doc.body.insertAdjacentHTML('afterbegin', html`<div id="${appId}" bbv-root></div>`)

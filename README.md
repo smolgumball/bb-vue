@@ -26,7 +26,6 @@ From custom UI extensions to reactive data storage, hacking in BitBurner has nev
 * Explore examples
   * `nano /bb-vue/examples/0-getting-started.js`
   * `nano /bb-vue/examples/1-the-app-tray.js`
-* Open an issue if you run into any problems, or hit me up in [the BitBurner discord](https://discord.gg/XKEGvHqVr3).
 
 ## Changelog
 

@@ -28,12 +28,6 @@ From custom UI extensions to reactive data storage, hacking in BitBurner has nev
   * `nano /bb-vue/examples/1-the-app-tray.js`
 * Open an issue if you run into any problems, or hit me up in [the BitBurner discord](https://discord.gg/XKEGvHqVr3).
 
-## In Development
-
-Most recent changes for those who want to browse the source:
-* Take a [peek at the `/src/bb-vue/*` tree](https://github.com/smolgumball/bb-vue/tree/dev/src/bb-vue) of the `dev` branch
-* Pop over here and [heed the call for testers](https://github.com/smolgumball/bb-vue/issues/11) if you'd like to lend a hand in shaping the growth of `bb-vue` with your feedback
-
 ## Changelog
 
 ### `dev`

@@ -40,7 +40,6 @@ Most recent changes for those who want to browse the source:
 
 * A new architecture that allows for more user-control
 * Beginnings of a component library for creating UIs quickly
-* Active development, be warned, but [feel free to contribute](https://github.com/smolgumball/bb-vue/issues/11) as well!
 
 ### v0.0.1
 
@@ -53,7 +52,3 @@ Most recent changes for those who want to browse the source:
 * An example `CommandPalette` component which creates async NetScript commands to be run by the `Orchestrator` and reports on their status
 * All UI components are now imported from their own files! Almost like Vue SFCs, but decidedly more punk
 * The beginnings of a central dashboard (something of an example of what can be done with the library thus far)
-
-## Troubleshooting
-
-* Please create a GitHub issue if you run into any snags with installation or use, or reach out to me on [the BitBurner discord](https://discord.gg/XKEGvHqVr3).
